@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Plan</title>
+
+<style>
+body {
+  margin: 0;
+  background: #f4f4f4;
+  font-family: Arial;
+}
+
+/* План */
+#planBox {
+  margin-left: 120px;
+  margin-top: 120px;
+}
+
+/* ===== ПАНЕЛЬ ЭТАЖЕЙ ===== */
+#floorPanel {
+    position: fixed;
+    top: 100px;
+    left: 20px;
+
+    background: rgba(30, 30, 30, 0.9);
+    padding: 10px;
+    border-radius: 12px;
+
+    backdrop-filter: blur(6px);
+    display: none;
+}
+
+#floors {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.floor-btn {
+    padding: 12px 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+
+    background: linear-gradient(145deg, #2c2c2c, #1f1f1f);
+    color: white;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    width: 100%;
+    text-align: left;
+
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.floor-btn:hover {
+    background: #3a3a3a;
+    transform: scale(1.05);
+}
+
+.floor-btn.active {
+    background: orange;
+    color: black;
+    font-weight: bold;
+}
+
+/* Кнопка назад */
+#backBtn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  background: black;
+  color: white;
+  cursor: pointer;
+  display: none;
+  z-index: 1000;
+}
+
+/* Карточка */
+#flatCard {
+  position: fixed;
+  left: 0;
+  bottom: -100%;
+
+  width: 100%;
+  max-width: 500px;
+
+  background: white;
+  border-radius: 16px 16px 0 0;
+
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+  padding: 20px;
+
+  transition: all 0.3s ease;
+  z-index: 999;
+}
+
+#flatCard.show {
+  bottom: 0;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- 🔙 КНОПКА -->
+<button id="backBtn">← Назад</button>
+
+<div id="app">
+
+  <!-- ЭТАЖИ (панель) -->
+  <div id="floorPanel">
+    <div id="floors"></div>
+  </div>
+
+  <!-- ПЛАН -->
+  <div id="planBox">
+    <object id="plan" type="image/svg+xml" data="blocks.svg"></object>
+  </div>
+
+  <!-- КАРТОЧКА -->
+  <div id="flatCard">
+    <h3 id="cardTitle">Квартира</h3>
+
+    <p>Номер: <span id="cardFlat"></span></p>
+    <p>Площадь: <span id="cardArea"></span></p>
+    <p>Статус: <span id="cardStatus"></span></p>
+    <p>Клиент: <span id="cardClient"></span></p>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
