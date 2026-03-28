@@ -1,142 +1,234 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Plan</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan</title>
 
-<style>
-body {
-  margin: 0;
-  background: #f4f4f4;
-  font-family: Arial;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-/* План */
-#planBox {
-  margin-left: 120px;
-  margin-top: 120px;
-}
+    body {
+      margin: 0;
+      background: #f4f4f4;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
 
-/* ===== ПАНЕЛЬ ЭТАЖЕЙ ===== */
-#floorPanel {
-    position: fixed;
-    top: 100px;
-    left: 20px;
+    #app {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
 
-    background: rgba(30, 30, 30, 0.9);
-    padding: 10px;
-    border-radius: 12px;
+    /* Кнопка назад */
+    #backBtn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: black;
+      color: white;
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+      font-size: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
 
-    backdrop-filter: blur(6px);
-    display: none;
-}
+    /* Панель этажей */
+    #floorPanel {
+      position: fixed;
+      top: 68px;
+      left: 16px;
+      background: rgba(30, 30, 30, 0.92);
+      padding: 10px;
+      border-radius: 14px;
+      backdrop-filter: blur(6px);
+      display: none;
+      z-index: 900;
+      max-height: calc(100vh - 90px);
+      overflow-y: auto;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
 
-#floors {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
+    #floors {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-.floor-btn {
-    padding: 12px 16px;
-    font-size: 16px;
-    border: none;
-    border-radius: 10px;
+    .floor-btn {
+      padding: 11px 14px;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #2c2c2c, #1f1f1f);
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      min-width: 78px;
+      text-align: left;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
 
-    background: linear-gradient(145deg, #2c2c2c, #1f1f1f);
-    color: white;
+    .floor-btn:hover {
+      background: #3a3a3a;
+      transform: scale(1.03);
+    }
 
-    cursor: pointer;
-    transition: all 0.2s ease;
+    .floor-btn.active {
+      background: orange;
+      color: black;
+      font-weight: bold;
+    }
 
-    width: 100%;
-    text-align: left;
+    /* Обертка плана */
+    #planWrapper {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 20px 20px 110px;
+      transition: all 0.3s ease;
+    }
 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
+    /* Сам SVG */
+    #plan {
+      width: min(78vw, 520px);
+      height: min(78vh, 720px);
+      border: none;
+      display: block;
+      transition: all 0.3s ease;
+    }
 
-.floor-btn:hover {
-    background: #3a3a3a;
-    transform: scale(1.05);
-}
+    /* Карточка */
+    #flatCard {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -100%;
+      width: calc(100% - 20px);
+      max-width: 500px;
+      background: white;
+      border-radius: 18px 18px 0 0;
+      box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.25);
+      padding: 20px;
+      transition: bottom 0.3s ease;
+      z-index: 999;
+    }
 
-.floor-btn.active {
-    background: orange;
-    color: black;
-    font-weight: bold;
-}
+    #flatCard.show {
+      bottom: 0;
+    }
 
-/* Кнопка назад */
-#backBtn {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  padding: 10px 15px;
-  border-radius: 8px;
-  border: none;
-  background: black;
-  color: white;
-  cursor: pointer;
-  display: none;
-  z-index: 1000;
-}
+    #flatCard h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+      font-size: 20px;
+    }
 
-/* Карточка */
-#flatCard {
-  position: fixed;
-  left: 0;
-  bottom: -100%;
+    #flatCard p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
 
-  width: 100%;
-  max-width: 500px;
+    /* Телефон */
+    @media (max-width: 768px) {
+      #backBtn {
+        top: 12px;
+        left: 12px;
+        font-size: 13px;
+        padding: 9px 12px;
+      }
 
-  background: white;
-  border-radius: 16px 16px 0 0;
+      #floorPanel {
+        top: 58px;
+        left: 12px;
+        padding: 8px;
+        border-radius: 12px;
+      }
 
-  box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
-  padding: 20px;
+      .floor-btn {
+        font-size: 14px;
+        padding: 10px 12px;
+        min-width: 74px;
+      }
 
-  transition: all 0.3s ease;
-  z-index: 999;
-}
+      #planWrapper {
+        padding: 16px 16px 16px 95px;
+        align-items: center;
+        justify-content: center;
+      }
 
-#flatCard.show {
-  bottom: 0;
-}
-</style>
+      #plan {
+        width: min(72vw, 420px);
+        height: min(72vh, 620px);
+      }
 
+      #flatCard {
+        width: calc(100% - 12px);
+        padding: 18px 16px 22px;
+      }
+
+      #flatCard h3 {
+        font-size: 18px;
+      }
+
+      #flatCard p {
+        font-size: 15px;
+      }
+    }
+
+    /* Очень маленькие экраны */
+    @media (max-width: 480px) {
+      #planWrapper {
+        padding: 14px 12px 14px 88px;
+      }
+
+      #plan {
+        width: min(70vw, 360px);
+        height: min(68vh, 540px);
+      }
+
+      .floor-btn {
+        font-size: 13px;
+        padding: 9px 10px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- 🔙 КНОПКА -->
-<button id="backBtn">← Назад</button>
+  <button id="backBtn">← Назад</button>
 
-<div id="app">
+  <div id="app">
 
-  <!-- ЭТАЖИ (панель) -->
-  <div id="floorPanel">
-    <div id="floors"></div>
+    <div id="floorPanel">
+      <div id="floors"></div>
+    </div>
+
+    <div id="planWrapper">
+      <object id="plan" type="image/svg+xml" data="blocks.svg"></object>
+    </div>
+
+    <div id="flatCard">
+      <h3 id="cardTitle">Квартира</h3>
+      <p>Номер: <span id="cardFlat"></span></p>
+      <p>Площадь: <span id="cardArea"></span></p>
+      <p>Статус: <span id="cardStatus"></span></p>
+      <p>Клиент: <span id="cardClient"></span></p>
+    </div>
+
   </div>
 
-  <!-- ПЛАН -->
-  <div id="planBox">
-    <object id="plan" type="image/svg+xml" data="blocks.svg"></object>
-  </div>
-
-  <!-- КАРТОЧКА -->
-  <div id="flatCard">
-    <h3 id="cardTitle">Квартира</h3>
-
-    <p>Номер: <span id="cardFlat"></span></p>
-    <p>Площадь: <span id="cardArea"></span></p>
-    <p>Статус: <span id="cardStatus"></span></p>
-    <p>Клиент: <span id="cardClient"></span></p>
-  </div>
-
-</div>
-
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
