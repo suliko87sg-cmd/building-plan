@@ -88,24 +88,27 @@
       font-weight: bold;
     }
 
-    /* Обертка плана */
+    /* ОБЕРТКА ПЛАНА */
     #planWrapper {
-      width: 100%;
-      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 100px; /* место под панель */
+      right: 0;
+      bottom: 0;
+
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px 20px 20px 110px;
-      transition: all 0.3s ease;
     }
 
-    /* Сам SVG */
+    /* САМ ПЛАН */
     #plan {
-      width: min(78vw, 520px);
-      height: min(78vh, 720px);
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
       border: none;
       display: block;
-      transition: all 0.3s ease;
     }
 
     /* Карточка */
@@ -141,67 +144,32 @@
 
     /* Телефон */
     @media (max-width: 768px) {
-      #backBtn {
-        top: 12px;
-        left: 12px;
-        font-size: 13px;
-        padding: 9px 12px;
-      }
 
-      #floorPanel {
-        top: 58px;
-        left: 12px;
-        padding: 8px;
-        border-radius: 12px;
+      #planWrapper {
+        left: 85px;
       }
 
       .floor-btn {
         font-size: 14px;
-        padding: 10px 12px;
-        min-width: 74px;
-      }
-
-      #planWrapper {
-        padding: 16px 16px 16px 95px;
-        align-items: center;
-        justify-content: center;
-      }
-
-      #plan {
-        width: min(72vw, 420px);
-        height: min(72vh, 620px);
+        padding: 10px;
       }
 
       #flatCard {
-        width: calc(100% - 12px);
-        padding: 18px 16px 22px;
-      }
-
-      #flatCard h3 {
-        font-size: 18px;
-      }
-
-      #flatCard p {
-        font-size: 15px;
+        padding: 16px;
       }
     }
 
-    /* Очень маленькие экраны */
     @media (max-width: 480px) {
-      #planWrapper {
-        padding: 14px 12px 14px 88px;
-      }
 
-      #plan {
-        width: min(70vw, 360px);
-        height: min(68vh, 540px);
+      #planWrapper {
+        left: 80px;
       }
 
       .floor-btn {
         font-size: 13px;
-        padding: 9px 10px;
       }
     }
+
   </style>
 </head>
 
@@ -220,7 +188,7 @@
     </div>
 
     <div id="flatCard">
-      <h3 id="cardTitle">Квартира</h3>
+      <h3>Квартира</h3>
       <p>Номер: <span id="cardFlat"></span></p>
       <p>Площадь: <span id="cardArea"></span></p>
       <p>Статус: <span id="cardStatus"></span></p>
