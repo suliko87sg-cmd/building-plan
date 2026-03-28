@@ -46,22 +46,23 @@
   top: 68px;
   left: 16px;
 
-  background: rgba(30, 30, 30, 0.92);
-  padding: 6px;
-  border-radius: 14px;
+  background: transparent;   /* ❌ убрали чёрный */
+  padding: 0;                /* ❌ убрали лишний отступ */
+  border-radius: 0;          /* ❌ убрали рамку */
 
   display: none;
   z-index: 1000;
 
-  width: fit-content;      /* 🔥 ключ */
-  max-width: 200px;        /* чтобы не растягивалось */
+  width: fit-content;
+min-width: 360px; /* 🔥 вот ключ */
 }
 
  #floors {
   display: grid;
-  grid-template-columns: repeat(4, auto); /* 4 кнопки в ряд */
+ grid-template-columns: repeat(6, 1fr);
   gap: 6px;
-  width: fit-content;      /* 🔥 ключ */
+
+  width: fit-content;
 }
 
     .floor-btn {
