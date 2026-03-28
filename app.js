@@ -2,6 +2,8 @@ let currentBlock = null;
 let currentFloor = 3;
 let sheetData = [];
 
+let isDataLoaded = false; // 🔥 контроль загрузки
+
 console.log("APP STARTED");
 
 const plan = document.getElementById("plan");
@@ -20,6 +22,10 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
   .then(data => {
     console.log("DATA LOADED:", data);
     sheetData = Array.isArray(data) ? data : (data.data || []);
+    isDataLoaded = true; // ✅ данные готовы
+  })
+  .catch(err => {
+    console.error("Ошибка загрузки данных:", err);
   });
 
 // =====================
@@ -52,20 +58,20 @@ function initBlocks(svg) {
 
     block.style.cursor = "pointer";
 
- block.onclick = function () {
-  currentBlock = blockId;
-  currentFloor = 3; // 👈 СБРОС ЭТАЖА
+    block.onclick = function () {
+      currentBlock = blockId;
+      currentFloor = 3;
 
-  plan.data = blockId + ".svg";
+      plan.data = blockId + ".svg";
 
-  floorPanel.style.display = "block";
-  backBtn.style.display = "block";
+      floorPanel.style.display = "block";
+      backBtn.style.display = "block";
 
-  initFloors(); // 👈 ОБНОВИТЬ ЭТАЖИ
+      initFloors();
 
-  const card = document.getElementById("flatCard");
-  if (card) card.classList.remove("show");
-};
+      const card = document.getElementById("flatCard");
+      if (card) card.classList.remove("show");
+    };
   });
 }
 
@@ -84,14 +90,27 @@ function loadFlats(blockId) {
 
     flat.style.cursor = "pointer";
 
-    const fullId = blockId + "-" + currentFloor + "-" + flatId;
-    const flatData = sheetData.find(item => item.flat_id === fullId);
+    // 👉 цвет при загрузке (если данные уже есть)
+    if (isDataLoaded) {
+      const fullId = blockId + "-" + currentFloor + "-" + flatId;
+      const flatData = sheetData.find(item => item.flat_id === fullId);
 
-    if (flatData && flatData.color) {
-      flat.style.fill = flatData.color;
+      if (flatData && flatData.color) {
+        flat.style.fill = flatData.color;
+      }
     }
 
     flat.onclick = function () {
+
+      // 🔒 защита от быстрых кликов
+      if (!isDataLoaded) {
+        console.log("Данные ещё не загрузились");
+        return;
+      }
+
+      const fullId = blockId + "-" + currentFloor + "-" + flatId;
+      const flatData = sheetData.find(item => item.flat_id === fullId);
+
       flats.forEach(id => {
         const f = svgDoc.getElementById(id);
         if (f) {
@@ -102,6 +121,10 @@ function loadFlats(blockId) {
 
       flat.style.stroke = "red";
       flat.style.strokeWidth = "3";
+
+      if (flatData && flatData.color) {
+        flat.style.fill = flatData.color;
+      }
 
       const card = document.getElementById("flatCard");
       if (card) card.classList.add("show");
@@ -118,6 +141,10 @@ function loadFlats(blockId) {
         }
 
         document.getElementById("cardClient").innerText = client;
+      } else {
+        document.getElementById("cardArea").innerText = "-";
+        document.getElementById("cardStatus").innerText = "-";
+        document.getElementById("cardClient").innerText = "нет данных";
       }
     };
   });
@@ -131,20 +158,20 @@ function initFloors() {
 
   for (let i = 3; i <= 18; i++) {
     const btn = document.createElement("button");
-btn.classList.add("floor-btn");
+    btn.classList.add("floor-btn");
 
     btn.innerText = i + " этаж";
     btn.style.margin = "4px";
 
     if (i === currentFloor) {
-     btn.classList.add("active");
+      btn.classList.add("active");
     }
 
     btn.onclick = function () {
       currentFloor = i;
 
       const card = document.getElementById("flatCard");
-      if (card) card.style.display = "none";
+      if (card) card.classList.remove("show");
 
       initFloors();
       plan.data = currentBlock + ".svg?t=" + Date.now();
@@ -153,6 +180,10 @@ btn.classList.add("floor-btn");
     floorsContainer.appendChild(btn);
   }
 }
+
+// =====================
+// НАЗАД
+// =====================
 backBtn.onclick = function () {
   currentBlock = null;
   plan.data = "blocks.svg";
@@ -161,7 +192,7 @@ backBtn.onclick = function () {
   backBtn.style.display = "none";
 
   const card = document.getElementById("flatCard");
-  if (card) card.style.display = "none";
+  if (card) card.classList.remove("show");
 
   floorsContainer.innerHTML = "";
 };
