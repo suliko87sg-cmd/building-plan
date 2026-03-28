@@ -56,11 +56,12 @@
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
     }
 
-    #floors {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+   #floors {
+  display: flex;
+  flex-direction: row;   /* ВОТ ЭТО ГЛАВНОЕ */
+  flex-wrap: wrap;      /* перенос на следующий ряд */
+  gap: 6px;
+}
 
     .floor-btn {
       padding: 5px 6px;
