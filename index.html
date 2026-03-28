@@ -41,7 +41,7 @@
     }
 
     /* Панель этажей */
-    #floorPanel {
+   #floorPanel {
   position: fixed;
   top: 68px;
   left: 16px;
@@ -53,15 +53,17 @@
   display: none;
   z-index: 1000;
 
-  width: auto;          /* 🔥 главное */
-  max-width: 90px;      /* 🔥 узкая как кнопка назад */
+  width: fit-content;      /* 🔥 ключ */
+  max-width: 200px;        /* чтобы не растягивалось */
 }
 
-   #floors {
+  #floors {
   display: flex;
-  flex-direction: row;   /* ВОТ ЭТО ГЛАВНОЕ */
-  flex-wrap: wrap;      /* перенос на следующий ряд */
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 6px;
+
+  width: fit-content;      /* 🔥 ключ */
 }
 
     .floor-btn {
@@ -73,7 +75,6 @@
       color: white;
       cursor: pointer;
       transition: all 0.2s ease;
-      width: auto;
       min-width: 45px;
       text-align: left;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
