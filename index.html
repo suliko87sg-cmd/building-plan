@@ -41,47 +41,46 @@
     }
 
     /* Панель этажей */
-   #floorPanel {
-  position: fixed;
-  top: 68px;
-  left: 16px;
+    #floorPanel {
+      position: fixed;
+      top: 68px;
+      left: 16px;
 
-  background: transparent; /* убрали фон */
-  padding: 0;              /* убрали отступ */
-  border-radius: 0;        /* убрали скругление */
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
 
-  display: none;
-  z-index: 1000;
+      display: none;
+      z-index: 1000;
 
-  width: fit-content;
-}
+      width: fit-content;
+    }
 
- #floors {
-  display: grid;
- grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-
-  width: fit-content;
-}
+    #floors {
+      display: grid;
+      grid-template-columns: repeat(6, auto);
+      gap: 6px;
+      width: fit-content;
+    }
 
     .floor-btn {
-      padding: 5px 6px;
-      font-size: 11px;
+      padding: 6px 8px;
+      font-size: 12px;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: linear-gradient(145deg, #2c2c2c, #1f1f1f);
       color: white;
       cursor: pointer;
       transition: all 0.2s ease;
-      min-width: 45px;
-      text-align: left;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
- white-space: nowrap;
+      min-width: 55px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+      white-space: nowrap;
     }
 
     .floor-btn:hover {
       background: #3a3a3a;
-      transform: scale(1.03);
+      transform: scale(1.05);
     }
 
     .floor-btn.active {
@@ -92,29 +91,30 @@
 
     /* ОБЕРТКА ПЛАНА */
     #planWrapper {
-  position: fixed;   /* 🔥 фиксируем */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-  overflow: hidden;
-}
+      overflow: hidden;
+      z-index: 1;
+    }
 
     /* САМ ПЛАН */
-   #plan {
-  width: 80%;
-  height: 80%;
-  border: none;
-  display: block;
+    #plan {
+      width: 80%;
+      height: 80%;
+      border: none;
+      display: block;
 
-  transform: scale(2.2);      /* 🔥 ВОТ МАГИЯ */
-  transform-origin: center;   /* центрируем */
-}
+      transform: scale(2.2);
+      transform-origin: center;
+    }
 
     /* Карточка */
     #flatCard {
@@ -145,34 +145,6 @@
     #flatCard p {
       margin: 8px 0;
       font-size: 16px;
-    }
-
-    /* Телефон */
-    @media (max-width: 768px) {
-
-      #planWrapper {
-        left: 85px;
-      }
-
-      .floor-btn {
-        font-size: 11px;
-        padding: 6px;
-      }
-
-      #flatCard {
-        padding: 16px;
-      }
-    }
-
-    @media (max-width: 480px) {
-
-      #planWrapper {
-        left: 90px;
-      }
-
-      .floor-btn {
-        font-size: 11px;
-      }
     }
 
   </style>
