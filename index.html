@@ -57,12 +57,10 @@
   max-width: 200px;        /* чтобы не растягивалось */
 }
 
-  #floors {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+ #floors {
+  display: grid;
+  grid-template-columns: repeat(4, auto); /* 4 кнопки в ряд */
   gap: 6px;
-
   width: fit-content;      /* 🔥 ключ */
 }
 
