@@ -61,7 +61,7 @@
   grid-template-columns: repeat(6, auto);
   gap: 6px;
   justify-content: start;
-  padding-left: 5px;
+  padding-left: 10px;
 }
 
     .floor-btn {
@@ -91,26 +91,28 @@
     }
 
     /* ОБЕРТКА ПЛАНА */
-    #planWrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+   #planWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
-      display: flex;
-      justify-content: center;
-      align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-      overflow: visible;
-      z-index: 1;
-    }
+  overflow: visible;
+  z-index: 1;
+
+  transform: translateX(20px);
+}
 
     /* САМ ПЛАН */
  #plan {
   width: 95%;
   height: 95%;
-  transform: scale(1.2) translateX(30px);
+  transform: scale(1.2)
   transform-origin: center;
 }
 
