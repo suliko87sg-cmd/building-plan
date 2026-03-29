@@ -23,6 +23,12 @@
   padding-top: 10vh;
 
   z-index: 9999;
+transition: opacity 0.5s ease;
+}
+#splash.hide {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
 }
 
 /* ЛОГОТИП */
@@ -231,9 +237,6 @@ font-weight: 600;
 <button id="backBtn">← Назад</button>
 <div id="app">
 
-  <button id="backBtn">← Назад</button>
-
-  <div id="app">
 
     <div id="floorPanel">
       <div id="floors"></div>
@@ -254,5 +257,12 @@ font-weight: 600;
   </div>
 
   <script src="app.js"></script>
+
+<script>
+  setTimeout(() => {
+    document.getElementById("splash").classList.add("hide");
+  }, 2500);
+</script>
+
 </body>
 </html>
