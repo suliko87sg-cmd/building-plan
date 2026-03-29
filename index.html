@@ -33,12 +33,17 @@ transition: opacity 0.5s ease;
 
 /* ЛОГОТИП */
 #splashLogo {
-  width: 220px;
-  max-width: 80%;
-  height: auto;
-filter: drop-shadow(0 0 20px rgba(255,0,0,0.3));
+  width: 90vw;
+  max-width: none;
 
-  animation: logoShow 1s ease forwards;
+  position: relative;
+  left: 50%;
+
+  transform: translateX(-50%) scale(0.8);
+
+  animation: logoShow 0.8s ease forwards;
+
+  filter: drop-shadow(0 0 40px rgba(255,0,0,0.5));
 }
 
 /* === ФОН (ТЕМНЫЙ С ЭФФЕКТОМ) === */
@@ -224,7 +229,22 @@ font-weight: 600;
   color: fff;
   font-weight: 600;
 }
+@keyframes logoShow {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
 
+@keyframes pulse {
+  0% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+  100% { transform: translateX(-50%) scale(1); }
+}
   </style>
 </head>
 
@@ -247,7 +267,7 @@ font-weight: 600;
     </div>
 
     <div id="flatCard">
-      <h3>Квартира</h3>
+      <h3>Квартира</h3>ы
       <p>Номер: <span id="cardFlat"></span></p>
       <p>Площадь: <span id="cardArea"></span></p>
       <p>Статус: <span id="cardStatus"></span></p>
@@ -259,6 +279,10 @@ font-weight: 600;
   <script src="app.js"></script>
 
 <script>
+  setTimeout(() => {
+    document.getElementById("splashLogo").style.animation += ", pulse 2s infinite";
+  }, 800);
+
   setTimeout(() => {
     document.getElementById("splash").classList.add("hide");
   }, 2500);
