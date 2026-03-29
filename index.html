@@ -6,30 +6,33 @@
   <title>Plan</title>
 
   <style>
-/* === ЛОГОТИП === */
-.logo {
-  width: 220px;
-  display: block;
+/* === SPLASH ЭКРАН === */
+#splash {
   position: fixed;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%) scale(0.9);
-  opacity: 0;
-  z-index: 2000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 
-  animation: logoShow 1s ease forwards;
-  filter: drop-shadow(0 0 10px rgba(255,0,0,0.4));
+  background: radial-gradient(circle at center, #1a1a1a, #0b0f14);
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  padding-top: 10vh;
+
+  z-index: 9999;
 }
 
-@keyframes logoShow {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-20px) scale(0.8);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
+/* ЛОГОТИП */
+#splashLogo {
+  width: 220px;
+  max-width: 80%;
+  height: auto;
+filter: drop-shadow(0 0 20px rgba(255,0,0,0.3));
+
+  animation: logoShow 1s ease forwards;
 }
 
 /* === ФОН (ТЕМНЫЙ С ЭФФЕКТОМ) === */
