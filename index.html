@@ -41,10 +41,11 @@
     }
 
     /* Панель этажей */
-   #floorPanel {
+  #floorPanel {
   position: fixed;
   top: 68px;
-  left: 8px;
+  left: 0;
+  transform: translateX(-10px);
 
   background: transparent;
   padding: 0;
@@ -53,15 +54,15 @@
   display: none;
   z-index: 1000;
 
-  width: fit-content; /* 🔥 ВОТ ЭТО ГЛАВНОЕ */
+  width: fit-content;
 }
 
-    #floors {
+#floors {
   display: grid;
   grid-template-columns: repeat(6, auto);
   gap: 6px;
   justify-content: start;
-  padding-left: 10px;
+  padding-left: 0;
 }
 
     .floor-btn {
