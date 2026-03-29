@@ -18,9 +18,9 @@
 
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 
-  padding-top: 10vh;
+  padding-top: 0;
 
   z-index: 9999;
 transition: opacity 0.5s ease;
@@ -41,9 +41,27 @@ transition: opacity 0.5s ease;
 
   transform: translateX(-50%) scale(0.8);
 
-  animation: logoShow 0.8s ease forwards;
+  animation: logoShow 1.2s ease-out forwards;
 
   filter: drop-shadow(0 0 40px rgba(255,0,0,0.5));
+  border-radius: 25px;
+overflow: hidden;
+}
+  
+@keyframes logoShow {
+  0% {
+  opacity: 0;
+  transform: translateX(-50%) scale(1.4);
+  filter: blur(30px);
+}
+  60% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    filter: blur(0);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
 }
 
 /* === ФОН (ТЕМНЫЙ С ЭФФЕКТОМ) === */
@@ -226,7 +244,7 @@ font-weight: 600;
 }
 
 #flatCard span {
-  color: fff;
+  color: #fff;
   font-weight: 600;
 }
 @keyframes logoShow {
