@@ -57,11 +57,12 @@
 }
 
     #floors {
-      display: grid;
-      grid-template-columns: repeat(6, auto);
-      gap: 6px;
-      justify-content: start; /* или center если хочешь по центру */
-    }
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  gap: 6px;
+  justify-content: start;
+  padding-left: 10px;
+}
 
     .floor-btn {
       padding: 6px 8px;
@@ -109,7 +110,7 @@
  #plan {
   width: 95%;
   height: 95%;
-  transform: scale(1.2);
+  transform: scale(1.2) translateX(30px);
   transform-origin: center;
 }
 
