@@ -41,21 +41,20 @@
     }
 
     /* Панель этажей */
-    #floorPanel {
-      position: fixed;
-      top: 68px;
-      left: 16px;
+   #floorPanel {
+  position: fixed;
+  top: 68px;
+  left: 8px;
 
-      background: transparent;
-      padding: 0;
-      border-radius: 0;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
 
-      display: none;
-      z-index: 1000;
+  display: none;
+  z-index: 1000;
 
-      width: 100%;
-max-width: 95%;
-    }
+  width: fit-content; /* 🔥 ВОТ ЭТО ГЛАВНОЕ */
+}
 
     #floors {
       display: grid;
@@ -107,11 +106,10 @@ max-width: 95%;
     }
 
     /* САМ ПЛАН */
-    #plan {
-  width: 90%;
-  height: 90%;
-
-  transform: scale(1.6);  /* 🔥 уменьшаем */
+ #plan {
+  width: 95%;
+  height: 95%;
+  transform: scale(1.2);
   transform-origin: center;
 }
 
