@@ -159,11 +159,13 @@ body::before {
 }
 
     /* Карточка */
-   #flatCard {
+  #flatCard {
   position: fixed;
+  opacity: 0;
   left: 50%;
-  transform: translateX(-50%);
   bottom: -100%;
+
+  transform: translateX(-50%) translateY(20px);
 
   width: calc(100% - 20px);
   max-width: 500px;
@@ -173,21 +175,25 @@ body::before {
 
   border-radius: 18px 18px 0 0;
 
-  box-shadow: 
+  box-shadow:
     0 -10px 30px rgba(0,0,0,0.6),
     0 0 20px rgba(255,0,0,0.15);
 
   padding: 20px;
-  transition: bottom 0.3s ease;
+
+  transition: all 0.35s ease;
 
   z-index: 3000;
 
   color: white;
-border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
+will-change: transform, opacity;
 }
 
     #flatCard.show {
       bottom: 0;
+opacity: 1;
+transform: translateX(-50%) translateY(0);
     }
 
   #flatCard h3 {
@@ -195,17 +201,19 @@ border: 1px solid rgba(255,255,255,0.05);
   margin-bottom: 14px;
   font-size: 20px;
   color: white;
+font-weight: 600;
 }
 
    #flatCard p {
   margin: 8px 0;
   font-size: 16px;
-  color: #ccc;
+  color: #bbb;
+ line-height: 1.4;
 }
 
 #flatCard span {
-  color: white;
-  font-weight: 500;
+  color: fff;
+  font-weight: 600;
 }
 
   </style>
