@@ -29,7 +29,7 @@
      inkscape:cy="430.90276"
      inkscape:window-width="1699"
      inkscape:window-height="1360"
-     inkscape:window-x="852"
+     inkscape:window-x="845"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg1" />
@@ -17099,17 +17099,6 @@
      id="path9213"
      d="m 677.70612,448.47442 0.0827,82.65823"
      style="fill:none;stroke:#000000;stroke-width:0.777833;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" />
-  <text
-     id="text9213"
-     xml:space="preserve"
-     transform="matrix(-1.2799965,6.2123089e-4,5.565255e-4,0.78125188,0,0)"
-     style="font-size:56.8001px;vector-effect:non-scaling-stroke;stroke-width:3.88917;stroke-dasharray:none;-inkscape-stroke:hairline"
-     x="-493.19278"
-     y="507.8631"><tspan
-       id="tspan9213"
-       style="font-variant:normal;font-weight:normal;font-size:72.2486px;font-family:Arial;writing-mode:lr-tb;vector-effect:non-scaling-stroke;fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.88917;stroke-dasharray:none;-inkscape-stroke:hairline"
-       x="-493.19278"
-       y="507.8631">А</tspan></text>
   <path
      id="path18378"
      d="m 688.56659,334.28706 v -14.62662 l 45.97718,-3e-5 v 14.62665 h -45.97718"
