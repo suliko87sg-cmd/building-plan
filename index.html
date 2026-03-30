@@ -200,7 +200,7 @@ body::before {
 }
 
     /* Карточка */
-  #flatCard {
+ #flatCard {
   position: fixed;
   opacity: 0;
   left: 50%;
@@ -211,14 +211,19 @@ body::before {
   width: calc(100% - 20px);
   max-width: 500px;
 
-  background: rgba(20, 20, 20, 0.95);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(
+    180deg,
+    rgba(30, 30, 30, 0.95),
+    rgba(10, 10, 10, 0.98)
+  );
 
-  border-radius: 18px 18px 0 0;
+  backdrop-filter: blur(15px);
+
+  border-radius: 20px 20px 0 0;
 
   box-shadow:
-    0 -10px 30px rgba(0,0,0,0.6),
-    0 0 20px rgba(255,0,0,0.15);
+    0 -10px 30px rgba(0,0,0,0.7),
+    0 0 30px rgba(255,0,0,0.2);
 
   padding: 20px;
 
@@ -227,8 +232,10 @@ body::before {
   z-index: 3000;
 
   color: white;
-  border: 1px solid rgba(255,255,255,0.05);
-will-change: transform, opacity;
+
+  border: 1px solid rgba(255,0,0,0.2);
+
+  will-change: transform, opacity;
 }
 
     #flatCard.show {
