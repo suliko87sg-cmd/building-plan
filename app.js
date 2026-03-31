@@ -229,28 +229,25 @@ window.addEventListener("popstate", () => {
 // =====================
 
 let touchStartX = 0;
-let touchStartY = 0;
 let touchEndX = 0;
-let touchEndY = 0;
 
-window.addEventListener("touchstart", e => {
-  touchStartX = e.changedTouches[0].screenX;
-  touchStartY = e.changedTouches[0].screenY;
-});
+document.addEventListener("touchstart", e => {
+  touchStartX = e.touches[0].clientX;
+}, { passive: true });
 
-window.addEventListener("touchend", e => {
-  touchEndX = e.changedTouches[0].screenX;
-  touchEndY = e.changedTouches[0].screenY;
+document.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].clientX;
 
   const deltaX = touchEndX - touchStartX;
-  const deltaY = touchEndY - touchStartY;
 
-  // ❗ если движение больше по вертикали — игнор
-  if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+  // 👉 слева → направо (назад)
+  if (touchStartX < 50 && deltaX > 100) {
+    history.back();
+  }
 
-  // ❗ если движение слишком маленькое — игнор
-  if (Math.abs(deltaX) < 120) return;
+  // 👉 справа → налево (назад)
+  if (touchStartX > window.innerWidth - 50 && deltaX < -100) {
+    history.back();
+  }
 
-  // 👉 любое место экрана
-  history.back();
-});
+}, { passive: true });
