@@ -222,5 +222,30 @@ window.addEventListener("popstate", () => {
 
     return;
   }
+    // =====================
+// СВАЙП НАЗАД (оба направления)
+// =====================
 
+let touchStartX = 0;
+let touchEndX = 0;
+
+window.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+window.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+
+  const deltaRight = touchEndX - touchStartX; // слева → направо
+  const deltaLeft = touchStartX - touchEndX;  // справа → налево
+
+  // 👉 свайп слева направо
+  if (touchStartX < 50 && deltaRight > 80) {
+    history.back();
+  }
+
+  // 👉 свайп справа налево
+  if (touchStartX > window.innerWidth - 50 && deltaLeft > 80) {
+    history.back();
+  }
 });
