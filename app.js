@@ -248,13 +248,9 @@ window.addEventListener("touchend", e => {
   // ❗ если движение больше по вертикали — игнор
   if (Math.abs(deltaY) > Math.abs(deltaX)) return;
 
-  // 👉 слева → направо
-  if (touchStartX < 50 && deltaX > 120) {
-    history.back();
-  }
+  // ❗ если движение слишком маленькое — игнор
+  if (Math.abs(deltaX) < 120) return;
 
-  // 👉 справа → налево
-  if (touchStartX > window.innerWidth - 50 && deltaX < -120) {
-    history.back();
-  }
+  // 👉 любое место экрана
+  history.back();
 });
