@@ -61,6 +61,7 @@ function initBlocks(svg) {
     block.onclick = function () {
       currentBlock = blockId;
       currentFloor = 3;
+history.pushState({ screen: "block" }, "");
 
       plan.data = blockId + ".svg";
 
@@ -128,6 +129,7 @@ function loadFlats(blockId) {
 
       const card = document.getElementById("flatCard");
       if (card) card.classList.add("show");
+      history.pushState({ screen: "flat" }, "");
 
       document.getElementById("cardFlat").innerText = flatId;
 
@@ -196,3 +198,29 @@ backBtn.onclick = function () {
 
   floorsContainer.innerHTML = "";
 };
+// =====================
+// КНОПКА НАЗАД ТЕЛЕФОНА
+// =====================
+window.addEventListener("popstate", () => {
+
+  const card = document.getElementById("flatCard");
+
+  // если открыта карточка
+  if (card && card.classList.contains("show")) {
+    card.classList.remove("show");
+    return;
+  }
+
+  // если внутри блока
+  if (currentBlock !== null) {
+    currentBlock = null;
+    plan.data = "blocks.svg";
+
+    floorPanel.style.display = "none";
+    backBtn.style.display = "none";
+    floorsContainer.innerHTML = "";
+
+    return;
+  }
+
+});
