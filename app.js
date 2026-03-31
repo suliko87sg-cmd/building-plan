@@ -224,30 +224,4 @@ window.addEventListener("popstate", () => {
 }
 
 });
-    // =====================
-// СВАЙП НАЗАД (оба направления)
-// =====================
-
-let touchStartX = 0;
-let touchEndX = 0;
-
-document.addEventListener("touchstart", e => {
-  touchStartX = e.touches[0].clientX;
-}, { passive: true });
-
-document.addEventListener("touchend", e => {
-  touchEndX = e.changedTouches[0].clientX;
-
-  const deltaX = touchEndX - touchStartX;
-
-  // 👉 слева → направо (назад)
-  if (touchStartX < 50 && deltaX > 100) {
-    history.back();
-  }
-
-  // 👉 справа → налево (назад)
-  if (touchStartX > window.innerWidth - 50 && deltaX < -100) {
-    history.back();
-  }
-
-}, { passive: true });
+ 
