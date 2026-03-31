@@ -212,40 +212,49 @@ window.addEventListener("popstate", () => {
   }
 
   // если внутри блока
-  if (currentBlock !== null) {
-    currentBlock = null;
-    plan.data = "blocks.svg";
+ if (currentBlock !== null) {
+  currentBlock = null;
+  plan.data = "blocks.svg";
 
-    floorPanel.style.display = "none";
-    backBtn.style.display = "none";
-    floorsContainer.innerHTML = "";
+  floorPanel.style.display = "none";
+  backBtn.style.display = "none";
+  floorsContainer.innerHTML = "";
 
-    return;
-  }
+  return;
+}
+
+});
     // =====================
 // СВАЙП НАЗАД (оба направления)
 // =====================
 
 let touchStartX = 0;
+let touchStartY = 0;
 let touchEndX = 0;
+let touchEndY = 0;
 
 window.addEventListener("touchstart", e => {
   touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
 });
 
 window.addEventListener("touchend", e => {
   touchEndX = e.changedTouches[0].screenX;
+  touchEndY = e.changedTouches[0].screenY;
 
-  const deltaRight = touchEndX - touchStartX; // слева → направо
-  const deltaLeft = touchStartX - touchEndX;  // справа → налево
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
 
-  // 👉 свайп слева направо
-  if (touchStartX < 50 && deltaRight > 80) {
+  // ❗ если движение больше по вертикали — игнор
+  if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+
+  // 👉 слева → направо
+  if (touchStartX < 50 && deltaX > 120) {
     history.back();
   }
 
-  // 👉 свайп справа налево
-  if (touchStartX > window.innerWidth - 50 && deltaLeft > 80) {
+  // 👉 справа → налево
+  if (touchStartX > window.innerWidth - 50 && deltaX < -120) {
     history.back();
   }
 });
