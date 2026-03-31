@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plan</title>
 
+  <link rel="manifest" href="manifest.json">
+
   <style>
     * {
       box-sizing: border-box;
@@ -276,15 +278,21 @@
 
   <script src="app.js"></script>
 
-  <script>
-    setTimeout(() => {
-      document.getElementById("splashLogo").style.animation += ", pulse 2s infinite";
-    }, 800);
+<script>
+  setTimeout(() => {
+    document.getElementById("splashLogo").style.animation += ", pulse 2s infinite";
+  }, 800);
 
-    setTimeout(() => {
-      document.getElementById("splash").classList.add("hide");
-    }, 7500);
-  </script>
+  setTimeout(() => {
+    document.getElementById("splash").classList.add("hide");
+  }, 7500);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
 
 </body>
 </html>
