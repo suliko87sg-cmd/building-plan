@@ -130,15 +130,8 @@ function loadFlats(blockId) {
 
     // 🔥 ЕСЛИ ЕСТЬ КЛИЕНТ → ШТРИХ
     if (flatData && flatData.client && flatData.client.trim() !== "") {
-      const overlay = flat.cloneNode(true);
-
-      overlay.setAttribute("id", fullId + "_overlay");
-      overlay.setAttribute("fill", "url(#soldPattern)");
-      overlay.setAttribute("pointer-events", "none");
-      overlay.style.opacity = "0.8";
-
-      flat.parentNode.appendChild(overlay);
-    }
+  flat.setAttribute("fill", "url(#soldPattern)");
+}
 
     flat.onclick = function () {
       if (!isDataLoaded) return;
