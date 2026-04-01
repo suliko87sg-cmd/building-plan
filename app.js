@@ -137,9 +137,10 @@ let client = "—";
 
 if (flatData) {
 
-  // 📄 договор
-if (flatData.contract && flatData.contract.trim() !== "") {
-  contract = flatData.contract;
+// 📄 договор
+if (flatData.contract) {
+  const clean = flatData.contract.toString().trim();
+  contract = clean.length > 0 ? clean : "пусто";
 } else {
   contract = "пусто";
 }
