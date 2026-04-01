@@ -100,8 +100,8 @@ function loadFlats(blockId) {
 
     const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
     line.setAttribute("d", "M0,8 L8,0");
-    line.setAttribute("stroke", "white");
-    line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke", "rgba(0,0,0,0.4)");
+    line.setAttribute("stroke-width", "2");
 
     pattern.appendChild(line);
     defs.appendChild(pattern);
