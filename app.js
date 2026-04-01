@@ -11,6 +11,14 @@ const floorsContainer = document.getElementById("floors");
 const floorPanel = document.getElementById("floorPanel");
 const backBtn = document.getElementById("backBtn");
 
+// 🔥 ВОТ СЮДА ВСТАВЛЯЕМ
+const projectMap = {
+  kush: "blocks.svg",
+  gafurov: "gafurov.svg",
+  obj3: "obj3.svg",
+  obj4: "obj4.svg"
+};
+
 const blocks = ["b1", "b2", "b3", "b4", "b5", "b6"];
 
 // =====================
@@ -224,6 +232,32 @@ function initFloors() {
 
     floorsContainer.appendChild(btn);
   }
+}
+
+function selectProject(project, el) {
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.classList.remove('active');
+  });
+
+  el.classList.add('active');
+
+  if (projectMap[project]) {
+    plan.data = projectMap[project];
+  } else {
+    console.log("Нет SVG для:", project);
+  }
+
+  currentBlock = null;
+  currentFloor = 3;
+
+  floorsContainer.innerHTML = "";
+  floorPanel.style.display = "none";
+  backBtn.style.display = "none";
+
+  const card = document.getElementById("flatCard");
+  if (card) card.classList.remove("show");
+
+  console.log("Переключили на:", project);
 }
 
 // =====================
