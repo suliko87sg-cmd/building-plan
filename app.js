@@ -2,13 +2,12 @@ let currentBlock = null;
 let currentFloor = 3;
 let sheetData = [];
 
-let isDataLoaded = false; // 🔥 контроль загрузки
+let isDataLoaded = false;
 
 console.log("APP STARTED");
 
 const plan = document.getElementById("plan");
 const floorsContainer = document.getElementById("floors");
-
 const floorPanel = document.getElementById("floorPanel");
 const backBtn = document.getElementById("backBtn");
 
@@ -22,7 +21,7 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
   .then(data => {
     console.log("DATA LOADED:", data);
     sheetData = Array.isArray(data) ? data : (data.data || []);
-    isDataLoaded = true; // ✅ данные готовы
+    isDataLoaded = true;
   })
   .catch(err => {
     console.error("Ошибка загрузки данных:", err);
@@ -61,7 +60,8 @@ function initBlocks(svg) {
     block.onclick = function () {
       currentBlock = blockId;
       currentFloor = 3;
-history.pushState({ screen: "block" }, "");
+
+      history.pushState({ screen: "block" }, "");
 
       plan.data = blockId + ".svg";
 
@@ -83,6 +83,35 @@ function loadFlats(blockId) {
   const svgDoc = plan.contentDocument;
   if (!svgDoc) return;
 
+  // pattern для штриховки проданных квартир
+  let defs = svgDoc.querySelector("defs");
+
+  if (!defs) {
+    defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    svgDoc.documentElement.appendChild(defs);
+  }
+
+  if (!svgDoc.getElementById("soldPattern")) {
+    const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+    pattern.setAttribute("id", "soldPattern");
+    pattern.setAttribute("patternUnits", "userSpaceOnUse");
+    pattern.setAttribute("width", "8");
+    pattern.setAttribute("height", "8");
+
+    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    line1.setAttribute("d", "M0,8 L8,0");
+    line1.setAttribute("stroke", "white");
+    line1.setAttribute("stroke-width", "1");
+
+    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    line2.setAttribute("d", "M-2,2 L2,-2 M6,10 L10,6");
+    line2.setAttribute("stroke", "white");
+    line2.setAttribute("stroke-width", "1");
+
+    pattern.appendChild(line1);
+    pattern.appendChild(line2);
+    defs.appendChild(pattern);
+  }
 
   const flats = ["flat1", "flat2", "flat3", "flat4", "flat5"];
 
@@ -92,19 +121,27 @@ function loadFlats(blockId) {
 
     flat.style.cursor = "pointer";
 
-    // 👉 цвет при загрузке (если данные уже есть)
-    if (isDataLoaded) {
-      const fullId = blockId + "-" + currentFloor + "-" + flatId;
-      const flatData = sheetData.find(item => item.flat_id === fullId);
+    const fullId = blockId + "-" + currentFloor + "-" + flatId;
+    const flatData = sheetData.find(item => item.flat_id === fullId);
 
-      if (flatData && flatData.color) {
-        flat.style.fill = flatData.color;
-      }
+    // сначала чистим старое состояние
+    flat.style.opacity = "1";
+    flat.style.stroke = "";
+    flat.style.strokeWidth = "";
+
+    // базовый цвет
+    if (flatData && flatData.color) {
+      flat.style.fill = flatData.color;
+      flat.setAttribute("fill", flatData.color);
+    }
+
+    // если есть клиент → квартира занята → штрихуем
+    if (flatData && flatData.client && flatData.client.trim() !== "") {
+      flat.setAttribute("fill", "url(#soldPattern)");
+      flat.style.opacity = "0.85";
     }
 
     flat.onclick = function () {
-
-      // 🔒 защита от быстрых кликов
       if (!isDataLoaded) {
         console.log("Данные ещё не загрузились");
         return;
@@ -115,52 +152,52 @@ function loadFlats(blockId) {
 
       flats.forEach(id => {
         const f = svgDoc.getElementById(id);
-        if (f) {
-          f.style.stroke = "";
-          f.style.strokeWidth = "";
+        if (!f) return;
+
+        f.style.stroke = "";
+        f.style.strokeWidth = "";
+
+        const rowId = blockId + "-" + currentFloor + "-" + id;
+        const rowData = sheetData.find(item => item.flat_id === rowId);
+
+        if (rowData && rowData.client && rowData.client.trim() !== "") {
+          f.setAttribute("fill", "url(#soldPattern)");
+          f.style.opacity = "0.85";
+        } else if (rowData && rowData.color) {
+          f.setAttribute("fill", rowData.color);
+          f.style.opacity = "1";
         }
       });
 
       flat.style.stroke = "red";
       flat.style.strokeWidth = "3";
 
-      if (flatData && flatData.color) {
-        flat.style.fill = flatData.color;
-      }
-
       const card = document.getElementById("flatCard");
       if (card) card.classList.add("show");
+
       history.pushState({ screen: "flat" }, "");
 
-     let contract = "нет";
-let area = "-";
-let client = "—";
+      let contract = "";
+      let area = "-";
+      let client = "—";
 
-if (flatData) {
+      if (flatData) {
+        if (flatData.contract && flatData.contract.trim() !== "") {
+          contract = flatData.contract.trim();
+        }
 
-// 📄 договор
-if (flatData.contract && flatData.contract.trim().length > 0) {
-  contract = flatData.contract.trim();
-} else {
-  contract = "";
-}
+        if (flatData.area && flatData.area.toString().trim() !== "") {
+          area = flatData.area + " м²";
+        }
 
-  // 📐 площадь
-  if (flatData.area) {
-    area = flatData.area + " м²";
-  }
+        if (flatData.client && flatData.client.trim() !== "") {
+          client = flatData.client;
+        }
+      }
 
-  // 👤 клиент
-  if (flatData.client && flatData.client.trim() !== "" && flatData.client !== ".") {
-    client = flatData.client;
-  }
-
-}
-
-// вставка в карточку
-document.getElementById("cardContract").innerText = contract;
-document.getElementById("cardArea").innerText = area;
-document.getElementById("cardClient").innerText = client;
+      document.getElementById("cardContract").innerText = contract;
+      document.getElementById("cardArea").innerText = area;
+      document.getElementById("cardClient").innerText = client;
     };
   });
 }
@@ -211,30 +248,24 @@ backBtn.onclick = function () {
 
   floorsContainer.innerHTML = "";
 };
+
 // =====================
 // КНОПКА НАЗАД ТЕЛЕФОНА
 // =====================
 window.addEventListener("popstate", () => {
-
   const card = document.getElementById("flatCard");
 
-  // если открыта карточка
   if (card && card.classList.contains("show")) {
     card.classList.remove("show");
     return;
   }
 
-  // если внутри блока
- if (currentBlock !== null) {
-  currentBlock = null;
-  plan.data = "blocks.svg";
+  if (currentBlock !== null) {
+    currentBlock = null;
+    plan.data = "blocks.svg";
 
-  floorPanel.style.display = "none";
-  backBtn.style.display = "none";
-  floorsContainer.innerHTML = "";
-
-  return;
-}
-
+    floorPanel.style.display = "none";
+    backBtn.style.display = "none";
+    floorsContainer.innerHTML = "";
+  }
 });
- 
