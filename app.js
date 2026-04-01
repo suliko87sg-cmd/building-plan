@@ -83,7 +83,7 @@ function loadFlats(blockId) {
   const svgDoc = plan.contentDocument;
   if (!svgDoc) return;
 
-  // pattern для штриховки проданных квартир
+  // 🔥 создаём pattern (ОДИН РАЗ)
   let defs = svgDoc.querySelector("defs");
 
   if (!defs) {
@@ -98,18 +98,12 @@ function loadFlats(blockId) {
     pattern.setAttribute("width", "8");
     pattern.setAttribute("height", "8");
 
-    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    line1.setAttribute("d", "M0,8 L8,0");
-    line1.setAttribute("stroke", "white");
-    line1.setAttribute("stroke-width", "1");
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    line.setAttribute("d", "M0,8 L8,0");
+    line.setAttribute("stroke", "white");
+    line.setAttribute("stroke-width", "1");
 
-    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    line2.setAttribute("d", "M-2,2 L2,-2 M6,10 L10,6");
-    line2.setAttribute("stroke", "white");
-    line2.setAttribute("stroke-width", "1");
-
-    pattern.appendChild(line1);
-    pattern.appendChild(line2);
+    pattern.appendChild(line);
     defs.appendChild(pattern);
   }
 
@@ -121,53 +115,39 @@ function loadFlats(blockId) {
 
     flat.style.cursor = "pointer";
 
-    // 🔹 получаем данные
-const fullId = blockId + "-" + currentFloor + "-" + flatId;
-const flatData = sheetData.find(item => item.flat_id === fullId);
+    const fullId = blockId + "-" + currentFloor + "-" + flatId;
+    const flatData = sheetData.find(item => item.flat_id === fullId);
 
-// 🧹 ВСЕГДА чистим старый overlay
-const oldOverlay = svgDoc.getElementById(fullId + "_overlay");
-if (oldOverlay) oldOverlay.remove();
+    // 🧹 УДАЛЯЕМ СТАРЫЙ ШТРИХ (ВАЖНО)
+    const oldOverlay = svgDoc.getElementById(fullId + "_overlay");
+    if (oldOverlay) oldOverlay.remove();
 
-// 🎨 базовый цвет
-if (flatData && flatData.color) {
-  flat.style.fill = flatData.color;
-  flat.setAttribute("fill", flatData.color);
-}
+    // 🎨 цвет
+    if (flatData && flatData.color) {
+      flat.style.fill = flatData.color;
+      flat.setAttribute("fill", flatData.color);
+    }
 
-// 🔥 если есть клиент → рисуем штрих
-if (flatData && flatData.client && flatData.client.trim() !== "") {
+    // 🔥 ЕСЛИ ЕСТЬ КЛИЕНТ → ШТРИХ
+    if (flatData && flatData.client && flatData.client.trim() !== "") {
+      const overlay = flat.cloneNode(true);
 
-  const overlay = flat.cloneNode(true);
-  overlay.setAttribute("id", fullId + "_overlay");
+      overlay.setAttribute("id", fullId + "_overlay");
+      overlay.setAttribute("fill", "url(#soldPattern)");
+      overlay.setAttribute("pointer-events", "none");
+      overlay.style.opacity = "0.8";
 
-  overlay.setAttribute("fill", "url(#soldPattern)");
-  overlay.setAttribute("pointer-events", "none");
-  overlay.style.opacity = "0.8";
-
-  flat.parentNode.appendChild(overlay);
-}
+      flat.parentNode.appendChild(overlay);
+    }
 
     flat.onclick = function () {
-      if (!isDataLoaded) {
-        console.log("Данные ещё не загрузились");
-        return;
-      }
-
-      const fullId = blockId + "-" + currentFloor + "-" + flatId;
-      const flatData = sheetData.find(item => item.flat_id === fullId);
+      if (!isDataLoaded) return;
 
       flats.forEach(id => {
         const f = svgDoc.getElementById(id);
         if (!f) return;
-
         f.style.stroke = "";
         f.style.strokeWidth = "";
-
-        const rowId = blockId + "-" + currentFloor + "-" + id;
-        const rowData = sheetData.find(item => item.flat_id === rowId);
-
-       
       });
 
       flat.style.stroke = "red";
