@@ -130,7 +130,26 @@ function loadFlats(blockId) {
 
     // 🔥 ЕСЛИ ЕСТЬ КЛИЕНТ → ШТРИХ
     if (flatData && flatData.client && flatData.client.trim() !== "") {
-  flat.setAttribute("fill", "url(#soldPattern)");
+
+  // удаляем старый слой
+  const old = svgDoc.getElementById(fullId + "_overlay");
+  if (old) old.remove();
+
+  // создаём новый слой
+  const overlay = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+  overlay.setAttribute("d", flat.getAttribute("d")); // копируем форму
+  overlay.setAttribute("fill", "none");
+  overlay.setAttribute("stroke", "rgba(0,0,0,0.4)");
+  overlay.setAttribute("stroke-width", "2");
+
+  // создаём штрих вручную (линии)
+  overlay.setAttribute("stroke-dasharray", "4,4");
+
+  overlay.setAttribute("pointer-events", "none");
+  overlay.setAttribute("id", fullId + "_overlay");
+
+  flat.parentNode.appendChild(overlay);
 }
 
     flat.onclick = function () {
