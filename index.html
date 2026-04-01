@@ -138,10 +138,11 @@
       font-weight: bold;
     }
 
+
     /* ОБЕРТКА ПЛАНА */
     #planWrapper {
       position: fixed;
-      top: 0;
+       top: 90px;
       left: 0;
       right: 0;
       bottom: 0;
@@ -265,11 +266,24 @@ svg * {
 
 <body>
 
-  <div id="splash">
-    <img src="logo.png" id="splashLogo" alt="Логотип">
+<div id="splash">
+  <img src="logo.png" id="splashLogo" alt="Логотип">
+</div>
+
+<button id="backBtn">← Назад</button>
+
+<!-- 🔥 ВОТ СЮДА ВСТАВЛЯЕМ -->
+<div id="projects" class="projects">
+  <div class="project-card active" onclick="selectProject('kush', this)">
+    <h3>Куш</h3>
+    <p>6 подъездов</p>
   </div>
 
-  <button id="backBtn">← Назад</button>
+  <div class="project-card" onclick="selectProject('gafurov', this)">
+    <h3>Гафуров</h3>
+    <p>2 блока</p>
+  </div>
+</div>
 
   <div id="app">
     <div id="floorPanel">
