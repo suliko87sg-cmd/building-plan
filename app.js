@@ -138,9 +138,13 @@ let client = "—";
 if (flatData) {
 
   // 📄 договор
-  if (flatData.contract && flatData.contract !== "№") {
-    contract = flatData.contract;
-  }
+  // 📄 договор
+if (flatData.contract && flatData.contract.trim() !== "№") {
+  contract = flatData.contract;
+} 
+else if (flatData.client && flatData.client.trim() !== "" && flatData.client !== ".") {
+  contract = "есть";
+}
 
   // 📐 площадь
   if (flatData.area) {
