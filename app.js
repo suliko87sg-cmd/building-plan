@@ -131,23 +131,33 @@ function loadFlats(blockId) {
       if (card) card.classList.add("show");
       history.pushState({ screen: "flat" }, "");
 
-      document.getElementById("cardFlat").innerText = flatId;
+     let contract = "нет";
+let area = "-";
+let client = "—";
 
-      if (flatData) {
-        document.getElementById("cardArea").innerText = (flatData.area || "-") + " м²";
-        document.getElementById("cardStatus").innerText = flatData.status || "-";
+if (flatData) {
 
-        let client = flatData.client || "";
-        if (!client || client === "." || client.trim() === "") {
-          client = "свободно";
-        }
+  // 📄 договор
+  if (flatData.contract && flatData.contract !== "№") {
+    contract = flatData.contract;
+  }
 
-        document.getElementById("cardClient").innerText = client;
-      } else {
-        document.getElementById("cardArea").innerText = "-";
-        document.getElementById("cardStatus").innerText = "-";
-        document.getElementById("cardClient").innerText = "нет данных";
-      }
+  // 📐 площадь
+  if (flatData.area) {
+    area = flatData.area + " м²";
+  }
+
+  // 👤 клиент
+  if (flatData.client && flatData.client.trim() !== "" && flatData.client !== ".") {
+    client = flatData.client;
+  }
+
+}
+
+// вставка в карточку
+document.getElementById("cardContract").innerText = contract;
+document.getElementById("cardArea").innerText = area;
+document.getElementById("cardClient").innerText = client;
     };
   });
 }
