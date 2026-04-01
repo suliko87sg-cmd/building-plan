@@ -235,17 +235,23 @@ function initFloors() {
 }
 
 function selectProject(project, el) {
+ console.log("КЛИК:", project);
   document.querySelectorAll('.project-card').forEach(card => {
     card.classList.remove('active');
   });
 
   el.classList.add('active');
 
-  if (projectMap[project]) {
+ if (projectMap[project]) {
+  plan.data = ""; // сброс
+
+  setTimeout(() => {
     plan.data = projectMap[project] + "?t=" + Date.now();
-  } else {
-    console.log("Нет SVG для:", project);
-  }
+  }, 50);
+
+} else {
+  console.log("Нет SVG для:", project);
+}
 
   currentBlock = null;
   currentFloor = 3;
@@ -263,18 +269,16 @@ function selectProject(project, el) {
 // =====================
 // НАЗАД
 // =====================
-backBtn.onclick = function () {
-  plan.data = "blocks.svg?t=" + Date.now();
+if (projectMap[project]) {
+  plan.data = ""; // сброс
 
-  floorPanel.style.display = "none";
-  backBtn.style.display = "none";
+  setTimeout(() => {
+    plan.data = projectMap[project] + "?t=" + Date.now();
+  }, 50);
 
-  const card = document.getElementById("flatCard");
-  if (card) card.classList.remove("show");
-
-  floorsContainer.innerHTML = "";
-};
-
+} else {
+  console.log("Нет SVG для:", project);
+}
 // =====================
 // КНОПКА НАЗАД ТЕЛЕФОНА
 // =====================
