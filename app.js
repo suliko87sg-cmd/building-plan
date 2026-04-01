@@ -141,7 +141,7 @@ if (flatData) {
 if (flatData.contract && flatData.contract.trim() !== "") {
   contract = flatData.contract;
 } else {
-  contract = "нет";
+  contract = "пусто";
 }
 
   // 📐 площадь
