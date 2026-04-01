@@ -242,7 +242,7 @@ function selectProject(project, el) {
   el.classList.add('active');
 
   if (projectMap[project]) {
-    plan.data = projectMap[project];
+    plan.data = projectMap[project] + "?t=" + Date.now();
   } else {
     console.log("Нет SVG для:", project);
   }
@@ -264,7 +264,7 @@ function selectProject(project, el) {
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-  plan.data = "blocks.svg";
+  plan.data = "blocks.svg?t=" + Date.now();
 
   floorPanel.style.display = "none";
   backBtn.style.display = "none";
