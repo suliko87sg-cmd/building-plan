@@ -237,7 +237,6 @@ function initFloors() {
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-  currentBlock = null;
   plan.data = "blocks.svg";
 
   floorPanel.style.display = "none";
