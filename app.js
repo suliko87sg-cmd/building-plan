@@ -121,25 +121,32 @@ function loadFlats(blockId) {
 
     flat.style.cursor = "pointer";
 
-    const fullId = blockId + "-" + currentFloor + "-" + flatId;
-    const flatData = sheetData.find(item => item.flat_id === fullId);
+    // 🔹 получаем данные
+const fullId = blockId + "-" + currentFloor + "-" + flatId;
+const flatData = sheetData.find(item => item.flat_id === fullId);
 
-    // сначала чистим старое состояние
-    flat.style.opacity = "1";
-    flat.style.stroke = "";
-    flat.style.strokeWidth = "";
+// 🧹 ВСЕГДА чистим старый overlay
+const oldOverlay = svgDoc.getElementById(fullId + "_overlay");
+if (oldOverlay) oldOverlay.remove();
 
-    // базовый цвет
-    if (flatData && flatData.color) {
-      flat.style.fill = flatData.color;
-      flat.setAttribute("fill", flatData.color);
-    }
+// 🎨 базовый цвет
+if (flatData && flatData.color) {
+  flat.style.fill = flatData.color;
+  flat.setAttribute("fill", flatData.color);
+}
 
-    // если есть клиент → квартира занята → штрихуем
-    if (flatData && flatData.client && flatData.client.trim() !== "") {
-      flat.setAttribute("fill", "url(#soldPattern)");
-      flat.style.opacity = "0.85";
-    }
+// 🔥 если есть клиент → рисуем штрих
+if (flatData && flatData.client && flatData.client.trim() !== "") {
+
+  const overlay = flat.cloneNode(true);
+  overlay.setAttribute("id", fullId + "_overlay");
+
+  overlay.setAttribute("fill", "url(#soldPattern)");
+  overlay.setAttribute("pointer-events", "none");
+  overlay.style.opacity = "0.8";
+
+  flat.parentNode.appendChild(overlay);
+}
 
     flat.onclick = function () {
       if (!isDataLoaded) {
@@ -160,13 +167,7 @@ function loadFlats(blockId) {
         const rowId = blockId + "-" + currentFloor + "-" + id;
         const rowData = sheetData.find(item => item.flat_id === rowId);
 
-        if (rowData && rowData.client && rowData.client.trim() !== "") {
-          f.setAttribute("fill", "url(#soldPattern)");
-          f.style.opacity = "0.85";
-        } else if (rowData && rowData.color) {
-          f.setAttribute("fill", rowData.color);
-          f.style.opacity = "1";
-        }
+       
       });
 
       flat.style.stroke = "red";
