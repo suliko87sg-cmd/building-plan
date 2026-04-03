@@ -94,7 +94,11 @@ plan.onload = function () {
 backBtn.onclick = function () {
   currentBlock = null;
 
-  loadSVG(projects[currentProject].svg);
+  plan.data = ""; // 💥 очистка
+
+  setTimeout(() => {
+    loadSVG(projects[currentProject].svg);
+  }, 50);
 
   backBtn.style.display = "none";
 };
