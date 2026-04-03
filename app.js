@@ -1,4 +1,22 @@
 // =====================
+// GOOGLE SHEETS
+// =====================
+let sheetData = [];
+let isDataLoaded = false;
+
+fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
+  .then(res => res.json())
+  .then(data => {
+    console.log("DATA LOADED:", data);
+
+    sheetData = Array.isArray(data) ? data : (data.data || []);
+    isDataLoaded = true;
+  })
+  .catch(err => {
+    console.error("Ошибка загрузки данных:", err);
+  });
+
+// =====================
 // СОСТОЯНИЕ
 // =====================
 let currentProject = "kush";
@@ -192,18 +210,29 @@ backBtn.onclick = function () {
 // =====================
 // КАРТОЧКА
 // =====================
-function showFlatCard(id) {
-  console.log("ОТКРЫВАЕМ КАРТОЧКУ:", id);
+function showFlatCard(flatId) {
+  console.log("ИЩЕМ:", flatId);
 
-  document.getElementById("cardContract").innerText = "№123";
-  document.getElementById("cardArea").innerText = "65 м²";
-  document.getElementById("cardClient").innerText = "Иванов";
+  if (!isDataLoaded) {
+    console.warn("Данные ещё не загрузились");
+    return;
+  }
+
+  const row = sheetData.find(item => item.flat_id === flatId);
+
+  if (!row) {
+    console.warn("Не найдено в таблице:", flatId);
+    return;
+  }
+
+  document.getElementById("cardContract").innerText =
+    row.contract ? "№" + row.contract : "";
+
+  document.getElementById("cardArea").innerText =
+    row.area ? row.area + " м²" : "";
+
+  document.getElementById("cardClient").innerText =
+    row.client || "";
 
   flatCard.classList.add("show");
 }
-
-function hideFlatCard() {
-  flatCard.classList.remove("show");
-}
-
-window.showFlatCard = showFlatCard;
