@@ -156,8 +156,8 @@ function showFlatCard(id) {
   document.getElementById("cardArea").innerText = "65 м²";
   document.getElementById("cardClient").innerText = "Иванов";
 
+  card.style.bottom = "0";
   card.classList.add("show");
 }
 
-// ДЕЛАЕМ ГЛОБАЛЬНОЙ (на всякий случай)
 window.showFlatCard = showFlatCard;

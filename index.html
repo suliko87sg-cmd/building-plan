@@ -34,6 +34,27 @@
 <!-- НАЗАД -->
 <button id="backBtn" style="display:none;">Назад</button>
 
+<!-- КАРТОЧКА КВАРТИРЫ -->
+<div id="flatCard" style="
+  position: fixed;
+  left: 50%;
+  bottom: -100%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background: #111;
+  border-radius: 15px 15px 0 0;
+  padding: 15px;
+  transition: 0.3s;
+  z-index: 999;
+">
+
+  <p><b>Договор:</b> <span id="cardContract">—</span></p>
+  <p><b>Площадь:</b> <span id="cardArea">—</span></p>
+  <p><b>Клиент:</b> <span id="cardClient">—</span></p>
+
+</div> 
+
 <!-- ВАЖНО -->
 <script src="app.js?v=3"></script>
 
