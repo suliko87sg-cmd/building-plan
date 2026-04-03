@@ -37,6 +37,12 @@ const projects = {
 // ВЫБОР ПРОЕКТА
 // =====================
 function selectProject(project, el) {
+
+  if (!projects[project]) {
+    console.error("❌ Нет такого проекта:", project);
+    return;
+  }
+
   console.log("Проект:", project);
 
   currentProject = project;
@@ -45,6 +51,7 @@ function selectProject(project, el) {
   document.querySelectorAll('.project-card').forEach(card => {
     card.classList.remove('active');
   });
+
   el.classList.add('active');
 
   if (!projects[project].svg) {
@@ -92,6 +99,7 @@ plan.onload = function () {
 
 if (currentProject === "buston") {
   fileName = "buston" + id + ".svg";
+
 }
 
 if (currentProject === "gafurov") {
