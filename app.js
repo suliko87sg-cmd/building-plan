@@ -9,6 +9,7 @@ let currentBlock = null;
 // =====================
 const plan = document.getElementById("plan");
 const backBtn = document.getElementById("backBtn");
+const flatCard = document.getElementById("flatCard");
 
 // =====================
 // ПРОЕКТЫ
@@ -23,8 +24,7 @@ const projects = {
 // =====================
 // ВЫБОР ПРОЕКТА
 // =====================
-function selectProject(project, el) {
-
+function selectProject(project) {
   if (!projects[project]) {
     console.error("Нет проекта:", project);
     return;
@@ -32,6 +32,9 @@ function selectProject(project, el) {
 
   currentProject = project;
   currentBlock = null;
+
+  hideFlatCard();
+  backBtn.style.display = "none";
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
@@ -41,9 +44,8 @@ function selectProject(project, el) {
   loadSVG(projects[project].svg);
 }
 
-// ДЕЛАЕМ ФУНКЦИЮ ГЛОБАЛЬНОЙ (ВАЖНО)
+// делаем функцию глобальной для onclick в HTML
 window.selectProject = selectProject;
-
 
 // =====================
 // ЗАГРУЗКА SVG
@@ -58,7 +60,6 @@ function loadSVG(src) {
   }, 100);
 }
 
-
 // =====================
 // КОГДА SVG ЗАГРУЗИЛСЯ
 // =====================
@@ -72,10 +73,9 @@ plan.onload = function () {
   // ЕСЛИ МЫ ВНУТРИ БЛОКА → РАБОТАЮТ КВАРТИРЫ
   // =====================
   if (currentBlock) {
-
     const flats = [
-      "flat1","flat2","flat3","flat4","flat5",
-      "flat6","flat7","flat8","flat9","flat10"
+      "flat1", "flat2", "flat3", "flat4", "flat5",
+      "flat6", "flat7", "flat8", "flat9", "flat10"
     ];
 
     flats.forEach(id => {
@@ -90,14 +90,13 @@ plan.onload = function () {
       };
     });
 
-    return; // 🔥 ВАЖНО! дальше блоки не трогаем
+    return;
   }
-
 
   // =====================
   // ЕСЛИ МЫ В ПРОЕКТЕ → РАБОТАЮТ БЛОКИ
   // =====================
-  const blocks = ["b1","b2","b3","b4","b5","b6"];
+  const blocks = ["b1", "b2", "b3", "b4", "b5", "b6"];
 
   blocks.forEach(id => {
     const el = svg.getElementById(id);
@@ -109,30 +108,28 @@ plan.onload = function () {
       console.log("Блок:", id);
 
       currentBlock = id;
+      hideFlatCard();
 
       let fileName = id + ".svg";
 
       if (currentProject === "buston") {
         fileName = "buston" + id + ".svg";
-      }
-
-      if (currentProject === "gafurov") {
+      } else if (currentProject === "gafurov") {
         fileName = "gafurov" + id + ".svg";
       }
 
       loadSVG(fileName);
-
       backBtn.style.display = "block";
     };
   });
 };
-
 
 // =====================
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
   currentBlock = null;
+  hideFlatCard();
 
   plan.data = "";
 
@@ -143,20 +140,21 @@ backBtn.onclick = function () {
   backBtn.style.display = "none";
 };
 
-
 // =====================
 // КАРТОЧКА КВАРТИРЫ
 // =====================
 function showFlatCard(id) {
   console.log("ОТКРЫВАЕМ КАРТОЧКУ:", id);
 
-  const card = document.getElementById("flatCard");
-
   document.getElementById("cardContract").innerText = "№123";
   document.getElementById("cardArea").innerText = "65 м²";
   document.getElementById("cardClient").innerText = "Иванов";
 
-  card.style.bottom = "20px";
+  flatCard.classList.add("show");
+}
+
+function hideFlatCard() {
+  flatCard.classList.remove("show");
 }
 
 window.showFlatCard = showFlatCard;

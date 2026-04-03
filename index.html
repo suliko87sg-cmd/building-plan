@@ -2,60 +2,144 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plan</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    #projects {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #projects > div {
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      user-select: none;
+    }
+
+    #plan {
+      width: 100%;
+      height: 80vh;
+      display: block;
+    }
+
+    #backBtn {
+      position: fixed;
+      left: 16px;
+      bottom: 16px;
+      z-index: 2500;
+      display: none;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #flatCard {
+      position: fixed;
+      left: 50%;
+      bottom: -300px;
+      transform: translateX(-50%);
+      width: calc(100% - 16px);
+      max-width: 420px;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      border-radius: 20px 20px 0 0;
+      box-shadow:
+        0 -10px 40px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 0, 0, 0.15);
+      padding: 18px;
+      transition: all 0.35s ease;
+      z-index: 3000;
+      color: white;
+      opacity: 0;
+    }
+
+    #flatCard.show {
+      bottom: 0;
+      opacity: 1;
+      transform: translateX(-50%);
+    }
+
+    #flatCard h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+    }
+
+    #flatCard p {
+      margin: 6px 0;
+      font-size: 15px;
+      color: #bbb;
+      line-height: 1.4;
+    }
+
+    #flatCard span {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    object {
+      outline: none;
+    }
+
+    svg * {
+      outline: none !important;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+  </style>
 </head>
+<body>
 
-<body style="background:black; color:white;">
-
-<!-- ПРОЕКТЫ -->
-<div id="projects">
-
-  <div onclick="selectProject('gafurov', this)">
-    Гафуров 2
+  <!-- ПРОЕКТЫ -->
+  <div id="projects">
+    <div onclick="selectProject('gafurov', this)">Гафуров 2</div>
+    <div onclick="selectProject('buston', this)">Бустон 2</div>
+    <div onclick="selectProject('obj4', this)">14-15</div>
+    <div onclick="selectProject('kush', this)">Куш</div>
   </div>
 
-  <div onclick="selectProject('buston', this)">
-    Бустон 2
+  <!-- SVG -->
+  <object id="plan" type="image/svg+xml" data="blocks.svg"></object>
+
+  <!-- НАЗАД -->
+  <button id="backBtn">Назад</button>
+
+  <!-- КАРТОЧКА КВАРТИРЫ -->
+  <div id="flatCard">
+    <h3>Информация о квартире</h3>
+    <p><b>Договор:</b> <span id="cardContract">—</span></p>
+    <p><b>Площадь:</b> <span id="cardArea">—</span></p>
+    <p><b>Клиент:</b> <span id="cardClient">—</span></p>
   </div>
 
-  <div onclick="selectProject('obj4', this)">
-    14-15
-  </div>
-
-  <div onclick="selectProject('kush', this)">
-    Куш
-  </div>
-
-</div>
-
-<!-- SVG -->
-<object id="plan" type="image/svg+xml" data="blocks.svg" style="width:100%; height:80vh;"></object>
-
-<!-- НАЗАД -->
-<button id="backBtn" style="display:none;">Назад</button>
-
-<!-- КАРТОЧКА КВАРТИРЫ -->
-<div id="flatCard" style="
-position: fixed;
-left: 50%;
-bottom: -200px;
-transform: translateX(-50%);
-width: 90%;
-max-width: 400px;
-background: #111;
-border-radius: 15px 15px 0 0;
-padding: 15px;
-transition: bottom 0.3s ease;
-z-index: 9999;
-">
-  <p><b>Договор:</b> <span id="cardContract">—</span></p>
-  <p><b>Площадь:</b> <span id="cardArea">—</span></p>
-  <p><b>Клиент:</b> <span id="cardClient">—</span></p>
-
-</div> 
-
-<!-- ВАЖНО -->
-<script src="app.js?v=3"></script>
-
+  <!-- ВАЖНО -->
+  <script src="app.js?v=3"></script>
 </body>
 </html>
