@@ -236,3 +236,9 @@ function showFlatCard(flatId) {
 
   flatCard.classList.add("show");
 }
+function hideFlatCard() {
+  if (!flatCard) return;
+  flatCard.classList.remove("show");
+}
+
+window.hideFlatCard = hideFlatCard;
