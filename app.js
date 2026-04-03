@@ -148,11 +148,16 @@ backBtn.onclick = function () {
 // КАРТОЧКА КВАРТИРЫ
 // =====================
 function showFlatCard(id) {
+  console.log("ОТКРЫВАЕМ КАРТОЧКУ:", id);
+
   const card = document.getElementById("flatCard");
 
-  document.getElementById("cardContract").innerText = "123";
+  document.getElementById("cardContract").innerText = "№123";
   document.getElementById("cardArea").innerText = "65 м²";
   document.getElementById("cardClient").innerText = "Иванов";
 
   card.classList.add("show");
 }
+
+// ДЕЛАЕМ ГЛОБАЛЬНОЙ (на всякий случай)
+window.showFlatCard = showFlatCard;
