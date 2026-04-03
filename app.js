@@ -61,6 +61,9 @@ plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
 
+  console.log("SVG загружен:", plan.data);
+
+  // === БЛОКИ ===
   const blocks = ["b1","b2","b3","b4","b5","b6"];
 
   blocks.forEach(id => {
@@ -70,6 +73,7 @@ plan.onload = function () {
     el.style.cursor = "pointer";
 
     el.onclick = () => {
+      console.log("Блок:", id);
 
       currentBlock = id;
 
@@ -86,6 +90,24 @@ plan.onload = function () {
       loadSVG(fileName);
 
       backBtn.style.display = "block";
+    };
+  });
+
+  // === КВАРТИРЫ ===
+  const flats = [
+    "flat1","flat2","flat3","flat4","flat5",
+    "flat6","flat7","flat8","flat9","flat10"
+  ];
+
+  flats.forEach(id => {
+    const el = svg.getElementById(id);
+    if (!el) return;
+
+    el.style.cursor = "pointer";
+
+    el.onclick = () => {
+      console.log("Квартира:", id);
+      showFlatCard(id);
     };
   });
 };
