@@ -45,11 +45,13 @@ function selectProject(project, el) {
 // ЗАГРУЗКА SVG
 // =====================
 function loadSVG(src) {
+  console.log("Загрузка:", src);
+
   plan.data = "";
 
   setTimeout(() => {
     plan.data = src + "?t=" + Date.now();
-  }, 50);
+  }, 100);
 }
 
 // =====================
