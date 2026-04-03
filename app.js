@@ -3,6 +3,7 @@
 // =====================
 let currentProject = "kush";
 let currentBlock = null;
+let currentFloor = 3;
 
 // =====================
 // ЭЛЕМЕНТЫ
@@ -10,6 +11,9 @@ let currentBlock = null;
 const plan = document.getElementById("plan");
 const backBtn = document.getElementById("backBtn");
 const flatCard = document.getElementById("flatCard");
+
+const floorPanel = document.getElementById("floorPanel");
+const floorsContainer = document.getElementById("floors");
 
 // =====================
 // ПРОЕКТЫ
@@ -35,6 +39,7 @@ function selectProject(project) {
 
   hideFlatCard();
   backBtn.style.display = "none";
+  floorPanel.style.display = "none";
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
@@ -44,7 +49,6 @@ function selectProject(project) {
   loadSVG(projects[project].svg);
 }
 
-// делаем функцию глобальной для onclick в HTML
 window.selectProject = selectProject;
 
 // =====================
@@ -61,6 +65,46 @@ function loadSVG(src) {
 }
 
 // =====================
+// ЭТАЖИ
+// =====================
+function showFloors() {
+  floorsContainer.innerHTML = "";
+
+  for (let i = 3; i <= 18; i++) {
+    const btn = document.createElement("button");
+    btn.className = "floor-btn";
+
+    if (i === currentFloor) {
+      btn.classList.add("active");
+    }
+
+    btn.textContent = i + " этаж";
+
+    btn.onclick = () => {
+      currentFloor = i;
+      showFloors();
+
+      if (!currentBlock) return;
+
+      let fileName = currentBlock + ".svg";
+
+      if (currentProject === "buston") {
+        fileName = "buston" + currentBlock + ".svg";
+      } else if (currentProject === "gafurov") {
+        fileName = "gafurov" + currentBlock + ".svg";
+      }
+
+      hideFlatCard();
+      loadSVG(fileName);
+    };
+
+    floorsContainer.appendChild(btn);
+  }
+
+  floorPanel.style.display = "block";
+}
+
+// =====================
 // КОГДА SVG ЗАГРУЗИЛСЯ
 // =====================
 plan.onload = function () {
@@ -70,12 +114,12 @@ plan.onload = function () {
   console.log("SVG загружен:", plan.data);
 
   // =====================
-  // ЕСЛИ МЫ ВНУТРИ БЛОКА → РАБОТАЮТ КВАРТИРЫ
+  // ЕСЛИ ВНУТРИ БЛОКА → КВАРТИРЫ
   // =====================
   if (currentBlock) {
     const flats = [
-      "flat1", "flat2", "flat3", "flat4", "flat5",
-      "flat6", "flat7", "flat8", "flat9", "flat10"
+      "flat1","flat2","flat3","flat4","flat5",
+      "flat6","flat7","flat8","flat9","flat10"
     ];
 
     flats.forEach(id => {
@@ -94,9 +138,9 @@ plan.onload = function () {
   }
 
   // =====================
-  // ЕСЛИ МЫ В ПРОЕКТЕ → РАБОТАЮТ БЛОКИ
+  // ЕСЛИ В ПРОЕКТЕ → БЛОКИ
   // =====================
-  const blocks = ["b1", "b2", "b3", "b4", "b5", "b6"];
+  const blocks = ["b1","b2","b3","b4","b5","b6"];
 
   blocks.forEach(id => {
     const el = svg.getElementById(id);
@@ -109,6 +153,9 @@ plan.onload = function () {
 
       currentBlock = id;
       hideFlatCard();
+
+      // 🔥 ВОТ ЗДЕСЬ ВКЛЮЧАЕМ ЭТАЖИ
+      showFloors();
 
       let fileName = id + ".svg";
 
@@ -129,7 +176,9 @@ plan.onload = function () {
 // =====================
 backBtn.onclick = function () {
   currentBlock = null;
+
   hideFlatCard();
+  floorPanel.style.display = "none";
 
   plan.data = "";
 
@@ -141,7 +190,7 @@ backBtn.onclick = function () {
 };
 
 // =====================
-// КАРТОЧКА КВАРТИРЫ
+// КАРТОЧКА
 // =====================
 function showFlatCard(id) {
   console.log("ОТКРЫВАЕМ КАРТОЧКУ:", id);

@@ -19,6 +19,7 @@
       overflow: hidden;
     }
 
+    /* ПРОЕКТЫ */
     #projects {
       position: fixed;
       top: 10px;
@@ -33,31 +34,66 @@
       cursor: pointer;
       font-size: 16px;
       font-weight: 600;
-      color: white;
-      user-select: none;
     }
 
+    /* КНОПКА НАЗАД */
+    #backBtn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 2500;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 14px;
+      background: #000;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+    }
+
+    /* ЭТАЖИ */
+    #floorPanel {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      z-index: 2400;
+      padding: 0 8px;
+      display: none;
+    }
+
+    #floors {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .floor-btn {
+      border: none;
+      border-radius: 14px;
+      background: #2b2b2f;
+      color: white;
+      font-size: 15px;
+      padding: 10px 6px;
+      cursor: pointer;
+    }
+
+    .floor-btn.active {
+      background: orange;
+      color: black;
+      font-weight: 700;
+    }
+
+    /* SVG */
     #plan {
       width: 100%;
       height: 80vh;
       display: block;
+      margin-top: 110px;
     }
 
-    #backBtn {
-      position: fixed;
-      left: 16px;
-      bottom: 16px;
-      z-index: 2500;
-      display: none;
-      padding: 10px 14px;
-      border: none;
-      border-radius: 10px;
-      background: white;
-      color: black;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
+    /* КАРТОЧКА */
     #flatCard {
       position: fixed;
       left: 50%;
@@ -82,21 +118,18 @@
     #flatCard.show {
       bottom: 0;
       opacity: 1;
-      transform: translateX(-50%);
     }
 
     #flatCard h3 {
       margin: 0 0 12px;
       font-size: 18px;
-      font-weight: 600;
-      color: white;
+      font-weight: 700;
     }
 
     #flatCard p {
       margin: 6px 0;
       font-size: 15px;
       color: #bbb;
-      line-height: 1.4;
     }
 
     #flatCard span {
@@ -110,11 +143,12 @@
 
     svg * {
       outline: none !important;
-      -webkit-tap-highlight-color: transparent;
       user-select: none;
     }
   </style>
+
 </head>
+
 <body>
 
   <!-- ПРОЕКТЫ -->
@@ -125,13 +159,18 @@
     <div onclick="selectProject('kush', this)">Куш</div>
   </div>
 
+  <!-- ЭТАЖИ -->
+  <div id="floorPanel">
+    <div id="floors"></div>
+  </div>
+
   <!-- SVG -->
   <object id="plan" type="image/svg+xml" data="blocks.svg"></object>
 
   <!-- НАЗАД -->
   <button id="backBtn">Назад</button>
 
-  <!-- КАРТОЧКА КВАРТИРЫ -->
+  <!-- КАРТОЧКА -->
   <div id="flatCard">
     <h3>Информация о квартире</h3>
     <p><b>Договор:</b> <span id="cardContract">—</span></p>
@@ -139,7 +178,6 @@
     <p><b>Клиент:</b> <span id="cardClient">—</span></p>
   </div>
 
-  <!-- ВАЖНО -->
   <script src="app.js?v=3"></script>
 </body>
 </html>
