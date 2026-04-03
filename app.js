@@ -116,7 +116,7 @@ loadSVG(fileName);
 // =====================
 // НАЗАД
 // =====================
-backBtn.onclick = function () {
+backBtn.onclick = function () {15:44 03.04.2026
   currentBlock = null;
 
   loadSVG(projects[currentProject].svg);

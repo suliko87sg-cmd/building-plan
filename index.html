@@ -1,19 +1,41 @@
-<div id="projects" class="projects">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Plan</title>
+</head>
 
-  <div class="project-card" onclick="selectProject('gafurov', this)">
-    <h3>Гафуров 2</h3>
+<body style="background:black; color:white;">
+
+<!-- ПРОЕКТЫ -->
+<div id="projects">
+
+  <div onclick="selectProject('gafurov', this)">
+    Гафуров 2
   </div>
 
-  <div class="project-card" onclick="selectProject('buston', this)">
-    <h3>Бустон 2</h3>
+  <div onclick="selectProject('buston', this)">
+    Бустон 2
   </div>
 
-  <div class="project-card" onclick="selectProject('obj4', this)">
-    <h3>14-15</h3>
+  <div onclick="selectProject('obj4', this)">
+    14-15
   </div>
 
-  <div class="project-card active" onclick="selectProject('kush', this)">
-    <h3>Куш</h3>
+  <div onclick="selectProject('kush', this)">
+    Куш
   </div>
 
 </div>
+
+<!-- SVG -->
+<object id="plan" type="image/svg+xml" data="blocks.svg" style="width:100%; height:80vh;"></object>
+
+<!-- НАЗАД -->
+<button id="backBtn" style="display:none;">Назад</button>
+
+<!-- ВАЖНО -->
+<script src="app.js?v=3"></script>
+
+</body>
+</html>
