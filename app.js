@@ -147,7 +147,7 @@ line.setAttribute("y2", "5");
 
 // 👇 ВОТ ГЛАВНОЕ
 line.style.stroke = "#ffffff";
-line.style.strokeWidth = "1";
+line.style.strokeWidth = "2,5";
 line.style.opacity = "0.5";
        pattern.setAttribute("width", "5");
        pattern.setAttribute("height", "5");
