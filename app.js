@@ -139,14 +139,16 @@ plan.onload = function () {
         pattern.setAttribute("patternTransform", "rotate(45)");
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        
-        line.setAttribute("x1", "0");
-        line.setAttribute("y1", "0");
-        line.setAttribute("x2", "0");
-        line.setAttribute("y2", "6");
-        line.setAttribute("stroke", "#ffffff");
-        line.setAttribute("stroke-width", "1");
-        line.setAttribute("opacity", "0.4");
+
+line.setAttribute("x1", "0");
+line.setAttribute("y1", "0");
+line.setAttribute("x2", "0");
+line.setAttribute("y2", "5");
+
+// 👇 ВОТ ГЛАВНОЕ
+line.style.stroke = "#ffffff";
+line.style.strokeWidth = "1";
+line.style.opacity = "0.5";
        pattern.setAttribute("width", "5");
        pattern.setAttribute("height", "5");
 
