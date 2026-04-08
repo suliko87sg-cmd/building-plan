@@ -145,6 +145,18 @@ plan.onload = function () {
       if (!el) return;
 
       el.style.cursor = "pointer";
+ const row = sheetData.find(item =>
+    item.flat &&
+    item.flat.toString().trim().toLowerCase() === id.toLowerCase() &&
+    Number(item.floor) === Number(currentFloor)
+  );
+
+  if (row && (row.contract || row.client)) {
+    el.style.fill = "#660000";
+    el.style.stroke = "#ff3b3b";
+    el.style.strokeWidth = "2";
+    el.style.opacity = "0.8";
+  }
 
       el.onclick = () => {
         console.log("Квартира:", id);
