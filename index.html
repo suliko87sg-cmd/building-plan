@@ -140,13 +140,23 @@
 }
 
 #splashLogo {
-  width: 300px;
+  width: 70%;
+  max-width: 420px;
+  min-width: 200px;
+
   opacity: 0;
   transform: scale(0.5);
   border-radius: 20px;
-filter: drop-shadow(0 0 35px rgba(255,0,0,0.8));
+
+  filter: drop-shadow(0 0 35px rgba(255,0,0,0.8));
 
   animation: logoAnim 5s ease forwards;
+}
+
+@media (min-width: 900px) {
+  #splashLogo {
+    max-width: 500px;
+  }
 }
 
 @keyframes logoAnim {
