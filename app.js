@@ -47,17 +47,24 @@ const projects = {
 // ВЫБОР ПРОЕКТА
 // =====================
 function selectProject(project) {
-  if (!projects[project]) {
-    console.error("Нет проекта:", project);
+
+if (!projects[project]) {
+  console.error("Нет проекта:", project);
     return;
   }
+
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("plan").style.display = "block";
+  document.getElementById("floorPanel").style.display = "block";
+  document.getElementById("backBtn").style.display = "block"; 
+ 
+  
 
   currentProject = project;
   currentBlock = null;
 
   hideFlatCard();
-  backBtn.style.display = "none";
-  floorPanel.style.display = "none";
+
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
