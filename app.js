@@ -152,9 +152,9 @@ plan.onload = function () {
   );
 
   if (row && (row.contract || row.client)) {
-    el.style.fill = "#660000";
-    el.style.stroke = "#ff3b3b";
-    el.style.strokeWidth = "2";
+    el.setAttribute("fill", "#550000");
+el.setAttribute("stroke", "red");
+el.setAttribute("stroke-width", "2");
     el.style.opacity = "0.8";
   }
 
