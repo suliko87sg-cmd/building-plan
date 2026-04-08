@@ -151,12 +151,18 @@ plan.onload = function () {
     Number(item.floor) === Number(currentFloor)
   );
 
-  if (row && (row.contract || row.client)) {
+ if (row && (row.contract || row.client)) {
+    console.log("ПРОДАНО:", id);
+
+    el.style.fill = "#550000";
+    el.style.setProperty("fill", "#550000", "important");
+
     el.setAttribute("fill", "#550000");
-el.setAttribute("stroke", "red");
-el.setAttribute("stroke-width", "2");
-    el.style.opacity = "0.8";
-  }
+    el.setAttribute("style", "fill:#550000 !important;");
+
+    el.style.stroke = "#ff3b3b";
+    el.style.strokeWidth = "2";
+}
 
       el.onclick = () => {
         console.log("Квартира:", id);
