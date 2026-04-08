@@ -155,10 +155,11 @@ plan.onload = function () {
     console.log("ПРОДАНО:", id);
 
     el.style.fill = "#550000";
-    el.style.setProperty("fill", "#550000", "important");
+    el.style.setProperty("fill", "#ff5c8a", "important");
 
-    el.setAttribute("fill", "#550000");
+    el.setAttribute("fill", "#ff5c8a");
     el.setAttribute("style", "fill:#550000 !important;");
+    el.style.opacity = "0.85";
 
     el.style.stroke = "#ff3b3b";
     el.style.strokeWidth = "2";
