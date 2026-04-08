@@ -147,10 +147,10 @@ line.setAttribute("y2", "5");
 
 // 👇 ВОТ ГЛАВНОЕ
 line.style.stroke = "#ffffff";
-line.style.strokeWidth = "2,5";
+line.style.strokeWidth = "3,5";
 line.style.opacity = "0.5";
-       pattern.setAttribute("width", "5");
-       pattern.setAttribute("height", "5");
+       pattern.setAttribute("width", "6");
+       pattern.setAttribute("height", "6");
 
         pattern.appendChild(line);
         defs.appendChild(pattern);
