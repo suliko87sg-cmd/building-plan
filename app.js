@@ -158,11 +158,19 @@ plan.onload = function () {
     el.style.setProperty("fill", "#ff5c8a", "important");
 
     el.setAttribute("fill", "#ff5c8a");
-    el.setAttribute("style", "fill:#550000 !important;");
     el.style.opacity = "0.85";
 
     el.style.stroke = "#ff3b3b";
     el.style.strokeWidth = "2";
+
+        // ===== ШТРИХОВКА =====
+    const clone = el.cloneNode(true);
+clone.removeAttribute("style");
+clone.removeAttribute("fill");
+    clone.setAttribute("fill", "url(#soldPattern)");
+    clone.style.pointerEvents = "none";
+    el.parentNode.appendChild(clone);
+
 }
 
       el.onclick = () => {
