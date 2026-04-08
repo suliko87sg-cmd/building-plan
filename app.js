@@ -218,10 +218,10 @@ function showFlatCard(flatId) {
     return;
   }
 
-  const row = sheetData.find(item => 
-  item.flat_id === flatId ||
-  item.flat_id === flatId.replace("flat", "") ||
-  ("flat" + item.flat_id) === flatId
+  const row = sheetData.find(item =>
+  item.flat &&
+  item.flat.toString().trim().toLowerCase() === flatId.toLowerCase() &&
+  Number(item.floor) === Number(currentFloor)
 );
 
   if (!row) {
