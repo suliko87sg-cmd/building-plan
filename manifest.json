@@ -1,15 +1,31 @@
 {
-  "name": "Сифат Каскад",
-  "short_name": "Каскад",
-  "start_url": ".",
+  "name": "CIF Cascade",
+  "short_name": "CIF",
+  "description": "Продажа квартир — CIF Cascade",
+
+  "start_url": "/?source=pwa",
+  "scope": "/",
+
   "display": "standalone",
-  "background_color": "#0b0f14",
-  "theme_color": "#0b0f14",
+  "orientation": "portrait",
+
+  "background_color": "#000000",
+  "theme_color": "#000000",
+
+  "id": "/",
+
   "icons": [
     {
-      "src": "icon.png",
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
