@@ -20,22 +20,6 @@
       overflow: hidden;
     }
 
-    /* ПРОЕКТЫ */
-    #projects {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    #projects > div {
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-    }
 
     /* КНОПКА НАЗАД */
     #backBtn {
@@ -200,12 +184,16 @@ filter: drop-shadow(0 0 35px rgba(255,0,0,0.8));
 </div>
 
   <!-- ПРОЕКТЫ -->
-  <div id="projects">
-    <div onclick="selectProject('gafurov', this)">Гафуров 2</div>
-    <div onclick="selectProject('buston', this)">Бустон 2</div>
-    <div onclick="selectProject('obj4', this)">14-15</div>
-    <div onclick="selectProject('kush', this)">Куш</div>
-  </div>
+  <div id="mainMenu">
+
+  <img src="logo.png" id="mainLogo">
+
+  <div class="menuBtn" onclick="selectProject('gafurov', this)">Гафуров 2</div>
+  <div class="menuBtn" onclick="selectProject('buston', this)">Бустон 2</div>
+  <div class="menuBtn" onclick="selectProject('obj4', this)">14-15</div>
+  <div class="menuBtn" onclick="selectProject('kush', this)">Куш</div>
+
+</div>
 
   <!-- ЭТАЖИ -->
   <div id="floorPanel">
