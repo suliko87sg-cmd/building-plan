@@ -77,8 +77,10 @@ function loadSVG(src) {
 
   plan.data = "";
 
+  const isFileProtocol = window.location.protocol === "file:";
+
   setTimeout(() => {
-    plan.data = src + "?t=" + Date.now();
+    plan.data = isFileProtocol ? src : src + "?t=" + Date.now();
   }, 100);
 }
 
