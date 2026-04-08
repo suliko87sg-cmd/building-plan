@@ -312,5 +312,5 @@ window.addEventListener("load", () => {
       splash.style.display = "none";
     }, 1000);
 
-  }, 4000);
+  }, 6000);
 });
