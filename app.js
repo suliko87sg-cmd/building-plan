@@ -127,7 +127,7 @@ function showFloors() {
 // =====================
 plan.onload = function () {
     const svg = plan.contentDocument;
-    if (!svg) return;   // 👈 СНАЧАЛА ПРОВЕРКА
+    if (!svg) return;   
 
     const defs = svg.querySelector("defs") || svg.createElementNS("http://www.w3.org/2000/svg", "defs");
 
@@ -148,7 +148,7 @@ plan.onload = function () {
         line.setAttribute("stroke-width", "1");
         line.setAttribute("opacity", "0.4");
        pattern.setAttribute("width", "5");
-       pattern.setAttribute("height", "5"); 👈 тоньше
+       pattern.setAttribute("height", "5");
 
         pattern.appendChild(line);
         defs.appendChild(pattern);
