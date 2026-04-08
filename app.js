@@ -77,10 +77,8 @@ function loadSVG(src) {
 
   plan.data = "";
 
-  const isFileProtocol = window.location.protocol === "file:";
-
   setTimeout(() => {
-    plan.data = isFileProtocol ? src : src + "?t=" + Date.now();
+    plan.data = src + "?t=" + Date.now();
   }, 100);
 }
 
@@ -220,7 +218,11 @@ function showFlatCard(flatId) {
     return;
   }
 
-  const row = sheetData.find(item => item.flat_id === flatId);
+  const row = sheetData.find(item => 
+  item.flat_id === flatId ||
+  item.flat_id === flatId.replace("flat", "") ||
+  ("flat" + item.flat_id) === flatId
+);
 
   if (!row) {
     console.warn("Не найдено в таблице:", flatId);
