@@ -133,19 +133,22 @@ plan.onload = function () {
 
     if (!svg.querySelector("#soldPattern")) {
         const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+       
         pattern.setAttribute("id", "soldPattern");
         pattern.setAttribute("patternUnits", "userSpaceOnUse");
-        pattern.setAttribute("width", "6");   // 👈 МЕНЬШЕ = ЧАЩЕ ШТРИХ
-        pattern.setAttribute("height", "6");
         pattern.setAttribute("patternTransform", "rotate(45)");
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        
         line.setAttribute("x1", "0");
         line.setAttribute("y1", "0");
         line.setAttribute("x2", "0");
         line.setAttribute("y2", "6");
-        line.setAttribute("stroke", "#000");
-        line.setAttribute("stroke-width", "1"); // 👈 тоньше
+        line.setAttribute("stroke", "#ffffff");
+        line.setAttribute("stroke-width", "1");
+        line.setAttribute("opacity", "0.4");
+       pattern.setAttribute("width", "5");
+       pattern.setAttribute("height", "5"); 👈 тоньше
 
         pattern.appendChild(line);
         defs.appendChild(pattern);
