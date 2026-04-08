@@ -230,7 +230,7 @@ function showFlatCard(flatId) {
   }
 
   document.getElementById("cardContract").innerText =
-    row.contract ? "№" + row.contract : "";
+  row.contract || "";
 
   document.getElementById("cardArea").innerText =
     row.area ? row.area + " м²" : "";
