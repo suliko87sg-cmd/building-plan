@@ -242,8 +242,10 @@ el.style.pointerEvents = "all";
         patternLayer.style.opacity = "0.8";
         patternLayer.id = id + "_sold_pattern";
 
-        el.parentNode.insertBefore(bg, el);
-el.parentNode.insertBefore(patternLayer, el);
+
+el.parentNode.appendChild(bg);
+el.parentNode.appendChild(patternLayer);
+el.parentNode.appendChild(el);
       }
 
       el.onclick = () => {
