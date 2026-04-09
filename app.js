@@ -222,8 +222,9 @@ plan.onload = function () {
         if (oldBg) oldBg.remove();
         if (oldPattern) oldPattern.remove();
 
-        el.style.fill = "none";
-        el.setAttribute("fill", "none");
+        el.style.fill = "rgba(0,0,0,0.001)";
+el.setAttribute("fill", "rgba(0,0,0,0.001)");
+el.style.pointerEvents = "all";
 
         // Белая полупрозрачная подложка
         const bg = el.cloneNode(true);
