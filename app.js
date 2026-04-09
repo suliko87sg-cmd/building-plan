@@ -188,26 +188,37 @@ line.style.opacity = "0.5";
  if (row && (row.contract || row.client)) {
     console.log("ПРОДАНО:", id);
 
-    el.style.fill = "#550000";
-    el.style.setProperty("fill", "#ff5c8a", "important");
+    // ===== ПОДЛОЖКА =====
+const oldBg = svg.getElementById(id + "_sold_bg");
+const oldPattern = svg.getElementById(id + "_sold_pattern");
 
-    el.setAttribute("fill", "#ff5c8a");
-    el.style.opacity = "0.85";
+if (oldBg) oldBg.remove();
+if (oldPattern) oldPattern.remove();
 
-    el.style.stroke = "#ff3b3b";
-    el.style.strokeWidth = "2";
+// убираем оригинальный fill
+el.style.fill = "none";
+el.setAttribute("fill", "none");
 
-        // ===== ШТРИХОВКА =====
-    const clone = el.cloneNode(true);
-clone.removeAttribute("style");
-clone.removeAttribute("fill");
-    clone.setAttribute("fill", "url(#soldPattern)");
-    clone.style.pointerEvents = "none";
-    el.parentNode.appendChild(clone);
+// ===== ПОДЛОЖКА =====
+const bg = el.cloneNode(true);
+bg.removeAttribute("style");
+bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+bg.style.pointerEvents = "none";
+bg.id = id + "_sold_bg";
 
-}
+// ===== ШТРИХОВКА =====
+const pattern = el.cloneNode(true);
+pattern.removeAttribute("style");
+pattern.removeAttribute("stroke");
+pattern.setAttribute("fill", "url(#soldPattern)");
+pattern.style.pointerEvents = "none";
+pattern.style.opacity = "0.8";
+pattern.id = id + "_sold_pattern";
 
-      el.onclick = () => {
+el.parentNode.appendChild(bg);
+el.parentNode.appendChild(pattern);
+      
+el.onclick = () => {
         console.log("Квартира:", id);
         showFlatCard(id);
       };
