@@ -142,7 +142,7 @@ plan.onload = function () {
         const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
        
         pattern.setAttribute("id", "soldPattern");
-        pattern.setAttribute("patternUnits", "userSpaceOnUse");
+        pattern.setAttribute("patternUnits", "objectBoundingBox");
         pattern.setAttribute("patternTransform", "rotate(45)");
 
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -156,9 +156,9 @@ line.setAttribute("y2", "5");
 line.style.stroke = "#ffffff";
 line.style.strokeWidth = "5,5";
 line.style.opacity = "0.5";
-       pattern.setAttribute("width", "6");
-       pattern.setAttribute("height", "6");
-
+       pattern.setAttribute("width", "0.1");
+       pattern.setAttribute("height", "0.1");
+ 
         pattern.appendChild(line);
         defs.appendChild(pattern);
         svg.documentElement.appendChild(defs);
