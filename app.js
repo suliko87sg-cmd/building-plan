@@ -169,63 +169,62 @@ line.style.opacity = "0.5";
   // ЕСЛИ ВНУТРИ БЛОКА → КВАРТИРЫ
   // =====================
   if (currentBlock) {
-    const flats = [
-      "flat1","flat2","flat3","flat4","flat5",
-      "flat6","flat7","flat8","flat9","flat10"
-    ];
+  const flats = [
+    "flat1","flat2","flat3","flat4","flat5",
+    "flat6","flat7","flat8","flat9","flat10"
+  ];
 
-    flats.forEach(id => {
-      const el = svg.getElementById(id);
-      if (!el) return;
+  flats.forEach(id => {
+    const el = svg.getElementById(id);
+    if (!el) return;
 
-      el.style.cursor = "pointer";
- const row = sheetData.find(item =>
-    item.flat &&
-    item.flat.toString().trim().toLowerCase() === id.toLowerCase() &&
-    Number(item.floor) === Number(currentFloor)
-  );
+    el.style.cursor = "pointer";
 
- if (row && (row.contract || row.client)) {
-    console.log("ПРОДАНО:", id);
+    const row = sheetData.find(item =>
+      item.flat &&
+      item.flat.toString().trim().toLowerCase() === id.toLowerCase() &&
+      Number(item.floor) === Number(currentFloor)
+    );
 
-    // ===== ПОДЛОЖКА =====
-const oldBg = svg.getElementById(id + "_sold_bg");
-const oldPattern = svg.getElementById(id + "_sold_pattern");
+    if (row && (row.contract || row.client)) {
+      console.log("ПРОДАНО:", id);
 
-if (oldBg) oldBg.remove();
-if (oldPattern) oldPattern.remove();
+      const oldBg = svg.getElementById(id + "_sold_bg");
+      const oldPattern = svg.getElementById(id + "_sold_pattern");
 
-// убираем оригинальный fill
-el.style.fill = "none";
-el.setAttribute("fill", "none");
+      if (oldBg) oldBg.remove();
+      if (oldPattern) oldPattern.remove();
 
-// ===== ПОДЛОЖКА =====
-const bg = el.cloneNode(true);
-bg.removeAttribute("style");
-bg.setAttribute("fill", "rgba(255,255,255,0.25)");
-bg.style.pointerEvents = "none";
-bg.id = id + "_sold_bg";
+      el.style.fill = "none";
+      el.setAttribute("fill", "none");
 
-// ===== ШТРИХОВКА =====
-const pattern = el.cloneNode(true);
-pattern.removeAttribute("style");
-pattern.removeAttribute("stroke");
-pattern.setAttribute("fill", "url(#soldPattern)");
-pattern.style.pointerEvents = "none";
-pattern.style.opacity = "0.8";
-pattern.id = id + "_sold_pattern";
+      const bg = el.cloneNode(true);
+      bg.removeAttribute("style");
+      bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+      bg.style.pointerEvents = "none";
+      bg.id = id + "_sold_bg";
 
-el.parentNode.appendChild(bg);
-el.parentNode.appendChild(pattern);
-      
-el.onclick = () => {
-        console.log("Квартира:", id);
-        showFlatCard(id);
-      };
-    });
+      const pattern = el.cloneNode(true);
+      pattern.removeAttribute("style");
+      pattern.removeAttribute("stroke");
+      pattern.setAttribute("fill", "url(#soldPattern)");
+      pattern.style.pointerEvents = "none";
+      pattern.style.opacity = "0.8";
+      pattern.id = id + "_sold_pattern";
 
-    return;
-  }
+      el.parentNode.appendChild(bg);
+      el.parentNode.appendChild(pattern);
+    }
+
+    // 👇 ВАЖНО: onclick должен быть СНАРУЖИ if
+    el.onclick = () => {
+      console.log("Квартира:", id);
+      showFlatCard(id);
+    };
+  });
+
+  return;
+}
 
   // =====================
   // ЕСЛИ В ПРОЕКТЕ → БЛОКИ
