@@ -8,7 +8,6 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
   .then(res => res.json())
   .then(data => {
     console.log("DATA LOADED:", data);
-
     sheetData = Array.isArray(data) ? data : (data.data || []);
     isDataLoaded = true;
   })
@@ -29,42 +28,86 @@ let currentFloor = 3;
 const plan = document.getElementById("plan");
 const backBtn = document.getElementById("backBtn");
 const flatCard = document.getElementById("flatCard");
-
 const floorPanel = document.getElementById("floorPanel");
 const floorsContainer = document.getElementById("floors");
 
 // =====================
 // ПРОЕКТЫ
+// key = то, что в selectProject(...)
+// sheet = то, что у тебя в Google Sheets в колонке project
 // =====================
 const projects = {
-  kush: { svg: "blocks.svg" },
-  buston: { svg: "bustonblocks.svg" },
-  gafurov: { svg: "gafurovblocks.svg" },
-  obj4: { svg: null }
+  kush: {
+    svg: "blocks.svg",
+    sheet: "blocks",
+    floorStart: 3,
+    floorEnd: 18
+  },
+  buston: {
+    svg: "bustonblocks.svg",
+    sheet: "bustonblocks",
+    floorStart: 1,
+    floorEnd: 16
+  },
+  gafurov: {
+    svg: "gafurovblocks.svg",
+    sheet: "gafurovblocks",
+    floorStart: 1,
+    floorEnd: 16
+  },
+  obj4: {
+    svg: null,
+    sheet: "obj4",
+    floorStart: 1,
+    floorEnd: 16
+  }
 };
+
+// =====================
+// ВСПОМОГАТЕЛЬНЫЕ
+// =====================
+function getCurrentSheetProject() {
+  return projects[currentProject]?.sheet || currentProject;
+}
+
+function normalize(val) {
+  return String(val || "").trim().toLowerCase();
+}
+
+function getBlockSvgFile(projectKey, blockId) {
+  if (projectKey === "buston") return "buston" + blockId + ".svg";
+  if (projectKey === "gafurov") return "gafurov" + blockId + ".svg";
+  return blockId + ".svg";
+}
+
+function findFlatRow(flatId) {
+  return sheetData.find(item =>
+    normalize(item.project) === normalize(getCurrentSheetProject()) &&
+    normalize(item.block) === normalize(currentBlock) &&
+    normalize(item.flat) === normalize(flatId) &&
+    Number(item.floor) === Number(currentFloor)
+  );
+}
 
 // =====================
 // ВЫБОР ПРОЕКТА
 // =====================
 function selectProject(project) {
-
-if (!projects[project]) {
-  console.error("Нет проекта:", project);
+  if (!projects[project]) {
+    console.error("Нет проекта:", project);
     return;
   }
 
-  document.getElementById("mainMenu").style.display = "none";
-  document.getElementById("plan").style.display = "block";
-  document.getElementById("floorPanel").style.display = "block";
-  document.getElementById("backBtn").style.display = "block"; 
- 
-  
-
   currentProject = project;
   currentBlock = null;
+  currentFloor = projects[project].floorStart;
 
   hideFlatCard();
 
+  document.getElementById("mainMenu").style.display = "none";
+  document.getElementById("plan").style.display = "block";
+  document.getElementById("floorPanel").style.display = "none";
+  document.getElementById("backBtn").style.display = "none";
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
@@ -81,7 +124,6 @@ window.selectProject = selectProject;
 // =====================
 function loadSVG(src) {
   console.log("Загрузка:", src);
-
   plan.data = "";
 
   setTimeout(() => {
@@ -95,7 +137,10 @@ function loadSVG(src) {
 function showFloors() {
   floorsContainer.innerHTML = "";
 
-  for (let i = 3; i <= 18; i++) {
+  const start = projects[currentProject]?.floorStart ?? 1;
+  const end = projects[currentProject]?.floorEnd ?? 16;
+
+  for (let i = start; i <= end; i++) {
     const btn = document.createElement("button");
     btn.className = "floor-btn";
 
@@ -111,16 +156,8 @@ function showFloors() {
 
       if (!currentBlock) return;
 
-      let fileName = currentBlock + ".svg";
-
-      if (currentProject === "buston") {
-        fileName = "buston" + currentBlock + ".svg";
-      } else if (currentProject === "gafurov") {
-        fileName = "gafurov" + currentBlock + ".svg";
-      }
-
       hideFlatCard();
-      loadSVG(fileName);
+      loadSVG(getBlockSvgFile(currentProject, currentBlock));
     };
 
     floorsContainer.appendChild(btn);
@@ -133,103 +170,94 @@ function showFloors() {
 // КОГДА SVG ЗАГРУЗИЛСЯ
 // =====================
 plan.onload = function () {
-    const svg = plan.contentDocument;
-    if (!svg) return;   
+  const svg = plan.contentDocument;
+  if (!svg) return;
 
-    const defs = svg.querySelector("defs") || svg.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const defs = svg.querySelector("defs") ||
+    svg.createElementNS("http://www.w3.org/2000/svg", "defs");
 
-    if (!svg.querySelector("#soldPattern")) {
-        const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-       
-        pattern.setAttribute("id", "soldPattern");
-        pattern.setAttribute("patternUnits", "objectBoundingBox");
-        pattern.setAttribute("patternTransform", "rotate(45)");
+  if (!svg.querySelector("#soldPattern")) {
+    const soldPattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+    soldPattern.setAttribute("id", "soldPattern");
+    soldPattern.setAttribute("patternUnits", "objectBoundingBox");
+    soldPattern.setAttribute("patternTransform", "rotate(45)");
+    soldPattern.setAttribute("width", "0.1");
+    soldPattern.setAttribute("height", "0.1");
 
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", "0");
+    line.setAttribute("y1", "0");
+    line.setAttribute("x2", "0");
+    line.setAttribute("y2", "5");
+    line.style.stroke = "#ffffff";
+    line.style.strokeWidth = "5.5";
+    line.style.opacity = "0.5";
 
-line.setAttribute("x1", "0");
-line.setAttribute("y1", "0");
-line.setAttribute("x2", "0");
-line.setAttribute("y2", "5");
+    soldPattern.appendChild(line);
+    defs.appendChild(soldPattern);
+    svg.documentElement.appendChild(defs);
+  }
 
-// 👇 ВОТ ГЛАВНОЕ
-line.style.stroke = "#ffffff";
-line.style.strokeWidth = "5,5";
-line.style.opacity = "0.5";
-       pattern.setAttribute("width", "0.1");
-       pattern.setAttribute("height", "0.1");
- 
-        pattern.appendChild(line);
-        defs.appendChild(pattern);
-        svg.documentElement.appendChild(defs);
-    }
   console.log("SVG загружен:", plan.data);
 
   // =====================
   // ЕСЛИ ВНУТРИ БЛОКА → КВАРТИРЫ
   // =====================
   if (currentBlock) {
-  const flats = [
-    "flat1","flat2","flat3","flat4","flat5",
-    "flat6","flat7","flat8","flat9","flat10"
-  ];
+    const flatElements = Array.from(svg.querySelectorAll('[id^="flat"]'))
+      .filter(el => /^flat\d+$/i.test(el.id));
 
-  flats.forEach(id => {
-    const el = svg.getElementById(id);
-    if (!el) return;
+    flatElements.forEach(el => {
+      const id = el.id;
+      el.style.cursor = "pointer";
 
-    el.style.cursor = "pointer";
+      const row = findFlatRow(id);
 
-    const row = sheetData.find(item =>
-      item.flat &&
-      item.flat.toString().trim().toLowerCase() === id.toLowerCase() &&
-      Number(item.floor) === Number(currentFloor)
-    );
+      if (row && (normalize(row.contract) || normalize(row.client))) {
+        console.log("ПРОДАНО:", id);
 
-    if (row && (row.contract || row.client)) {
-      console.log("ПРОДАНО:", id);
+        const oldBg = svg.getElementById(id + "_sold_bg");
+        const oldPattern = svg.getElementById(id + "_sold_pattern");
 
-      const oldBg = svg.getElementById(id + "_sold_bg");
-      const oldPattern = svg.getElementById(id + "_sold_pattern");
+        if (oldBg) oldBg.remove();
+        if (oldPattern) oldPattern.remove();
 
-      if (oldBg) oldBg.remove();
-      if (oldPattern) oldPattern.remove();
+        el.style.fill = "none";
+        el.setAttribute("fill", "none");
 
-      el.style.fill = "none";
-      el.setAttribute("fill", "none");
+        // Белая полупрозрачная подложка
+        const bg = el.cloneNode(true);
+        bg.removeAttribute("style");
+        bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+        bg.style.pointerEvents = "none";
+        bg.id = id + "_sold_bg";
 
-      const bg = el.cloneNode(true);
-      bg.removeAttribute("style");
-      bg.setAttribute("fill", "rgba(255,255,255,0.25)");
-      bg.style.pointerEvents = "none";
-      bg.id = id + "_sold_bg";
+        // Штриховка
+        const patternLayer = el.cloneNode(true);
+        patternLayer.removeAttribute("style");
+        patternLayer.removeAttribute("stroke");
+        patternLayer.setAttribute("fill", "url(#soldPattern)");
+        patternLayer.style.pointerEvents = "none";
+        patternLayer.style.opacity = "0.8";
+        patternLayer.id = id + "_sold_pattern";
 
-      const pattern = el.cloneNode(true);
-      pattern.removeAttribute("style");
-      pattern.removeAttribute("stroke");
-      pattern.setAttribute("fill", "url(#soldPattern)");
-      pattern.style.pointerEvents = "none";
-      pattern.style.opacity = "0.8";
-      pattern.id = id + "_sold_pattern";
+        el.parentNode.appendChild(bg);
+        el.parentNode.appendChild(patternLayer);
+      }
 
-      el.parentNode.appendChild(bg);
-      el.parentNode.appendChild(pattern);
-    }
+      el.onclick = () => {
+        console.log("Квартира:", id);
+        showFlatCard(id);
+      };
+    });
 
-    // 👇 ВАЖНО: onclick должен быть СНАРУЖИ if
-    el.onclick = () => {
-      console.log("Квартира:", id);
-      showFlatCard(id);
-    };
-  });
-
-  return;
-}
+    return;
+  }
 
   // =====================
   // ЕСЛИ В ПРОЕКТЕ → БЛОКИ
   // =====================
-  const blocks = ["b1","b2","b3","b4","b5","b6"];
+  const blocks = ["b1", "b2", "b3", "b4", "b5", "b6"];
 
   blocks.forEach(id => {
     const el = svg.getElementById(id);
@@ -242,18 +270,9 @@ line.style.opacity = "0.5";
 
       currentBlock = id;
       hideFlatCard();
-
-      // 🔥 ВОТ ЗДЕСЬ ВКЛЮЧАЕМ ЭТАЖИ
       showFloors();
 
-      let fileName = id + ".svg";
-
-      if (currentProject === "buston") {
-        fileName = "buston" + id + ".svg";
-      } else if (currentProject === "gafurov") {
-        fileName = "gafurov" + id + ".svg";
-      }
-
+      const fileName = getBlockSvgFile(currentProject, id);
       loadSVG(fileName);
       backBtn.style.display = "block";
     };
@@ -268,7 +287,6 @@ backBtn.onclick = function () {
 
   hideFlatCard();
   floorPanel.style.display = "none";
-
   plan.data = "";
 
   setTimeout(() => {
@@ -289,28 +307,25 @@ function showFlatCard(flatId) {
     return;
   }
 
-  const row = sheetData.find(item =>
-  item.flat &&
-  item.flat.toString().trim().toLowerCase() === flatId.toLowerCase() &&
-  Number(item.floor) === Number(currentFloor)
-);
+  const row = findFlatRow(flatId);
 
   if (!row) {
-    console.warn("Не найдено в таблице:", flatId);
+    console.warn("Не найдено в таблице:", {
+      project: getCurrentSheetProject(),
+      block: currentBlock,
+      floor: currentFloor,
+      flat: flatId
+    });
     return;
   }
 
-  document.getElementById("cardContract").innerText =
-  row.contract || "";
-
-  document.getElementById("cardArea").innerText =
-    row.area ? row.area + " м²" : "";
-
-  document.getElementById("cardClient").innerText =
-    row.client || "";
+  document.getElementById("cardContract").innerText = row.contract || "";
+  document.getElementById("cardArea").innerText = row.area ? row.area + " м²" : "";
+  document.getElementById("cardClient").innerText = row.client || "";
 
   flatCard.classList.add("show");
 }
+
 function hideFlatCard() {
   if (!flatCard) return;
   flatCard.classList.remove("show");
@@ -318,9 +333,13 @@ function hideFlatCard() {
 
 window.hideFlatCard = hideFlatCard;
 
+// =====================
+// SPLASH
+// =====================
 window.addEventListener("load", () => {
   setTimeout(() => {
     const splash = document.getElementById("splash");
+    if (!splash) return;
 
     splash.style.transition = "opacity 1s";
     splash.style.opacity = "0";
@@ -328,10 +347,12 @@ window.addEventListener("load", () => {
     setTimeout(() => {
       splash.style.display = "none";
     }, 1000);
-
   }, 6000);
 });
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+// =====================
+// SERVICE WORKER
+// =====================
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
 }
