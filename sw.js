@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-v2";
+const CACHE_NAME = "app-v3";
 
 // очистка старых кешей
 self.addEventListener("activate", event => {
