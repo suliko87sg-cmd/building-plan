@@ -172,6 +172,12 @@ function showFloors() {
 plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
+// 🔥 УБИРАЕМ СИНИЙ ФОКУС НАВСЕГДА
+svg.querySelectorAll("*").forEach(el => {
+  el.style.outline = "none";
+  el.style.webkitTapHighlightColor = "transparent";
+  el.setAttribute("tabindex", "-1");
+});
 
   const defs = svg.querySelector("defs") ||
     svg.createElementNS("http://www.w3.org/2000/svg", "defs");
