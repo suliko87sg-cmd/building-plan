@@ -1,6 +1,7 @@
 // =====================
 // GOOGLE SHEETS
 // =====================
+let currentView = "main"; 
 let sheetData = [];
 let isDataLoaded = false;
 
@@ -319,28 +320,26 @@ backBtn.onclick = function () {
     return;
   }
 
-  // 2. Если мы внутри блока → назад к блокам проекта
-  if (currentBlock) {
-    currentBlock = null;
-    currentView = "blocks";
+  // 2. Если мы внутри блока → назад к блокам
+if (currentBlock) {
+  currentBlock = null;
+  currentView = "blocks";
 
-    hideFlatCard();
-    floorPanel.style.display = "none";
-    plan.data = "";
+  floorPanel.style.display = "none"; 
+  hideFlatCard();
 
-    setTimeout(() => {
-      if (projects[currentProject]?.svg) {
-        loadSVG(projects[currentProject].svg);
-      }
-    }, 50);
+  return;
+}
 
-    return;
-  }
+// 3. Если мы уже на уровне блоков → назад на ГЛАВНОЕ МЕНЮ
+if (currentView === "blocks") {
+  document.getElementById("plan").style.display = "none";
+  document.getElementById("mainMenu").style.display = "flex";
+  document.getElementById("backBtn").style.display = "none";
 
-  // 3. Если мы уже на блоках → назад в главное меню
-  if (currentView === "blocks" && currentProject) {
-    showMainMenu();
-  }
+  currentView = "main";
+  return;
+}
 };
 
 // =====================
