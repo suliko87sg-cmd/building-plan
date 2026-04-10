@@ -136,7 +136,7 @@ function selectProject(project) {
 
   if (plan) plan.style.display = "block";
   if (floorPanel) floorPanel.style.display = "none";
-  if (backBtn) backBtn.style.display = "none";
+  if (backBtn) backBtn.style.display = "block";
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
