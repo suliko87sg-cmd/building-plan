@@ -1,7 +1,7 @@
+{
 // =====================
 // GOOGLE SHEETS
 // =====================
-let currentView = "main"; 
 let sheetData = [];
 let isDataLoaded = false;
 
@@ -318,7 +318,7 @@ backBtn.onclick = () => {
   // квартиры → этажи
   if (currentView === "flats") {
     hideFlatCard();
-    floorPanel.style.display = "flex";
+    floorPanel.style.display = "block";
     currentView = "floors";
     return;
   }
@@ -329,6 +329,7 @@ backBtn.onclick = () => {
     currentView = "blocks";
 
     floorPanel.style.display = "none";
+    loadSVG(projects[currentProject].svg);
     return;
   }
 
@@ -404,4 +405,5 @@ window.addEventListener("load", () => {
 // =====================
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
+}
 }
