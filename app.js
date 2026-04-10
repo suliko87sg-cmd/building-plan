@@ -172,12 +172,6 @@ function showFloors() {
 plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
-// 🔥 УБИРАЕМ СИНИЙ ФОКУС НАВСЕГДА
-svg.querySelectorAll("*").forEach(el => {
-  el.style.outline = "none";
-  el.style.webkitTapHighlightColor = "transparent";
-  el.setAttribute("tabindex", "-1");
-});
 
   const defs = svg.querySelector("defs") ||
     svg.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -228,9 +222,8 @@ svg.querySelectorAll("*").forEach(el => {
         if (oldBg) oldBg.remove();
         if (oldPattern) oldPattern.remove();
 
-        el.style.pointerEvents = "visibleFill";
-el.style.fillOpacity = "0.01";
-el.style.stroke = "transparent";
+        el.style.fill = "rgba(0,0,0,0.001)";
+el.setAttribute("fill", "rgba(0,0,0,0.001)");
 el.style.pointerEvents = "all";
 
         // Белая полупрозрачная подложка
@@ -249,40 +242,15 @@ el.style.pointerEvents = "all";
         patternLayer.style.opacity = "0.8";
         patternLayer.id = id + "_sold_pattern";
 
-
-el.parentNode.appendChild(bg);
-el.parentNode.appendChild(patternLayer);
-el.parentNode.appendChild(el);
+        el.parentNode.appendChild(bg);
+        el.parentNode.appendChild(patternLayer);
       }
 
-      el.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  if (document.activeElement) {
-    document.activeElement.blur();
-  }
-
-  console.log("Квартира:", id);
-  showFlatCard(id);
-// ДО addEventListener
-el.style.userSelect = "none";
-el.style.webkitUserSelect = "none";
-el.style.webkitTapHighlightColor = "transparent";
-el.style.outline = "none";
-el.setAttribute("tabindex", "-1");
-
-// ПОТОМ обработчик
-el.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  if (document.activeElement) {
-    document.activeElement.blur();
-  }
-
-  showFlatCard(id);
-});
+      el.onclick = () => {
+        console.log("Квартира:", id);
+        showFlatCard(id);
+      };
+    });
 
     return;
   }
