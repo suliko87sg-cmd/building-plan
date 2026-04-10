@@ -7,9 +7,9 @@ let isDataLoaded = false;
 fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
   .then(res => res.json())
   .then(data => {
+    console.log("DATA LOADED:", data);
     sheetData = Array.isArray(data) ? data : (data.data || []);
     isDataLoaded = true;
-    console.log("DATA LOADED:", sheetData);
   })
   .catch(err => {
     console.error("Ошибка загрузки данных:", err);
@@ -64,12 +64,12 @@ const projects = {
 // =====================
 // ВСПОМОГАТЕЛЬНЫЕ
 // =====================
-function normalize(val) {
-  return String(val || "").trim().toLowerCase();
-}
-
 function getCurrentSheetProject() {
   return projects[currentProject]?.sheet || currentProject;
+}
+
+function normalize(val) {
+  return String(val || "").trim().toLowerCase();
 }
 
 function getBlockSvgFile(projectKey, blockId) {
@@ -92,28 +92,27 @@ function removeIfExists(root, id) {
   if (el) el.remove();
 }
 
-function addFlatClickLayer(svg, flatEl, flatId) {
+function addFlatHitArea(svg, flatEl, flatId) {
   removeIfExists(svg, flatId + "_hit");
 
-  const hitArea = flatEl.cloneNode(true);
-  hitArea.removeAttribute("style");
-  hitArea.removeAttribute("stroke");
+  const hit = flatEl.cloneNode(true);
+  hit.removeAttribute("style");
+  hit.removeAttribute("stroke");
+  hit.id = flatId + "_hit";
 
-  hitArea.id = flatId + "_hit";
-  hitArea.setAttribute("fill", "rgba(0,0,0,0.001)");
-  hitArea.setAttribute("fill-opacity", "1");
-  hitArea.setAttribute("pointer-events", "all");
-  hitArea.style.pointerEvents = "all";
-  hitArea.style.cursor = "pointer";
+  hit.setAttribute("fill", "rgba(0,0,0,0.001)");
+  hit.setAttribute("pointer-events", "all");
+  hit.style.pointerEvents = "all";
+  hit.style.cursor = "pointer";
 
-  hitArea.addEventListener("click", function (e) {
+  hit.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
     console.log("Квартира:", flatId);
     showFlatCard(flatId);
   });
 
-  flatEl.parentNode.appendChild(hitArea);
+  flatEl.parentNode.appendChild(hit);
 }
 
 // =====================
@@ -131,10 +130,12 @@ function selectProject(project) {
 
   hideFlatCard();
 
-  document.getElementById("mainMenu").style.display = "none";
-  plan.style.display = "block";
-  floorPanel.style.display = "none";
-  backBtn.style.display = "none";
+  const mainMenu = document.getElementById("mainMenu");
+  if (mainMenu) mainMenu.style.display = "none";
+
+  if (plan) plan.style.display = "block";
+  if (floorPanel) floorPanel.style.display = "none";
+  if (backBtn) backBtn.style.display = "none";
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
@@ -202,7 +203,7 @@ plan.onload = function () {
 
   let defs = svg.querySelector("defs");
   if (!defs) {
-    defs = svg.createElementNS("http://www.w3.org/2000/svg", "defs");
+    defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
     svg.documentElement.appendChild(defs);
   }
 
@@ -248,8 +249,6 @@ plan.onload = function () {
       const isSold = !!(row && (normalize(row.contract) || normalize(row.client)));
 
       if (isSold) {
-        console.log("ПРОДАНО:", id);
-
         const bg = el.cloneNode(true);
         bg.removeAttribute("style");
         bg.removeAttribute("stroke");
@@ -271,7 +270,7 @@ plan.onload = function () {
         el.parentNode.appendChild(patternLayer);
       }
 
-      addFlatClickLayer(svg, el, id);
+      addFlatHitArea(svg, el, id);
     });
 
     return;
@@ -323,6 +322,8 @@ backBtn.onclick = function () {
 // КАРТОЧКА
 // =====================
 function showFlatCard(flatId) {
+  console.log("ИЩЕМ:", flatId);
+
   if (!isDataLoaded) {
     console.warn("Данные ещё не загрузились");
     return;
@@ -357,19 +358,25 @@ window.hideFlatCard = hideFlatCard;
 // =====================
 // SPLASH
 // =====================
-window.addEventListener("load", () => {
+function hideSplash() {
+  const splash = document.getElementById("splash");
+  const mainMenu = document.getElementById("mainMenu");
+
+  if (!splash) return;
+
+  splash.style.transition = "opacity 1s";
+  splash.style.opacity = "0";
+
   setTimeout(() => {
-    const splash = document.getElementById("splash");
-    if (!splash) return;
+    splash.style.display = "none";
+    if (mainMenu && mainMenu.style.display === "none") {
+      mainMenu.style.display = "flex";
+    }
+  }, 1000);
+}
 
-    splash.style.transition = "opacity 1s";
-    splash.style.opacity = "0";
-
-    setTimeout(() => {
-      splash.style.display = "none";
-    }, 1000);
-  }, 6000);
-});
+// не ждём window.load бесконечно
+setTimeout(hideSplash, 6000);
 
 // =====================
 // SERVICE WORKER
