@@ -18,6 +18,7 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
 // =====================
 // СОСТОЯНИЕ
 // =====================
+let selectedFlat = null;
 let currentView = "projects";
 let currentProject = "kush";
 let currentBlock = null;
@@ -107,10 +108,12 @@ function addFlatHitArea(svg, flatEl, flatId) {
   hit.style.cursor = "pointer";
 
   hit.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    showFlatCard(flatId);
-  });
+  e.preventDefault();
+  e.stopPropagation();
+
+  highlightFlat(svg, flatId); 
+  showFlatCard(flatId);
+});
 
   flatEl.parentNode.appendChild(hit);
 }
@@ -261,6 +264,28 @@ function showFlatCard(flatId) {
 
 function hideFlatCard() {
   flatCard.classList.remove("show");
+}
+function highlightFlat(svg, flatId) {
+
+  // убрать старую подсветку
+  if (selectedFlat) {
+    const old = svg.getElementById(selectedFlat);
+    if (old) {
+      old.style.filter = "";
+      old.style.stroke = "";
+      old.style.strokeWidth = "";
+    }
+  }
+
+  // поставить новую
+  const el = svg.getElementById(flatId);
+  if (!el) return;
+
+  el.style.filter = "drop-shadow(0 0 12px red)";
+  el.style.stroke = "#ff0000";
+  el.style.strokeWidth = "2";
+
+  selectedFlat = flatId;
 }
 
 // =====================
