@@ -406,4 +406,3 @@ setTimeout(hideSplash, 6000);
 // =====================
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
-}
