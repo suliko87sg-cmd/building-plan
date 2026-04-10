@@ -228,8 +228,9 @@ svg.querySelectorAll("*").forEach(el => {
         if (oldBg) oldBg.remove();
         if (oldPattern) oldPattern.remove();
 
-        el.style.fill = "rgba(0,0,0,0.001)";
-el.setAttribute("fill", "rgba(0,0,0,0.001)");
+        el.style.pointerEvents = "visibleFill";
+el.style.fillOpacity = "0.01";
+el.style.stroke = "transparent";
 el.style.pointerEvents = "all";
 
         // Белая полупрозрачная подложка
@@ -264,11 +265,23 @@ el.parentNode.appendChild(el);
 
   console.log("Квартира:", id);
   showFlatCard(id);
+// ДО addEventListener
 el.style.userSelect = "none";
 el.style.webkitUserSelect = "none";
 el.style.webkitTapHighlightColor = "transparent";
 el.style.outline = "none";
 el.setAttribute("tabindex", "-1");
+
+// ПОТОМ обработчик
+el.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (document.activeElement) {
+    document.activeElement.blur();
+  }
+
+  showFlatCard(id);
 });
 
     return;
