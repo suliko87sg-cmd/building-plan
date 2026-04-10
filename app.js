@@ -18,7 +18,7 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
 // =====================
 // СОСТОЯНИЕ
 // =====================
-let currentView = "menu";
+let currentView = "projects";
 let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
@@ -31,7 +31,7 @@ const backBtn = document.getElementById("backBtn");
 const flatCard = document.getElementById("flatCard");
 const floorPanel = document.getElementById("floorPanel");
 const floorsContainer = document.getElementById("floors");
-
+const mainMenu = document.getElementById("mainMenu");
 // =====================
 // ПРОЕКТЫ
 // =====================
