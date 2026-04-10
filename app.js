@@ -53,7 +53,7 @@ const projects = {
     svg: "gafurovblocks.svg",
     sheet: "gafurovblocks",
     floorStart: 1,
-    floorEnd: 16
+    floorEnd: 14
   },
   obj4: {
     svg: null,
