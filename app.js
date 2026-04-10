@@ -18,6 +18,7 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
 // =====================
 // СОСТОЯНИЕ
 // =====================
+let currentView = "menu";
 let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
@@ -123,7 +124,7 @@ function selectProject(project) {
     console.error("Нет проекта:", project);
     return;
   }
-
+  currentView = "blocks";
   currentProject = project;
   currentBlock = null;
   currentFloor = projects[project].floorStart;
@@ -289,7 +290,7 @@ plan.onload = function () {
 
     el.onclick = () => {
       console.log("Блок:", id);
-
+      currentView = "flats";
       currentBlock = id;
       hideFlatCard();
       showFloors();
@@ -307,32 +308,37 @@ plan.onload = function () {
 backBtn.onclick = function () {
 
   // ЕСЛИ МЫ ВНУТРИ БЛОКА
-  if (currentBlock) {
-    currentBlock = null;
+  backBtn.onclick = function () {
 
+  // 🟢 из квартир → к блокам
+  if (currentView === "flats") {
+    currentView = "blocks";
+
+    currentBlock = null;
     hideFlatCard();
     floorPanel.style.display = "none";
-    plan.data = "";
 
-    setTimeout(() => {
-      loadSVG(projects[currentProject].svg);
-    }, 50);
-
+    loadSVG(projects[currentProject].svg);
     return;
   }
 
-  // ЕСЛИ УЖЕ НЕ В БЛОКЕ → В ГЛАВНОЕ МЕНЮ
-  hideFlatCard();
+  // 🔵 из блоков → в главное меню
+  if (currentView === "blocks") {
+    currentView = "menu";
 
-  plan.style.display = "none";
-  floorPanel.style.display = "none";
+    hideFlatCard();
 
-  const mainMenu = document.getElementById("mainMenu");
-  if (mainMenu) {
-    mainMenu.style.display = "flex";
+    plan.style.display = "none";
+    floorPanel.style.display = "none";
+
+    const mainMenu = document.getElementById("mainMenu");
+    if (mainMenu) {
+      mainMenu.style.display = "flex";
+    }
+
+    backBtn.style.display = "none";
+    return;
   }
-
-  backBtn.style.display = "none";
 };
 
 // =====================
