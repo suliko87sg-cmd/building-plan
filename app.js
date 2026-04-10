@@ -307,9 +307,6 @@ plan.onload = function () {
 // =====================
 backBtn.onclick = function () {
 
-  // ЕСЛИ МЫ ВНУТРИ БЛОКА
-  backBtn.onclick = function () {
-
   // 🟢 из квартир → к блокам
   if (currentView === "flats") {
     currentView = "blocks";
@@ -324,23 +321,19 @@ backBtn.onclick = function () {
 
   // 🔵 из блоков → в главное меню
   if (currentView === "blocks") {
-    currentView = "menu";
+    currentView = "projects";
 
     hideFlatCard();
 
     plan.style.display = "none";
     floorPanel.style.display = "none";
 
-    const mainMenu = document.getElementById("mainMenu");
-    if (mainMenu) {
-      mainMenu.style.display = "flex";
-    }
+    if (mainMenu) mainMenu.style.display = "flex";
 
     backBtn.style.display = "none";
     return;
   }
 };
-
 // =====================
 // КАРТОЧКА
 // =====================
