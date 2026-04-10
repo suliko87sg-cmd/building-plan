@@ -313,13 +313,12 @@ plan.onload = function () {
 // =====================
 // НАЗАД
 // =====================
-backBtn.onclick = function () {
- document.getElementById("backBtn").onclick = () => {
+backBtn.onclick = () => {
 
   // квартиры → этажи
   if (currentView === "flats") {
     hideFlatCard();
-    document.getElementById("floorPanel").style.display = "flex";
+    floorPanel.style.display = "flex";
     currentView = "floors";
     return;
   }
@@ -329,23 +328,22 @@ backBtn.onclick = function () {
     currentBlock = null;
     currentView = "blocks";
 
-    document.getElementById("floorPanel").style.display = "none";
+    floorPanel.style.display = "none";
     return;
   }
 
   // блоки → главное меню
   if (currentView === "blocks") {
-    document.getElementById("plan").style.display = "none";
-    document.getElementById("mainMenu").style.display = "flex";
-    document.getElementById("backBtn").style.display = "none";
+    plan.style.display = "none";
+    mainMenu.style.display = "flex";
+    backBtn.style.display = "none";
 
     currentProject = null;
-    currentView = "main";
+    currentView = "projects";
     return;
   }
 
 };
-
 // =====================
 // КАРТОЧКА
 // =====================
