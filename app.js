@@ -21,7 +21,7 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
 let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
-let currentView = "projects";
+let currentView = "projects"; // projects | blocks | flats
 
 // =====================
 // ЭЛЕМЕНТЫ
@@ -31,11 +31,10 @@ const backBtn = document.getElementById("backBtn");
 const flatCard = document.getElementById("flatCard");
 const floorPanel = document.getElementById("floorPanel");
 const floorsContainer = document.getElementById("floors");
+const mainMenu = document.getElementById("mainMenu");
 
 // =====================
 // ПРОЕКТЫ
-// key = то, что в selectProject(...)
-// sheet = то, что у тебя в Google Sheets в колонке project
 // =====================
 const projects = {
   kush: {
@@ -90,32 +89,54 @@ function findFlatRow(flatId) {
   );
 }
 
+function showMainMenu() {
+  currentView = "projects";
+  currentProject = null;
+  currentBlock = null;
+
+  hideFlatCard();
+  floorPanel.style.display = "none";
+  plan.style.display = "none";
+  plan.data = "";
+  backBtn.style.display = "none";
+
+  if (mainMenu) {
+    mainMenu.style.display = "flex";
+  }
+}
+
+function showProjectsView(project) {
+  currentProject = project;
+  currentBlock = null;
+  currentFloor = projects[project].floorStart;
+  currentView = "blocks";
+
+  hideFlatCard();
+
+  if (mainMenu) {
+    mainMenu.style.display = "none";
+  }
+
+  plan.style.display = "block";
+  floorPanel.style.display = "none";
+  backBtn.style.display = "block";
+}
+
 // =====================
 // ВЫБОР ПРОЕКТА
 // =====================
 function selectProject(project) {
- currentView = "blocks";
- if (!projects[project]) {
+  if (!projects[project]) {
     console.error("Нет проекта:", project);
     return;
   }
-
-  currentProject = project;
-  currentBlock = null;
-  currentFloor = projects[project].floorStart;
-
-  hideFlatCard();
-
-  document.getElementById("mainMenu").style.display = "none";
-document.getElementById("plan").style.display = "block";
-document.getElementById("floorPanel").style.display = "none";
-document.getElementById("backBtn").style.display = "block"; 
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
     return;
   }
 
+  showProjectsView(project);
   loadSVG(projects[project].svg);
 }
 
@@ -206,6 +227,8 @@ plan.onload = function () {
   // ЕСЛИ ВНУТРИ БЛОКА → КВАРТИРЫ
   // =====================
   if (currentBlock) {
+    currentView = "flats";
+
     const flatElements = Array.from(svg.querySelectorAll('[id^="flat"]'))
       .filter(el => /^flat\d+$/i.test(el.id));
 
@@ -224,9 +247,10 @@ plan.onload = function () {
         if (oldBg) oldBg.remove();
         if (oldPattern) oldPattern.remove();
 
+        // Квартира остаётся кликабельной
         el.style.fill = "rgba(0,0,0,0.001)";
-el.setAttribute("fill", "rgba(0,0,0,0.001)");
-el.style.pointerEvents = "all";
+        el.setAttribute("fill", "rgba(0,0,0,0.001)");
+        el.style.pointerEvents = "all";
 
         // Белая полупрозрачная подложка
         const bg = el.cloneNode(true);
@@ -246,6 +270,7 @@ el.style.pointerEvents = "all";
 
         el.parentNode.appendChild(bg);
         el.parentNode.appendChild(patternLayer);
+        el.parentNode.appendChild(el);
       }
 
       el.onclick = () => {
@@ -260,6 +285,8 @@ el.style.pointerEvents = "all";
   // =====================
   // ЕСЛИ В ПРОЕКТЕ → БЛОКИ
   // =====================
+  currentView = "blocks";
+
   const blocks = ["b1", "b2", "b3", "b4", "b5", "b6"];
 
   blocks.forEach(id => {
@@ -286,17 +313,34 @@ el.style.pointerEvents = "all";
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-  currentBlock = null;
+  // 1. Если открыта карточка квартиры → просто закрываем
+  if (flatCard && flatCard.classList.contains("show")) {
+    hideFlatCard();
+    return;
+  }
 
-  hideFlatCard();
-  floorPanel.style.display = "none";
-  plan.data = "";
+  // 2. Если мы внутри блока → назад к блокам проекта
+  if (currentBlock) {
+    currentBlock = null;
+    currentView = "blocks";
 
-  setTimeout(() => {
-    loadSVG(projects[currentProject].svg);
-  }, 50);
+    hideFlatCard();
+    floorPanel.style.display = "none";
+    plan.data = "";
 
-  backBtn.style.display = "none";
+    setTimeout(() => {
+      if (projects[currentProject]?.svg) {
+        loadSVG(projects[currentProject].svg);
+      }
+    }, 50);
+
+    return;
+  }
+
+  // 3. Если мы уже на блоках → назад в главное меню
+  if (currentView === "blocks" && currentProject) {
+    showMainMenu();
+  }
 };
 
 // =====================
