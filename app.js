@@ -21,6 +21,7 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
 let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
+let currentView = "projects";
 
 // =====================
 // ЭЛЕМЕНТЫ
@@ -93,7 +94,8 @@ function findFlatRow(flatId) {
 // ВЫБОР ПРОЕКТА
 // =====================
 function selectProject(project) {
-  if (!projects[project]) {
+ currentView = "blocks";
+ if (!projects[project]) {
     console.error("Нет проекта:", project);
     return;
   }
@@ -105,9 +107,9 @@ function selectProject(project) {
   hideFlatCard();
 
   document.getElementById("mainMenu").style.display = "none";
-  document.getElementById("plan").style.display = "block";
-  document.getElementById("floorPanel").style.display = "none";
-  document.getElementById("backBtn").style.display = "none";
+document.getElementById("plan").style.display = "block";
+document.getElementById("floorPanel").style.display = "none";
+document.getElementById("backBtn").style.display = "block"; 
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
