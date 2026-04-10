@@ -305,15 +305,32 @@ plan.onload = function () {
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-  currentBlock = null;
 
+  // ЕСЛИ МЫ ВНУТРИ БЛОКА
+  if (currentBlock) {
+    currentBlock = null;
+
+    hideFlatCard();
+    floorPanel.style.display = "none";
+    plan.data = "";
+
+    setTimeout(() => {
+      loadSVG(projects[currentProject].svg);
+    }, 50);
+
+    return;
+  }
+
+  // ЕСЛИ УЖЕ НЕ В БЛОКЕ → В ГЛАВНОЕ МЕНЮ
   hideFlatCard();
-  floorPanel.style.display = "none";
-  plan.data = "";
 
-  setTimeout(() => {
-    loadSVG(projects[currentProject].svg);
-  }, 50);
+  plan.style.display = "none";
+  floorPanel.style.display = "none";
+
+  const mainMenu = document.getElementById("mainMenu");
+  if (mainMenu) {
+    mainMenu.style.display = "flex";
+  }
 
   backBtn.style.display = "none";
 };
