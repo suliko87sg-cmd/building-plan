@@ -7,12 +7,8 @@ let isDataLoaded = false;
 fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
   .then(res => res.json())
   .then(data => {
-    console.log("DATA LOADED:", data);
     sheetData = Array.isArray(data) ? data : (data.data || []);
     isDataLoaded = true;
-  })
-  .catch(err => {
-    console.error("Ошибка загрузки данных:", err);
   });
 
 // =====================
@@ -33,45 +29,22 @@ const floorsContainer = document.getElementById("floors");
 
 // =====================
 // ПРОЕКТЫ
-// key = то, что в selectProject(...)
-// sheet = то, что у тебя в Google Sheets в колонке project
 // =====================
 const projects = {
-  kush: {
-    svg: "blocks.svg",
-    sheet: "blocks",
-    floorStart: 3,
-    floorEnd: 18
-  },
-  buston: {
-    svg: "bustonblocks.svg",
-    sheet: "bustonblocks",
-    floorStart: 1,
-    floorEnd: 16
-  },
-  gafurov: {
-    svg: "gafurovblocks.svg",
-    sheet: "gafurovblocks",
-    floorStart: 1,
-    floorEnd: 16
-  },
-  obj4: {
-    svg: null,
-    sheet: "obj4",
-    floorStart: 1,
-    floorEnd: 16
-  }
+  kush: { svg: "blocks.svg", sheet: "blocks", floorStart: 3, floorEnd: 18 },
+  buston: { svg: "bustonblocks.svg", sheet: "bustonblocks", floorStart: 1, floorEnd: 16 },
+  gafurov: { svg: "gafurovblocks.svg", sheet: "gafurovblocks", floorStart: 1, floorEnd: 16 }
 };
 
 // =====================
 // ВСПОМОГАТЕЛЬНЫЕ
 // =====================
-function getCurrentSheetProject() {
-  return projects[currentProject]?.sheet || currentProject;
-}
-
 function normalize(val) {
   return String(val || "").trim().toLowerCase();
+}
+
+function getCurrentSheetProject() {
+  return projects[currentProject]?.sheet || currentProject;
 }
 
 function getBlockSvgFile(projectKey, blockId) {
@@ -93,11 +66,6 @@ function findFlatRow(flatId) {
 // ВЫБОР ПРОЕКТА
 // =====================
 function selectProject(project) {
-  if (!projects[project]) {
-    console.error("Нет проекта:", project);
-    return;
-  }
-
   currentProject = project;
   currentBlock = null;
   currentFloor = projects[project].floorStart;
@@ -105,14 +73,7 @@ function selectProject(project) {
   hideFlatCard();
 
   document.getElementById("mainMenu").style.display = "none";
-  document.getElementById("plan").style.display = "block";
-  document.getElementById("floorPanel").style.display = "none";
-  document.getElementById("backBtn").style.display = "none";
-
-  if (!projects[project].svg) {
-    alert("Пока нет проекта");
-    return;
-  }
+  plan.style.display = "block";
 
   loadSVG(projects[project].svg);
 }
@@ -123,9 +84,7 @@ window.selectProject = selectProject;
 // ЗАГРУЗКА SVG
 // =====================
 function loadSVG(src) {
-  console.log("Загрузка:", src);
   plan.data = "";
-
   setTimeout(() => {
     plan.data = src + "?t=" + Date.now();
   }, 100);
@@ -137,26 +96,14 @@ function loadSVG(src) {
 function showFloors() {
   floorsContainer.innerHTML = "";
 
-  const start = projects[currentProject]?.floorStart ?? 1;
-  const end = projects[currentProject]?.floorEnd ?? 16;
-
-  for (let i = start; i <= end; i++) {
+  for (let i = projects[currentProject].floorStart; i <= projects[currentProject].floorEnd; i++) {
     const btn = document.createElement("button");
     btn.className = "floor-btn";
-
-    if (i === currentFloor) {
-      btn.classList.add("active");
-    }
-
     btn.textContent = i + " этаж";
 
     btn.onclick = () => {
       currentFloor = i;
       showFloors();
-
-      if (!currentBlock) return;
-
-      hideFlatCard();
       loadSVG(getBlockSvgFile(currentProject, currentBlock));
     };
 
@@ -167,113 +114,86 @@ function showFloors() {
 }
 
 // =====================
-// КОГДА SVG ЗАГРУЗИЛСЯ
+// SVG LOADED
 // =====================
 plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
 
-  const defs = svg.querySelector("defs") ||
-    svg.createElementNS("http://www.w3.org/2000/svg", "defs");
-
+  // pattern
   if (!svg.querySelector("#soldPattern")) {
-    const soldPattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-    soldPattern.setAttribute("id", "soldPattern");
-    soldPattern.setAttribute("patternUnits", "objectBoundingBox");
-    soldPattern.setAttribute("patternTransform", "rotate(45)");
-    soldPattern.setAttribute("width", "0.1");
-    soldPattern.setAttribute("height", "0.1");
+    const defs = svg.createElementNS("http://www.w3.org/2000/svg", "defs");
+
+    const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+    pattern.id = "soldPattern";
+    pattern.setAttribute("patternUnits", "objectBoundingBox");
+    pattern.setAttribute("patternTransform", "rotate(45)");
+    pattern.setAttribute("width", "0.1");
+    pattern.setAttribute("height", "0.1");
 
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
     line.setAttribute("x1", "0");
     line.setAttribute("y1", "0");
     line.setAttribute("x2", "0");
     line.setAttribute("y2", "5");
-    line.style.stroke = "#ffffff";
-    line.style.strokeWidth = "5.5";
-    line.style.opacity = "0.5";
+    line.style.stroke = "#fff";
+    line.style.strokeWidth = "5";
 
-    soldPattern.appendChild(line);
-    defs.appendChild(soldPattern);
+    pattern.appendChild(line);
+    defs.appendChild(pattern);
     svg.documentElement.appendChild(defs);
   }
 
-  console.log("SVG загружен:", plan.data);
-
   // =====================
-  // ЕСЛИ ВНУТРИ БЛОКА → КВАРТИРЫ
+  // КВАРТИРЫ
   // =====================
   if (currentBlock) {
-    const flatElements = Array.from(svg.querySelectorAll('[id^="flat"]'))
-      .filter(el => /^flat\d+$/i.test(el.id));
+    const flats = svg.querySelectorAll('[id^="flat"]');
 
-    flatElements.forEach(el => {
+    flats.forEach(el => {
       const id = el.id;
+
       el.style.cursor = "pointer";
+
+      // 👉 КЛИК ВСЕГДА
+      el.addEventListener("click", () => {
+        showFlatCard(id);
+      });
 
       const row = findFlatRow(id);
 
-      if (row && (normalize(row.contract) || normalize(row.client))) {
-        console.log("ПРОДАНО:", id);
+      if (row && (row.contract || row.client)) {
+        // продано
 
-        const oldBg = svg.getElementById(id + "_sold_bg");
-        const oldPattern = svg.getElementById(id + "_sold_pattern");
-
-        if (oldBg) oldBg.remove();
-        if (oldPattern) oldPattern.remove();
-
-        el.style.fill = "none";
-        el.setAttribute("fill", "none");
-
-        // Белая полупрозрачная подложка
         const bg = el.cloneNode(true);
-        bg.removeAttribute("style");
         bg.setAttribute("fill", "rgba(255,255,255,0.25)");
-        bg.style.pointerEvents = "none";
-        bg.id = id + "_sold_bg";
+        bg.setAttribute("pointer-events", "none");
 
-        // Штриховка
         const patternLayer = el.cloneNode(true);
-        patternLayer.removeAttribute("style");
-        patternLayer.removeAttribute("stroke");
         patternLayer.setAttribute("fill", "url(#soldPattern)");
-        patternLayer.style.pointerEvents = "none";
-        patternLayer.style.opacity = "0.8";
-        patternLayer.id = id + "_sold_pattern";
+        patternLayer.setAttribute("pointer-events", "none");
 
         el.parentNode.appendChild(bg);
         el.parentNode.appendChild(patternLayer);
       }
-
-      el.onclick = () => {
-        console.log("Квартира:", id);
-        showFlatCard(id);
-      };
     });
 
     return;
   }
 
   // =====================
-  // ЕСЛИ В ПРОЕКТЕ → БЛОКИ
+  // БЛОКИ
   // =====================
-  const blocks = ["b1", "b2", "b3", "b4", "b5", "b6"];
-
-  blocks.forEach(id => {
+  ["b1", "b2", "b3", "b4", "b5", "b6"].forEach(id => {
     const el = svg.getElementById(id);
     if (!el) return;
 
     el.style.cursor = "pointer";
 
     el.onclick = () => {
-      console.log("Блок:", id);
-
       currentBlock = id;
-      hideFlatCard();
       showFloors();
-
-      const fileName = getBlockSvgFile(currentProject, id);
-      loadSVG(fileName);
+      loadSVG(getBlockSvgFile(currentProject, id));
       backBtn.style.display = "block";
     };
   });
@@ -284,15 +204,9 @@ plan.onload = function () {
 // =====================
 backBtn.onclick = function () {
   currentBlock = null;
-
   hideFlatCard();
   floorPanel.style.display = "none";
-  plan.data = "";
-
-  setTimeout(() => {
-    loadSVG(projects[currentProject].svg);
-  }, 50);
-
+  loadSVG(projects[currentProject].svg);
   backBtn.style.display = "none";
 };
 
@@ -300,24 +214,10 @@ backBtn.onclick = function () {
 // КАРТОЧКА
 // =====================
 function showFlatCard(flatId) {
-  console.log("ИЩЕМ:", flatId);
-
-  if (!isDataLoaded) {
-    console.warn("Данные ещё не загрузились");
-    return;
-  }
+  if (!isDataLoaded) return;
 
   const row = findFlatRow(flatId);
-
-  if (!row) {
-    console.warn("Не найдено в таблице:", {
-      project: getCurrentSheetProject(),
-      block: currentBlock,
-      floor: currentFloor,
-      flat: flatId
-    });
-    return;
-  }
+  if (!row) return;
 
   document.getElementById("cardContract").innerText = row.contract || "";
   document.getElementById("cardArea").innerText = row.area ? row.area + " м²" : "";
@@ -327,31 +227,11 @@ function showFlatCard(flatId) {
 }
 
 function hideFlatCard() {
-  if (!flatCard) return;
   flatCard.classList.remove("show");
 }
 
-window.hideFlatCard = hideFlatCard;
-
 // =====================
-// SPLASH
-// =====================
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    const splash = document.getElementById("splash");
-    if (!splash) return;
-
-    splash.style.transition = "opacity 1s";
-    splash.style.opacity = "0";
-
-    setTimeout(() => {
-      splash.style.display = "none";
-    }, 1000);
-  }, 6000);
-});
-
-// =====================
-// SERVICE WORKER
+// SW
 // =====================
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
