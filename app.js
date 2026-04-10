@@ -320,15 +320,16 @@ backBtn.onclick = function () {
     return;
   }
 
-  // 2. Если мы внутри блока → назад к блокам
+ 
+// 2. Если мы внутри блока → назад к блокам
 if (currentBlock) {
   currentBlock = null;
   currentView = "blocks";
 
-  floorPanel.style.display = "none"; 
+  document.getElementById("floorPanel").style.display = "none";
   hideFlatCard();
 
-  return;
+  return; // 💥 ОБЯЗАТЕЛЬНО
 }
 
 // 3. Если мы уже на уровне блоков → назад на ГЛАВНОЕ МЕНЮ
@@ -337,10 +338,11 @@ if (currentView === "blocks") {
   document.getElementById("mainMenu").style.display = "flex";
   document.getElementById("backBtn").style.display = "none";
 
+  currentProject = null;
   currentView = "main";
+
   return;
-}
-};
+}};
 
 // =====================
 // КАРТОЧКА
