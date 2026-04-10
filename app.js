@@ -314,35 +314,37 @@ plan.onload = function () {
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-  // 1. Если открыта карточка квартиры → просто закрываем
-  if (flatCard && flatCard.classList.contains("show")) {
+ document.getElementById("backBtn").onclick = () => {
+
+  // квартиры → этажи
+  if (currentView === "flats") {
     hideFlatCard();
+    document.getElementById("floorPanel").style.display = "flex";
+    currentView = "floors";
     return;
   }
 
- 
-// 2. Если мы внутри блока → назад к блокам
-if (currentBlock) {
-  currentBlock = null;
-  currentView = "blocks";
+  // этажи → блоки
+  if (currentBlock) {
+    currentBlock = null;
+    currentView = "blocks";
 
-  document.getElementById("floorPanel").style.display = "none";
-  hideFlatCard();
+    document.getElementById("floorPanel").style.display = "none";
+    return;
+  }
 
-  return; // 💥 ОБЯЗАТЕЛЬНО
-}
+  // блоки → главное меню
+  if (currentView === "blocks") {
+    document.getElementById("plan").style.display = "none";
+    document.getElementById("mainMenu").style.display = "flex";
+    document.getElementById("backBtn").style.display = "none";
 
-// 3. Если мы уже на уровне блоков → назад на ГЛАВНОЕ МЕНЮ
-if (currentView === "blocks") {
-  document.getElementById("plan").style.display = "none";
-  document.getElementById("mainMenu").style.display = "flex";
-  document.getElementById("backBtn").style.display = "none";
+    currentProject = null;
+    currentView = "main";
+    return;
+  }
 
-  currentProject = null;
-  currentView = "main";
-
-  return;
-}};
+};
 
 // =====================
 // КАРТОЧКА
