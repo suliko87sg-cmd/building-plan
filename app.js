@@ -154,6 +154,7 @@ plan.onload = function () {
       const id = el.id;
 
       el.style.cursor = "pointer";
+el.setAttribute("fill", "rgba(0,0,0,0.001)");
 
       // 👉 КЛИК ВСЕГДА
       el.addEventListener("click", () => {
