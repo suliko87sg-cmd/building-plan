@@ -254,11 +254,22 @@ el.parentNode.appendChild(patternLayer);
 el.parentNode.appendChild(el);
       }
 
-      el.onclick = () => {
-        console.log("Квартира:", id);
-        showFlatCard(id);
-      };
-    });
+      el.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (document.activeElement) {
+    document.activeElement.blur();
+  }
+
+  console.log("Квартира:", id);
+  showFlatCard(id);
+el.style.userSelect = "none";
+el.style.webkitUserSelect = "none";
+el.style.webkitTapHighlightColor = "transparent";
+el.style.outline = "none";
+el.setAttribute("tabindex", "-1");
+});
 
     return;
   }
