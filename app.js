@@ -182,39 +182,33 @@ function applySoldFlatsForCurrentBlock(svg) {
     const id = el.id;
     const row = findFlatRow(id);
 
-    // удалить старые слои
     removeIfExists(svg, id + "_sold_bg");
     removeIfExists(svg, id + "_sold_pattern");
     removeIfExists(svg, id + "_hit");
 
-    // вернуть обычный стиль
     el.style.opacity = "";
     el.style.fill = "";
     el.style.stroke = "";
     el.style.strokeWidth = "";
     el.removeAttribute("fill");
 
-    // если продано, рисуем подложку и штрих
+    // ✅ ВОТ ТУТ продолжение, без закрытия функции
     if (row && (normalize(row.contract) || normalize(row.client))) {
-      // оригинал оставляем почти невидимым, но не трогаем клик
+
       el.style.fill = "rgba(0,0,0,0.001)";
       el.setAttribute("fill", "rgba(0,0,0,0.001)");
 
-      // ===== ПОДЛОЖКА =====
       const bg = el.cloneNode(true);
       bg.removeAttribute("style");
       bg.setAttribute("fill", "rgba(255,255,255,0.25)");
       bg.setAttribute("pointer-events", "none");
-      bg.style.pointerEvents = "none";
       bg.id = id + "_sold_bg";
 
-      // ===== ШТРИХ =====
       const pattern = el.cloneNode(true);
       pattern.removeAttribute("style");
       pattern.removeAttribute("stroke");
       pattern.setAttribute("fill", "url(#soldPattern)");
       pattern.setAttribute("pointer-events", "none");
-      pattern.style.pointerEvents = "none";
       pattern.style.opacity = "0.8";
       pattern.id = id + "_sold_pattern";
 
@@ -222,11 +216,10 @@ function applySoldFlatsForCurrentBlock(svg) {
       el.parentNode.appendChild(pattern);
     }
 
-    // кликабельный слой всегда сверху
     addFlatHitArea(svg, el, id);
   });
-}
 
+} // ✅ ВОТ ТУТ закрывается функция
 // =====================
 // ВЫБОР ПРОЕКТА
 // =====================
