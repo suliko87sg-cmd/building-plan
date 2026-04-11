@@ -316,23 +316,11 @@ function markSoldFlat(svg, flatId) {
   const el = svg.getElementById(flatId);
   if (!el) return;
 
-  if (svg.getElementById(flatId + "_sold")) return;
+  // штриховка через pattern
+  el.setAttribute("fill", "url(#soldPattern)");
 
-  const sold = el.cloneNode(true);
-
-  sold.removeAttribute("style");
-  sold.removeAttribute("stroke");
-
-  sold.setAttribute("fill", "url(#soldPattern)");
-
-  sold.style.pointerEvents = "none";
-  sold.setAttribute("pointer-events", "none"); // 💥 вот это фикс
-
-  sold.style.opacity = "0.8";
-
-  sold.id = flatId + "_sold";
-
-  el.parentNode.insertBefore(sold, el);
+  // можно чуть затемнить
+  el.style.opacity = "0.8";
 }
 
 // =====================
