@@ -199,3 +199,7 @@ plan.onload = function () {
     };
   });
 };
+
+loadSheet().then(() => {
+  console.log("Данные загружены");
+});
