@@ -146,11 +146,31 @@ window.selectProject = selectProject;
 // =====================
 function loadSVG(src) {
   plan.data = "";
+
   setTimeout(() => {
     plan.data = src + "?t=" + Date.now();
+
+    // Ждём загрузку SVG
+    plan.onload = () => {
+      const svg = plan.contentDocument;
+
+      if (!svg) return;
+
+      //  ШТРИХОВКА
+      sheetData.forEach(row => {
+        if (row.contract) {
+          markSoldFlat(svg, row.flat);
+        }
+      });
+
+      //   клики 
+      if (typeof initSVG === "function") {
+        initSVG(svg);
+      }
+    };
+
   }, 100);
 }
-
 // =====================
 // ЭТАЖИ
 // =====================
