@@ -210,6 +210,12 @@ plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
 
+sheetData.forEach(row => {
+    if (row.contract) {
+      markSoldFlat(svg, row.flat);
+    }
+  });
+
   if (currentBlock) {
     const flats = svg.querySelectorAll('[id^="flat"]');
 
@@ -306,6 +312,27 @@ function highlightFlat(svg, flatId) {
   el.style.strokeWidth = "2";
 
   selectedFlat = flatId;
+}
+ 
+function markSoldFlat(svg, flatId) {
+  const el = svg.getElementById(flatId);
+  if (!el) return;
+
+  // если уже есть штрих — не дублируем
+  if (svg.getElementById(flatId + "_sold")) return;
+
+  const sold = el.cloneNode(true);
+
+  sold.removeAttribute("style");
+  sold.removeAttribute("stroke");
+
+  sold.setAttribute("fill", "url(#soldPattern)");
+  sold.style.pointerEvents = "none"; // чтобы клики не ломались
+  sold.style.opacity = "0.8";
+
+  sold.id = flatId + "_sold";
+
+  el.parentNode.appendChild(sold);
 }
 
 // =====================
