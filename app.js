@@ -316,7 +316,6 @@ function markSoldFlat(svg, flatId) {
   const el = svg.getElementById(flatId);
   if (!el) return;
 
-  // если уже есть штрих — не дублируем
   if (svg.getElementById(flatId + "_sold")) return;
 
   const sold = el.cloneNode(true);
@@ -325,7 +324,10 @@ function markSoldFlat(svg, flatId) {
   sold.removeAttribute("stroke");
 
   sold.setAttribute("fill", "url(#soldPattern)");
-  sold.style.pointerEvents = "none"; // чтобы клики не ломались
+
+  sold.style.pointerEvents = "none";
+  sold.setAttribute("pointer-events", "none"); // 💥 вот это фикс
+
   sold.style.opacity = "0.8";
 
   sold.id = flatId + "_sold";
