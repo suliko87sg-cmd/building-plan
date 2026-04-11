@@ -212,7 +212,7 @@ plan.onload = function () {
 
 sheetData.forEach(row => {
     if (row.contract) {
-      markSoldFlat(svg, row.flat);
+      markSoldFlat(svg, "flat" + row.flat);
     }
   });
 
