@@ -94,44 +94,35 @@ function findFlatRow(flatId) {
 }
 
 function ensureSoldPattern(svg) {
-  let root = svg.documentElement; 
+  const root = svg.documentElement;
+  if (!root) return;
 
   let defs = root.querySelector("defs");
   if (!defs) {
     defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-    root.insertBefore(defs, root.firstChild); 
+    root.insertBefore(defs, root.firstChild);
   }
 
-  if (!root.querySelector("#soldPattern")) {
-    const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-    pattern.setAttribute("id", "soldPattern");
-    pattern.setAttribute("patternUnits", "userSpaceOnUse");
-    pattern.setAttribute("width", "8");
-    pattern.setAttribute("height", "8");
-    pattern.setAttribute("patternTransform", "rotate(45)");
+  if (root.querySelector("#soldPattern")) return;
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", "0");
-    line.setAttribute("y1", "0");
-    line.setAttribute("x2", "0");
-    line.setAttribute("y2", "8");
-    line.setAttribute("stroke", "#ffffff");
-    line.setAttribute("stroke-width", "2");
-    line.setAttribute("opacity", "0.7");
+  const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+  pattern.setAttribute("id", "soldPattern");
+  pattern.setAttribute("patternUnits", "userSpaceOnUse");
+  pattern.setAttribute("width", "8");
+  pattern.setAttribute("height", "8");
+  pattern.setAttribute("patternTransform", "rotate(45)");
 
-    pattern.appendChild(line);
-    defs.appendChild(pattern);
-  }
-}
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", "0");
+  line.setAttribute("y1", "0");
+  line.setAttribute("x2", "0");
+  line.setAttribute("y2", "8");
+  line.setAttribute("stroke", "#ffffff");
+  line.setAttribute("stroke-width", "2");
+  line.setAttribute("opacity", "0.7");
 
-function clearFlatStyles(svg) {
-  const flats = svg.querySelectorAll('[id^="flat"]');
-  flats.forEach(el => {
-    el.style.filter = "";
-    el.style.stroke = "";
-    el.style.strokeWidth = "";
-    el.style.cursor = "pointer";
-  });
+  pattern.appendChild(line);
+  defs.appendChild(pattern);
 }
 
 function highlightFlat(svg, flatId) {
@@ -154,38 +145,32 @@ function highlightFlat(svg, flatId) {
   selectedFlat = flatId;
 }
 
-function applySoldStyle(svg, flatId) {
-  const el = svg.getElementById(flatId);
-  if (!el) return;
-
-  el.setAttribute("fill", "url(#soldPattern)");
-  el.style.opacity = "0.85";
+function removeIfExists(svg, id) {
+  const el = svg.getElementById(id);
+  if (el) el.remove();
 }
 
-function applyDefaultFlatStyle(el) {
-  el.style.opacity = "";
-}
+function addFlatHitArea(svg, flatEl, flatId) {
+  removeIfExists(svg, flatId + "_hit");
 
-function bindFlatClicks(svg) {
-  const flats = svg.querySelectorAll('[id^="flat"]');
+  const hit = flatEl.cloneNode(true);
+  hit.removeAttribute("style");
+  hit.removeAttribute("stroke");
+  hit.id = flatId + "_hit";
 
-  flats.forEach(el => {
-    const id = el.id;
-    el.style.cursor = "pointer";
+  hit.setAttribute("fill", "rgba(0,0,0,0.001)");
+  hit.setAttribute("pointer-events", "all");
+  hit.style.pointerEvents = "all";
+  hit.style.cursor = "pointer";
 
-    // убираем старые обработчики клонированием самого элемента
-    const fresh = el.cloneNode(true);
-    el.parentNode.replaceChild(fresh, el);
-
-    fresh.style.cursor = "pointer";
-
-    fresh.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      highlightFlat(svg, id);
-      showFlatCard(id);
-    });
+  hit.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    highlightFlat(svg, flatId);
+    showFlatCard(flatId);
   });
+
+  flatEl.parentNode.appendChild(hit);
 }
 
 function applySoldFlatsForCurrentBlock(svg) {
@@ -198,47 +183,50 @@ function applySoldFlatsForCurrentBlock(svg) {
     const row = findFlatRow(id);
 
     // удалить старые слои
-    const oldBg = svg.getElementById(id + "_sold_bg");
-    const oldPattern = svg.getElementById(id + "_sold_pattern");
-
-    if (oldBg) oldBg.remove();
-    if (oldPattern) oldPattern.remove();
+    removeIfExists(svg, id + "_sold_bg");
+    removeIfExists(svg, id + "_sold_pattern");
+    removeIfExists(svg, id + "_hit");
 
     // вернуть обычный стиль
     el.style.opacity = "";
     el.style.fill = "";
+    el.style.stroke = "";
+    el.style.strokeWidth = "";
     el.removeAttribute("fill");
 
-    // если ПРОДАНО
+    // если продано, рисуем подложку и штрих
     if (row && (normalize(row.contract) || normalize(row.client))) {
+      // оригинал оставляем почти невидимым, но не трогаем клик
+      el.style.fill = "rgba(0,0,0,0.001)";
+      el.setAttribute("fill", "rgba(0,0,0,0.001)");
 
-  // оригинал оставляем кликабельным, но почти невидимым
-  el.style.fill = "rgba(0,0,0,0.001)";
-  el.setAttribute("fill", "rgba(0,0,0,0.001)");
-  el.style.pointerEvents = "all";
-  el.setAttribute("pointer-events", "all");
+      // ===== ПОДЛОЖКА =====
+      const bg = el.cloneNode(true);
+      bg.removeAttribute("style");
+      bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+      bg.setAttribute("pointer-events", "none");
+      bg.style.pointerEvents = "none";
+      bg.id = id + "_sold_bg";
 
-  // ===== ПОДЛОЖКА =====
-  const bg = el.cloneNode(true);
-  bg.removeAttribute("style");
-  bg.setAttribute("fill", "rgba(255,255,255,0.25)");
-  bg.style.pointerEvents = "none";
-  bg.setAttribute("pointer-events", "none");
-  bg.id = id + "_sold_bg";
+      // ===== ШТРИХ =====
+      const pattern = el.cloneNode(true);
+      pattern.removeAttribute("style");
+      pattern.removeAttribute("stroke");
+      pattern.setAttribute("fill", "url(#soldPattern)");
+      pattern.setAttribute("pointer-events", "none");
+      pattern.style.pointerEvents = "none";
+      pattern.style.opacity = "0.8";
+      pattern.id = id + "_sold_pattern";
 
-  // ===== ШТРИХ =====
-  const pattern = el.cloneNode(true);
-  pattern.removeAttribute("style");
-  pattern.removeAttribute("stroke");
-  pattern.setAttribute("fill", "url(#soldPattern)");
-  pattern.style.pointerEvents = "none";
-  pattern.setAttribute("pointer-events", "none");
-  pattern.style.opacity = "0.8";
-  pattern.id = id + "_sold_pattern";
+      el.parentNode.appendChild(bg);
+      el.parentNode.appendChild(pattern);
+    }
 
-  el.parentNode.appendChild(bg);
-  el.parentNode.appendChild(pattern);
+    // кликабельный слой всегда сверху
+    addFlatHitArea(svg, el, id);
+  });
 }
+
 // =====================
 // ВЫБОР ПРОЕКТА
 // =====================
@@ -279,28 +267,6 @@ function loadSVG(src) {
   }, 100);
 }
 
-function ensureSoldPattern(svg) {
-  if (svg.getElementById("soldPattern")) return;
-
-  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-
-  const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
-  pattern.setAttribute("id", "soldPattern");
-  pattern.setAttribute("patternUnits", "userSpaceOnUse");
-  pattern.setAttribute("width", "8");
-  pattern.setAttribute("height", "8");
-
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  line.setAttribute("d", "M0 8 L8 0");
-  line.setAttribute("stroke", "#ffffff");
-  line.setAttribute("stroke-width", "1");
-
-  pattern.appendChild(line);
-  defs.appendChild(pattern);
-
-  svg.documentElement.appendChild(defs);
-}
-
 plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
@@ -309,7 +275,6 @@ plan.onload = function () {
 
   // Внутри блока: квартиры
   if (currentBlock) {
-    bindFlatClicks(svg);
     applySoldFlatsForCurrentBlock(svg);
     return;
   }
