@@ -293,17 +293,15 @@ function hideFlatCard() {
 }
 function highlightFlat(svg, flatId) {
 
-  // убрать старую подсветку
   if (selectedFlat) {
     const old = svg.getElementById(selectedFlat);
     if (old) {
       old.style.filter = "";
       old.style.stroke = "";
-      old.style.strokeWidth = "";
+      old.style.strokeWidth = "";  // ✅ теперь внутри
     }
   }
 
-  // поставить новую
   const el = svg.getElementById(flatId);
   if (!el) return;
 
