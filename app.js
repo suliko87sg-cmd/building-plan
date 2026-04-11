@@ -279,6 +279,28 @@ function loadSVG(src) {
   }, 100);
 }
 
+function ensureSoldPattern(svg) {
+  if (svg.getElementById("soldPattern")) return;
+
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+
+  const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+  pattern.setAttribute("id", "soldPattern");
+  pattern.setAttribute("patternUnits", "userSpaceOnUse");
+  pattern.setAttribute("width", "8");
+  pattern.setAttribute("height", "8");
+
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  line.setAttribute("d", "M0 8 L8 0");
+  line.setAttribute("stroke", "#ffffff");
+  line.setAttribute("stroke-width", "1");
+
+  pattern.appendChild(line);
+  defs.appendChild(pattern);
+
+  svg.documentElement.appendChild(defs);
+}
+
 plan.onload = function () {
   const svg = plan.contentDocument;
   if (!svg) return;
