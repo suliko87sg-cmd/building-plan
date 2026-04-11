@@ -4,25 +4,14 @@
 let sheetData = [];
 let isDataLoaded = false;
 
-fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
-  .then(res => res.json())
-  .then(data => {
-    console.log("DATA LOADED:", data);
-    sheetData = Array.isArray(data) ? data : (data.data || []);
-    isDataLoaded = true;
-  })
-  .catch(err => {
-    console.error("Ошибка загрузки данных:", err);
-  });
-
 // =====================
 // СОСТОЯНИЕ
 // =====================
-let selectedFlat = null;
 let currentView = "projects";
 let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
+let selectedFlat = null;
 
 // =====================
 // ЭЛЕМЕНТЫ
@@ -65,6 +54,20 @@ const projects = {
 };
 
 // =====================
+// ЗАГРУЗКА ДАННЫХ
+// =====================
+fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
+  .then(res => res.json())
+  .then(data => {
+    console.log("DATA LOADED:", data);
+    sheetData = Array.isArray(data) ? data : (data.data || []);
+    isDataLoaded = true;
+  })
+  .catch(err => {
+    console.error("Ошибка загрузки данных:", err);
+  });
+
+// =====================
 // ВСПОМОГАТЕЛЬНЫЕ
 // =====================
 function normalize(val) {
@@ -90,32 +93,116 @@ function findFlatRow(flatId) {
   );
 }
 
-function removeIfExists(root, id) {
-  const el = root.getElementById(id);
-  if (el) el.remove();
+function ensureSoldPattern(svg) {
+  let defs = svg.querySelector("defs");
+  if (!defs) {
+    defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    svg.documentElement.appendChild(defs);
+  }
+
+  if (!svg.querySelector("#soldPattern")) {
+    const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+    pattern.setAttribute("id", "soldPattern");
+    pattern.setAttribute("patternUnits", "userSpaceOnUse");
+    pattern.setAttribute("width", "8");
+    pattern.setAttribute("height", "8");
+    pattern.setAttribute("patternTransform", "rotate(45)");
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", "0");
+    line.setAttribute("y1", "0");
+    line.setAttribute("x2", "0");
+    line.setAttribute("y2", "8");
+    line.setAttribute("stroke", "#ffffff");
+    line.setAttribute("stroke-width", "2");
+    line.setAttribute("opacity", "0.65");
+
+    pattern.appendChild(line);
+    defs.appendChild(pattern);
+  }
 }
 
-function addFlatHitArea(svg, flatEl, flatId) {
-  removeIfExists(svg, flatId + "_hit");
+function clearFlatStyles(svg) {
+  const flats = svg.querySelectorAll('[id^="flat"]');
+  flats.forEach(el => {
+    el.style.filter = "";
+    el.style.stroke = "";
+    el.style.strokeWidth = "";
+    el.style.cursor = "pointer";
+  });
+}
 
-  const hit = flatEl.cloneNode(true);
-  hit.removeAttribute("style");
-  hit.removeAttribute("stroke");
-  hit.id = flatId + "_hit";
+function highlightFlat(svg, flatId) {
+  if (selectedFlat) {
+    const old = svg.getElementById(selectedFlat);
+    if (old) {
+      old.style.filter = "";
+      old.style.stroke = "";
+      old.style.strokeWidth = "";
+    }
+  }
 
-  hit.setAttribute("fill", "rgba(0,0,0,0.001)");
-  hit.style.pointerEvents = "all";
-  hit.style.cursor = "pointer";
+  const el = svg.getElementById(flatId);
+  if (!el) return;
 
-  hit.addEventListener("click", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
+  el.style.filter = "drop-shadow(0 0 12px red)";
+  el.style.stroke = "#ff0000";
+  el.style.strokeWidth = "2";
 
-  highlightFlat(svg, flatId); 
-  showFlatCard(flatId);
-});
+  selectedFlat = flatId;
+}
 
-  flatEl.parentNode.appendChild(hit);
+function applySoldStyle(svg, flatId) {
+  const el = svg.getElementById(flatId);
+  if (!el) return;
+
+  el.setAttribute("fill", "url(#soldPattern)");
+  el.style.opacity = "0.85";
+}
+
+function applyDefaultFlatStyle(el) {
+  el.style.opacity = "";
+}
+
+function bindFlatClicks(svg) {
+  const flats = Array.from(svg.querySelectorAll('[id^="flat"]'))
+    .filter(el => /^flat\d+$/i.test(el.id));
+
+  flats.forEach(el => {
+    const id = el.id;
+    el.style.cursor = "pointer";
+
+    // убираем старые обработчики клонированием самого элемента
+    const fresh = el.cloneNode(true);
+    el.parentNode.replaceChild(fresh, el);
+
+    fresh.style.cursor = "pointer";
+
+    fresh.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      highlightFlat(svg, id);
+      showFlatCard(id);
+    });
+  });
+}
+
+function applySoldFlatsForCurrentBlock(svg) {
+  if (!currentBlock) return;
+
+  const flats = Array.from(svg.querySelectorAll('[id^="flat"]'))
+    .filter(el => /^flat\d+$/i.test(el.id));
+
+  flats.forEach(el => {
+    const id = el.id;
+    const row = findFlatRow(id);
+
+    if (row && (normalize(row.contract) || normalize(row.client))) {
+      applySoldStyle(svg, id);
+    } else {
+      applyDefaultFlatStyle(el);
+    }
+  });
 }
 
 // =====================
@@ -128,6 +215,7 @@ function selectProject(project) {
   currentProject = project;
   currentBlock = null;
   currentFloor = projects[project].floorStart;
+  selectedFlat = null;
 
   hideFlatCard();
 
@@ -136,41 +224,60 @@ function selectProject(project) {
   if (floorPanel) floorPanel.style.display = "none";
   if (backBtn) backBtn.style.display = "block";
 
+  if (!projects[project].svg) {
+    alert("Пока нет проекта");
+    return;
+  }
+
   loadSVG(projects[project].svg);
 }
 
 window.selectProject = selectProject;
 
 // =====================
-// SVG
+// SVG LOAD
 // =====================
 function loadSVG(src) {
   plan.data = "";
 
   setTimeout(() => {
     plan.data = src + "?t=" + Date.now();
-
-    // Ждём загрузку SVG
-    plan.onload = () => {
-      const svg = plan.contentDocument;
-
-      if (!svg) return;
-
-      //  ШТРИХОВКА
-      sheetData.forEach(row => {
-        if (row.contract) {
-          markSoldFlat(svg, row.flat);
-        }
-      });
-
-      //   клики 
-      if (typeof initSVG === "function") {
-        initSVG(svg);
-      }
-    };
-
   }, 100);
 }
+
+plan.onload = function () {
+  const svg = plan.contentDocument;
+  if (!svg) return;
+
+  ensureSoldPattern(svg);
+
+  // Внутри блока: квартиры
+  if (currentBlock) {
+    bindFlatClicks(svg);
+    applySoldFlatsForCurrentBlock(svg);
+    return;
+  }
+
+  // В проекте: блоки
+  ["b1", "b2", "b3", "b4", "b5", "b6"].forEach(id => {
+    const el = svg.getElementById(id);
+    if (!el) return;
+
+    el.style.cursor = "pointer";
+
+    el.onclick = () => {
+      currentView = "flats";
+      currentBlock = id;
+      selectedFlat = null;
+
+      hideFlatCard();
+      showFloors();
+
+      loadSVG(getBlockSvgFile(currentProject, id));
+    };
+  });
+};
+
 // =====================
 // ЭТАЖИ
 // =====================
@@ -185,15 +292,18 @@ function showFloors() {
     btn.className = "floor-btn";
     btn.textContent = i + " этаж";
 
-    if (i === currentFloor) btn.classList.add("active");
+    if (i === currentFloor) {
+      btn.classList.add("active");
+    }
 
     btn.onclick = () => {
       currentFloor = i;
+      selectedFlat = null;
+      hideFlatCard();
       showFloors();
 
       if (!currentBlock) return;
 
-      hideFlatCard();
       loadSVG(getBlockSvgFile(currentProject, currentBlock));
     };
 
@@ -204,55 +314,13 @@ function showFloors() {
 }
 
 // =====================
-// SVG LOAD
-// =====================
-plan.onload = function () {
-  const svg = plan.contentDocument;
-  if (!svg) return;
-
-sheetData.forEach(row => {
-    if (row.contract) {
-      markSoldFlat(svg, "flat" + row.flat);
-    }
-  });
-
-  if (currentBlock) {
-    const flats = svg.querySelectorAll('[id^="flat"]');
-
-    flats.forEach(el => {
-      const id = el.id;
-      addFlatHitArea(svg, el, id);
-    });
-
-    return;
-  }
-
-  ["b1","b2","b3","b4","b5","b6"].forEach(id => {
-    const el = svg.getElementById(id);
-    if (!el) return;
-
-    el.style.cursor = "pointer";
-
-    el.onclick = () => {
-      currentView = "flats";
-      currentBlock = id;
-
-      hideFlatCard();
-      showFloors();
-
-      loadSVG(getBlockSvgFile(currentProject, id));
-    };
-  });
-};
-
-// =====================
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-
   if (currentView === "flats") {
     currentView = "blocks";
     currentBlock = null;
+    selectedFlat = null;
 
     hideFlatCard();
     floorPanel.style.display = "none";
@@ -263,12 +331,15 @@ backBtn.onclick = function () {
 
   if (currentView === "blocks") {
     currentView = "projects";
+    currentBlock = null;
+    selectedFlat = null;
 
-    plan.style.display = "none";
-    floorPanel.style.display = "none";
-    mainMenu.style.display = "flex";
+    hideFlatCard();
 
-    backBtn.style.display = "none";
+    if (plan) plan.style.display = "none";
+    if (floorPanel) floorPanel.style.display = "none";
+    if (mainMenu) mainMenu.style.display = "flex";
+    if (backBtn) backBtn.style.display = "none";
   }
 };
 
@@ -289,50 +360,24 @@ function showFlatCard(flatId) {
 }
 
 function hideFlatCard() {
+  if (!flatCard) return;
   flatCard.classList.remove("show");
 }
-function highlightFlat(svg, flatId) {
 
-  if (selectedFlat) {
-    const old = svg.getElementById(selectedFlat);
-    if (old) {
-      old.style.filter = "";
-      old.style.stroke = "";
-      old.style.strokeWidth = "";  // ✅ теперь внутри
-    }
-  }
-
-  const el = svg.getElementById(flatId);
-  if (!el) return;
-
-  el.style.filter = "drop-shadow(0 0 12px red)";
-  el.style.stroke = "#ff0000";
-  el.style.strokeWidth = "2";
-
-  selectedFlat = flatId;
-}
- 
-function markSoldFlat(svg, flatId) {
-  const el = svg.getElementById(flatId);
-  if (!el) return;
-
-  // штриховка через pattern
-  el.setAttribute("fill", "url(#soldPattern)");
-
-  // можно чуть затемнить
-  el.style.opacity = "0.8";
-}
+window.hideFlatCard = hideFlatCard;
 
 // =====================
 // SPLASH
 // =====================
 function hideSplash() {
   const splash = document.getElementById("splash");
+  if (!splash) return;
 
   splash.style.opacity = "0";
+
   setTimeout(() => {
     splash.style.display = "none";
-    mainMenu.style.display = "flex";
+    if (mainMenu) mainMenu.style.display = "flex";
   }, 1000);
 }
 
