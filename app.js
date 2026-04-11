@@ -197,14 +197,48 @@ function applySoldFlatsForCurrentBlock(svg) {
     const id = el.id;
     const row = findFlatRow(id);
 
+    // удалить старые слои
+    const oldBg = svg.getElementById(id + "_sold_bg");
+    const oldPattern = svg.getElementById(id + "_sold_pattern");
+
+    if (oldBg) oldBg.remove();
+    if (oldPattern) oldPattern.remove();
+
+    // вернуть обычный стиль
+    el.style.opacity = "";
+    el.style.fill = "";
+    el.removeAttribute("fill");
+
+    // если ПРОДАНО
     if (row && (normalize(row.contract) || normalize(row.client))) {
-      applySoldStyle(svg, id);
-    } else {
-      applyDefaultFlatStyle(el);
+
+      // убираем оригинальный цвет
+      el.style.fill = "none";
+      el.setAttribute("fill", "none");
+
+      // ===== ПОДЛОЖКА =====
+      const bg = el.cloneNode(true);
+      bg.removeAttribute("style");
+      bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+      bg.style.pointerEvents = "none";
+      bg.setAttribute("pointer-events", "none");
+      bg.id = id + "_sold_bg";
+
+      // ===== ШТРИХ =====
+      const pattern = el.cloneNode(true);
+      pattern.removeAttribute("style");
+      pattern.removeAttribute("stroke");
+      pattern.setAttribute("fill", "url(#soldPattern)");
+      pattern.style.pointerEvents = "none";
+      pattern.setAttribute("pointer-events", "none");
+      pattern.style.opacity = "0.8";
+      pattern.id = id + "_sold_pattern";
+
+      el.parentNode.appendChild(bg);
+      el.parentNode.appendChild(pattern);
     }
   });
 }
-
 // =====================
 // ВЫБОР ПРОЕКТА
 // =====================
