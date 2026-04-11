@@ -212,34 +212,32 @@ function applySoldFlatsForCurrentBlock(svg) {
     // если ПРОДАНО
     if (row && (normalize(row.contract) || normalize(row.client))) {
 
-      el.style.fill = "rgba(0,0,0,0.001)";
-el.setAttribute("fill", "rgba(0,0,0,0.001)");
-el.style.pointerEvents = "all";
-el.setAttribute("pointer-events", "all");
+  // оригинал оставляем кликабельным, но почти невидимым
+  el.style.fill = "rgba(0,0,0,0.001)";
+  el.setAttribute("fill", "rgba(0,0,0,0.001)");
+  el.style.pointerEvents = "all";
+  el.setAttribute("pointer-events", "all");
 
-      // ===== ПОДЛОЖКА =====
-      const bg = el.cloneNode(true);
-      bg.removeAttribute("style");
-      bg.setAttribute("fill", "rgba(255,255,255,0.25)");
-      bg.style.pointerEvents = "none";
-      bg.setAttribute("pointer-events", "none");
-      bg.id = id + "_sold_bg";
+  // ===== ПОДЛОЖКА =====
+  const bg = el.cloneNode(true);
+  bg.removeAttribute("style");
+  bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+  bg.style.pointerEvents = "none";
+  bg.setAttribute("pointer-events", "none");
+  bg.id = id + "_sold_bg";
 
-      // ===== ШТРИХ =====
-      const pattern = el.cloneNode(true);
-      pattern.removeAttribute("style");
-      pattern.removeAttribute("stroke");
-      pattern.setAttribute("fill", "url(#soldPattern)");
-      pattern.style.pointerEvents = "none";
-      pattern.setAttribute("pointer-events", "none");
-      pattern.style.opacity = "0.8";
-      pattern.id = id + "_sold_pattern";
+  // ===== ШТРИХ =====
+  const pattern = el.cloneNode(true);
+  pattern.removeAttribute("style");
+  pattern.removeAttribute("stroke");
+  pattern.setAttribute("fill", "url(#soldPattern)");
+  pattern.style.pointerEvents = "none";
+  pattern.setAttribute("pointer-events", "none");
+  pattern.style.opacity = "0.8";
+  pattern.id = id + "_sold_pattern";
 
-      el.parentNode.appendChild(bg);
-      el.parentNode.appendChild(pattern);
-el.style.pointerEvents = "all";
-    }
-  });
+  el.parentNode.appendChild(bg);
+  el.parentNode.appendChild(pattern);
 }
 // =====================
 // ВЫБОР ПРОЕКТА
