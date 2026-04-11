@@ -94,13 +94,15 @@ function findFlatRow(flatId) {
 }
 
 function ensureSoldPattern(svg) {
-  let defs = svg.querySelector("defs");
+  let root = svg.documentElement; 
+
+  let defs = root.querySelector("defs");
   if (!defs) {
     defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-    svg.documentElement.appendChild(defs);
+    root.insertBefore(defs, root.firstChild); 
   }
 
-  if (!svg.querySelector("#soldPattern")) {
+  if (!root.querySelector("#soldPattern")) {
     const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
     pattern.setAttribute("id", "soldPattern");
     pattern.setAttribute("patternUnits", "userSpaceOnUse");
@@ -115,7 +117,7 @@ function ensureSoldPattern(svg) {
     line.setAttribute("y2", "8");
     line.setAttribute("stroke", "#ffffff");
     line.setAttribute("stroke-width", "2");
-    line.setAttribute("opacity", "0.65");
+    line.setAttribute("opacity", "0.7");
 
     pattern.appendChild(line);
     defs.appendChild(pattern);
