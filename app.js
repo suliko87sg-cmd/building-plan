@@ -212,9 +212,10 @@ function applySoldFlatsForCurrentBlock(svg) {
     // если ПРОДАНО
     if (row && (normalize(row.contract) || normalize(row.client))) {
 
-      // убираем оригинальный цвет
-      el.style.fill = "none";
-      el.setAttribute("fill", "none");
+      el.style.fill = "rgba(0,0,0,0.001)";
+el.setAttribute("fill", "rgba(0,0,0,0.001)");
+el.style.pointerEvents = "all";
+el.setAttribute("pointer-events", "all");
 
       // ===== ПОДЛОЖКА =====
       const bg = el.cloneNode(true);
@@ -236,6 +237,7 @@ function applySoldFlatsForCurrentBlock(svg) {
 
       el.parentNode.appendChild(bg);
       el.parentNode.appendChild(pattern);
+el.style.pointerEvents = "all";
     }
   });
 }
