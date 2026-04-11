@@ -332,7 +332,7 @@ function markSoldFlat(svg, flatId) {
 
   sold.id = flatId + "_sold";
 
-  el.parentNode.appendChild(sold);
+  el.parentNode.insertBefore(sold, el);
 }
 
 // =====================
