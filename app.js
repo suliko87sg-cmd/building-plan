@@ -165,8 +165,7 @@ function applyDefaultFlatStyle(el) {
 }
 
 function bindFlatClicks(svg) {
-  const flats = Array.from(svg.querySelectorAll('[id^="flat"]'))
-    .filter(el => /^flat\d+$/i.test(el.id));
+  const flats = svg.querySelectorAll('[id^="flat"]');
 
   flats.forEach(el => {
     const id = el.id;
@@ -190,8 +189,7 @@ function bindFlatClicks(svg) {
 function applySoldFlatsForCurrentBlock(svg) {
   if (!currentBlock) return;
 
-  const flats = Array.from(svg.querySelectorAll('[id^="flat"]'))
-    .filter(el => /^flat\d+$/i.test(el.id));
+  const flats = svg.querySelectorAll('[id^="flat"]');
 
   flats.forEach(el => {
     const id = el.id;
