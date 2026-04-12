@@ -4,16 +4,24 @@
 let sheetData = [];
 let isDataLoaded = false;
 
-fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
-  .then(res => res.json())
-  .then(data => {
+async function loadSheet() {
+  try {
+    const res = await fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwaju8zsoQaHBco-aDTmNON1Q2s/plan");
+
+    const data = await res.json();
+
     console.log("DATA LOADED:", data);
+
     sheetData = Array.isArray(data) ? data : (data.data || []);
     isDataLoaded = true;
-  })
-  .catch(err => {
+
+    // 👉 ВАЖНО
+    showProjects();
+
+  } catch (err) {
     console.error("Ошибка загрузки данных:", err);
-  });
+  }
+}
 
 // =====================
 // СОСТОЯНИЕ
@@ -354,5 +362,7 @@ window.addEventListener("load", () => {
 // SERVICE WORKER
 // =====================
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+ // navigator.serviceWorker.register("sw.js");
 }
+
+loadSheet();
