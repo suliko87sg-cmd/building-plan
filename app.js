@@ -4,24 +4,16 @@
 let sheetData = [];
 let isDataLoaded = false;
 
-async function loadSheet() {
-  try {
-    const res = await fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwaju8zsoQaHBco-aDTmNON1Q2s/plan");
-
-    const data = await res.json();
-
+fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/plan")
+  .then(res => res.json())
+  .then(data => {
     console.log("DATA LOADED:", data);
-
     sheetData = Array.isArray(data) ? data : (data.data || []);
     isDataLoaded = true;
-
-    // 👉 ВАЖНО
-    showProjects();
-
-  } catch (err) {
+  })
+  .catch(err => {
     console.error("Ошибка загрузки данных:", err);
-  }
-}
+  });
 
 // =====================
 // СОСТОЯНИЕ
@@ -226,9 +218,11 @@ plan.onload = function () {
 
         const oldBg = svg.getElementById(id + "_sold_bg");
         const oldPattern = svg.getElementById(id + "_sold_pattern");
+        const oldHit = svg.getElementById(id + "_hit");
 
         if (oldBg) oldBg.remove();
         if (oldPattern) oldPattern.remove();
+        if (oldHit) oldHit.remove();
 
         el.style.fill = "none";
         el.setAttribute("fill", "none");
@@ -251,9 +245,28 @@ plan.onload = function () {
 
         el.parentNode.appendChild(bg);
         el.parentNode.appendChild(patternLayer);
-      }
+        
+        // ===== КЛИКАБЕЛЬНЫЙ СЛОЙ =====
+        const hit = el.cloneNode(true);
+        hit.removeAttribute("style");
+        hit.removeAttribute("stroke");
 
-      el.onclick = () => {
+        // почти прозрачный (но ловит клики)
+        hit.setAttribute("fill", "rgba(0,0,0,0.001)");
+
+        hit.style.pointerEvents = "all";
+        hit.style.cursor = "pointer";
+        hit.id = id + "_hit";
+
+        hit.onclick = () => {
+        console.log("Квартира:", id);
+        showFlatCard(id);
+        };
+
+        el.parentNode.appendChild(hit);
+        }
+
+        el.onclick = () => {
         console.log("Квартира:", id);
         showFlatCard(id);
       };
@@ -291,17 +304,33 @@ plan.onload = function () {
 // НАЗАД
 // =====================
 backBtn.onclick = function () {
-  currentBlock = null;
 
-  hideFlatCard();
-  floorPanel.style.display = "none";
-  plan.data = "";
+  // 1️⃣ ЕСЛИ ОТКРЫТА КАРТОЧКА → просто закрываем
+  if (flatCard.classList.contains("show")) {
+    hideFlatCard();
+    return;
+  }
 
-  setTimeout(() => {
-    loadSVG(projects[currentProject].svg);
-  }, 50);
+  // 2️⃣ ЕСЛИ МЫ ВНУТРИ БЛОКА → идём к блокам
+  if (currentBlock) {
+    currentBlock = null;
 
+    floorPanel.style.display = "none";
+    plan.data = "";
+
+    setTimeout(() => {
+      loadSVG(projects[currentProject].svg);
+    }, 50);
+
+    return;
+  }
+
+  // 3️⃣ ЕСЛИ МЫ НА БЛОКАХ → ВЫХОД В МЕНЮ
+  plan.style.display = "none";
+  document.getElementById("mainMenu").style.display = "flex";
   backBtn.style.display = "none";
+
+  currentProject = null;
 };
 
 // =====================
@@ -361,8 +390,6 @@ window.addEventListener("load", () => {
 // =====================
 // SERVICE WORKER
 // =====================
-if ("serviceWorker" in navigator) {
- // navigator.serviceWorker.register("sw.js");
-}
-
-loadSheet();
+//if ("serviceWorker" in navigator) {
+  //navigator.serviceWorker.register("sw.js");
+// }
