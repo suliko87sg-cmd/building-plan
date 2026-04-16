@@ -76,14 +76,21 @@
     /* SPLASH */
     /* ===================== */
     #splash {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle, #1a1a1a, #000);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 🔥 поднимает вверх */
+
+  padding-top: 80px; /* 👈 регулируешь */
+  
+  background: radial-gradient(circle, #1a1a1a, #000);
+  z-index: 9999;
+}
+#splashLogo {
+  transform: translateY(-90x);
+}
 
     #splashLogo {
       width: 70%;
@@ -109,22 +116,40 @@
     /* ГЛАВНОЕ МЕНЮ */
     /* ===================== */
     #mainMenu {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      background: black;
-      z-index: 2000;
-    }
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: flex-start; /* 🔥 теперь сверху */
+  align-items: center;
+
+  padding-top: 90px; /* 👈 регулируешь высоту */
+  gap: 16px;
+
+  background: black;
+  z-index: 2000;
+}
 
     #mainLogo {
-      width: 70%;
-      max-width: 260px;
-      margin-bottom: 20px;
-    }
+  width: 75%;
+  max-width: 420px;
+
+  display: block;
+  margin: 30px auto;
+
+  /* 🔥 ЧЁРНАЯ ОБВЯЗКА */
+  background: black;
+  padding: 12px;
+  border-radius: 25px;
+
+  /* 🔴 КРАСНОЕ СВЕЧЕНИЕ */
+  box-shadow: 0 0 40px rgba(255, 0, 0, 0.8);
+
+  /* 💎 ЧЁТКОСТЬ */
+  image-rendering: crisp-edges;
+}
 
     .menuBtn {
       width: 80%;
@@ -149,19 +174,38 @@
     /* КНОПКА НАЗАД */
     /* ===================== */
     #backBtn {
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      z-index: 2500;
-      padding: 10px 16px;
-      border-radius: 14px;
-      background: #000;
-      color: #fff;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      display: none;
-    }
+  position: fixed;
+  top: 15px;
+  left: 15px;
+
+  font-size: 16px;
+  padding: 10px 16px;
+
+  color: white;
+
+  /* 🔴 ВНУТРЕННИЙ КРАСНЫЙ */
+  background: rgba(40, 0, 0, 0.6);
+
+  border-radius: 12px;
+
+  /* 🔴 ОБВОДКА */
+  border: 1px solid rgba(255, 0, 0, 0.7);
+
+  /* 🔥 СВЕЧЕНИЕ */
+  box-shadow:
+    0 0 8px rgba(255, 0, 0, 0.6),
+    inset 0 0 10px rgba(255, 0, 0, 0.3);
+
+  cursor: pointer;
+  z-index: 9999;
+}
+#backBtn:active {
+  transform: scale(0.95);
+
+  box-shadow:
+    0 0 4px rgba(255, 0, 0, 0.4),
+    inset 0 0 15px rgba(255, 0, 0, 0.5);
+}
 
     /* ===================== */
     /* ЭТАЖИ */
@@ -175,27 +219,71 @@
       z-index: 2400;
     }
 
-    #floors {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-    }
+  #floors {
+  display: grid;
 
-    .floor-btn {
-      border-radius: 14px;
-      background: #2b2b2f;
-      color: white;
-      font-size: 14px;
-      padding: 10px;
-      border: none;
-      cursor: pointer;
-    }
+  grid-template-columns: repeat(6, auto); /* 👈 важно */
 
-    .floor-btn.active {
-      background: orange;
-      color: black;
-      font-weight: bold;
-    }
+  justify-content: center; /* 👈 центр всей сетки */
+
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+ .floor-btn {
+  padding: 4px 10px; /* 🔥 было больше → стало компактно */
+  min-width: 60px;
+
+  border-radius: 16px;
+
+  font-size: 12px; /* чуть меньше текст */
+
+  white-space: nowrap;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(20, 0, 0, 0.6);
+  color: white;
+  border: none;
+
+  cursor: pointer;
+
+  /* 🔥 мягкий свет (чуть слабее, чтобы не жирнило) */
+  box-shadow:
+    0 0 4px rgba(255, 0, 0, 0.6),
+    0 0 8px rgba(255, 0, 0, 0.5),
+    0 0 16px rgba(255, 0, 0, 0.4);
+
+  transition: all 0.2s ease;
+}
+.floor-btn {
+  animation: glowPulse 2s infinite alternate;
+}
+
+@keyframes glowPulse {
+  from {
+    box-shadow:
+      0 0 5px rgba(255, 0, 0, 0.5),
+      0 0 10px rgba(255, 0, 0, 0.4);
+  }
+  to {
+    box-shadow:
+      0 0 10px rgba(255, 0, 0, 0.8),
+      0 0 25px rgba(255, 0, 0, 0.6);
+  }
+}
+.floor-btn.active {
+  background: rgba(226, 95, 19, 0.918);
+
+  box-shadow:
+    0 0 10px red,
+    0 0 20px red,
+    0 0 40px red;
+
+  transform: scale(1.05);
+}
 
     /* ===================== */
     /* SVG */

@@ -53,7 +53,7 @@ const projects = {
     svg: "gafurovblocks.svg",
     sheet: "gafurovblocks",
     floorStart: 1,
-    floorEnd: 16
+    floorEnd: 14
   },
   obj4: {
     svg: null,
@@ -107,7 +107,7 @@ function selectProject(project) {
   document.getElementById("mainMenu").style.display = "none";
   document.getElementById("plan").style.display = "block";
   document.getElementById("floorPanel").style.display = "none";
-  document.getElementById("backBtn").style.display = "none";
+  document.getElementById("backBtn").style.display = "block";
 
   if (!projects[project].svg) {
     alert("Пока нет проекта");
@@ -230,7 +230,7 @@ plan.onload = function () {
         // Белая полупрозрачная подложка
         const bg = el.cloneNode(true);
         bg.removeAttribute("style");
-        bg.setAttribute("fill", "rgba(255,255,255,0.25)");
+        bg.setAttribute("fill", "rgba(255,255,255,0.45)");
         bg.style.pointerEvents = "none";
         bg.id = id + "_sold_bg";
 
@@ -241,6 +241,8 @@ plan.onload = function () {
         patternLayer.setAttribute("fill", "url(#soldPattern)");
         patternLayer.style.pointerEvents = "none";
         patternLayer.style.opacity = "0.8";
+        patternLayer.setAttribute("stroke", "#ff2a2a");
+        patternLayer.setAttribute("stroke-width", "5");
         patternLayer.id = id + "_sold_pattern";
 
         el.parentNode.appendChild(bg);
