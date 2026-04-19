@@ -14,40 +14,21 @@
 }
 
 /* ===================== */
-/* ФОН (ГАЛАКТИКА) */
+/* ФОН
 /* ===================== */
 body {
   margin: 0;
-  background-color: #000;
-  background-image: url("image.png");
+  background-color: #310202;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
 
-  color: white;
+  color: rgb(8, 8, 8);
   font-family: Arial, sans-serif;
   overflow: hidden;
 }
 
-/* затемнение для читаемости */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  z-index: 0;
-}
 
-/* всё приложение поверх */
-#mainMenu,
-#floorPanel,
-#plan,
-#flatCard,
-#backBtn,
-#splash {
-  position: relative;
-  z-index: 1;
-}
 
 /* ===================== */
 /* SPLASH */
@@ -84,6 +65,47 @@ body::before {
   30% { opacity: 1; transform: scale(1.1); }
   60% { transform: scale(1.05); }
   100% { transform: scale(1); opacity: 1; }
+}
+
+/* ===================== */
+/* MAIN MENU 1 */
+/* ===================== */
+#mainMenu1 {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* вертикально центр */
+  align-items: center;       /* горизонтально центр */
+
+  gap: 20px;
+  text-align: center;
+}
+
+/* ЛОГО */
+#mainMenu1 img {
+  width: 220px;
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(255,0,0,0.4);
+}
+
+/* КНОПКИ */
+.menuBtn {
+  width: 220px;
+  padding: 15px;
+
+  border-radius: 20px;
+  background: #000;
+  color: white;
+
+  text-align: center;
+  font-size: 16px;
+
+  border: 1px solid rgba(255,0,0,0.3);
+  box-shadow: 0 0 15px rgba(255,0,0,0.3);
+
+  cursor: pointer;
 }
 
 /* ===================== */
@@ -210,7 +232,7 @@ body::before {
 }
 
 .floor-btn.active {
-  background: rgba(226,95,19,0.9);
+  background: rgba(240, 71, 71, 0.9);
   box-shadow:
     0 0 15px red,
     0 0 30px red;
@@ -294,6 +316,24 @@ body::before {
   transform: translate(-50%, 0);
 }
 
+/* ===================== */
+/* ПРОДАННАЯ КАРТОЧКА */
+/* ===================== */
+#flatCard.sold {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.3);
+
+  /* штриховка */
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.2) 0px,
+    rgba(255,255,255,0.2) 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
 </style>
 </head>
 
@@ -303,9 +343,16 @@ body::before {
 <div id="splash">
   <img src="logo.png" id="splashLogo">
 </div>
+<!-- МЕНЮ 1 -->
+<div id="mainMenu1">
+  <img src="logo.png" id="mainLogo">
 
+  <div class="menuBtn" onclick="openProjects()">Проекты</div>
+  <div class="menuBtn">Погашение</div>
+  <div class="menuBtn">Мониторинг</div>
+</div>
 <!-- МЕНЮ -->
-<div id="mainMenu">
+<div id="mainMenu" style="display:none;">
   <img src="logo.png" id="mainLogo">
 
   <div class="menuBtn" onclick="selectProject('kush')">Куш</div>
@@ -327,7 +374,7 @@ body::before {
 
 <!-- КАРТОЧКА -->
 <div id="flatCard">
-  <h3>Информация о квартире</h3>
+  <h3 id="cardTitle">Информация о квартире</h3>
   <p><b>Договор:</b> <span id="cardContract"></span></p>
   <p><b>Площадь:</b> <span id="cardArea"></span></p>
   <p><b>Клиент:</b> <span id="cardClient"></span></p>
