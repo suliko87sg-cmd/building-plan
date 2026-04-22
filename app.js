@@ -13,6 +13,18 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
   })
   .catch(err => console.error("Ошибка загрузки данных:", err));
 
+  let clientsData = [];
+let isClientsLoaded = false;
+
+fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/clients")
+  .then(res => res.json())
+  .then(data => {
+    console.log("CLIENTS LOADED:", data);
+    clientsData = Array.isArray(data) ? data : (data.data || []);
+    isClientsLoaded = true;
+  })
+  .catch(err => console.error("Ошибка загрузки clients:", err));
+
 // =====================
 // СОСТОЯНИЕ
 // =====================
@@ -20,7 +32,8 @@ let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
 let currentLevel = "main";
-
+let currentClientProject = null;
+let currentClientBlock = null;
 // =====================
 // ЭЛЕМЕНТЫ
 // =====================
@@ -29,15 +42,44 @@ const backBtn = document.getElementById("backBtn");
 const flatCard = document.getElementById("flatCard");
 const floorPanel = document.getElementById("floorPanel");
 const floorsContainer = document.getElementById("floors");
+const clientsScreen = document.getElementById("clientsScreen");
+// =====================
+// ПРОЕКТЫ  (ИМЯ БЛОКОВ )
+// =====================
 
-// =====================
-// ПРОЕКТЫ
-// =====================
 const projects = {
-  kush: { svg: "blocks.svg", sheet: "blocks", floorStart: 3, floorEnd: 18 },
-  buston: { svg: "bustonblocks.svg", sheet: "bustonblocks", floorStart: 1, floorEnd: 16 },
-  gafurov: { svg: "gafurovblocks.svg", sheet: "gafurovblocks", floorStart: 1, floorEnd: 14 },
-  obj4: { svg: null, sheet: "obj4", floorStart: 1, floorEnd: 16 }
+  kush: {
+    svg: "blocks.svg",
+    sheet: "blocks",
+    floorStart: 3,
+    floorEnd: 18,
+    blocks: ["b1","b2","b3","b4","b5","b6"],
+    blockNames: ["А","Б","В","Г","Д","Е"] // 🔥 русские буквы
+  },
+    buston: {
+    svg: "bustonblocks.svg",
+    sheet: "bustonblocks",
+    floorStart: 1,
+    floorEnd: 16,
+    blocks: ["b1","b2"],
+    blockNames: ["А","Б"]
+  },
+    gafurov: {
+    svg: "gafurovblocks.svg",
+    sheet: "gafurovblocks",
+    floorStart: 1,
+    floorEnd: 14,
+    blocks: ["b1","b2"],
+    blockNames: ["А","Б"]
+  },
+    obj4: {
+    svg: null,
+    sheet: "obj4",
+    floorStart: 1,
+    floorEnd: 16,
+    blocks: [],
+    blockNames: []
+  }
 };
 
 // =====================
@@ -100,6 +142,113 @@ function openProjects() {
   backBtn.style.display = "block";
 }
 window.openProjects = openProjects;
+
+function selectClientProject(project) {
+  currentClientProject = project;
+  currentLevel = "clients-blocks";
+
+  renderClientBlocks();
+}
+window.selectClientProject = selectClientProject;
+
+function renderClientBlocks() {
+  clientsScreen.innerHTML = "";
+
+  const blocks = projects[currentClientProject]?.blocks || [];
+  const blockNames = projects[currentClientProject]?.blockNames || [];
+
+  const container = document.createElement("div");
+  container.style.textAlign = "center";
+  container.style.marginTop = "60px";
+
+  blocks.forEach((block, index) => {
+    const btn = document.createElement("div");
+    btn.className = "menuBtn";
+
+    btn.innerText = blockNames[index] || block.toUpperCase();
+
+    btn.onclick = () => {
+      currentClientBlock = block;
+      currentLevel = "clients-flats";
+      renderClientFlats(); // 🔥 вот сюда идём дальше
+    };
+    container.appendChild(btn);
+  });
+  clientsScreen.appendChild(container);
+}
+
+function renderClientFlats() {
+  clientsScreen.innerHTML = "";
+  if (!isClientsLoaded) {
+  console.log("clients еще не загрузились");
+  return;
+}
+const container = document.createElement("div");
+  container.style.textAlign = "center";
+  container.style.marginTop = "60px";
+
+  const blockMap = {
+  "А": "b1",
+  "Б": "b2",
+  "В": "b3",
+  "Г": "b4",
+  "Д": "b5",
+  "Е": "b6"
+};
+
+const projectMap = {
+  "Куш": "kush",
+  "Гафуров": "gafurov",
+  "Бустон": "buston"
+};
+
+const realBlock = blockMap[currentClientBlock] || currentClientBlock;
+const realProject = projectMap[currentClientProject] || currentClientProject;
+// 🔍 диагностика
+console.log("PROJECT:", realProject);
+console.log("BLOCK:", realBlock);
+console.log("ВСЕ ДАННЫЕ:", clientsData);
+console.log("ПРОЕКТ В СИСТЕМЕ:", currentClientProject);
+console.log("БЛОК В СИСТЕМЕ:", currentClientBlock);
+console.log("ПЕРВЫЙ flatId:", clientsData[0]?.flatId);
+console.log("КЛЮЧИ:", Object.keys(clientsData[0]));
+// ✅ фильтр
+const rows = clientsData.filter(item => {
+  const project = (item["проект"] || "").toLowerCase().trim();
+  const flatId = (item.flatId || item.flatID || "").toLowerCase();
+
+  return (
+    project === currentClientProject.toLowerCase() &&
+    flatId.includes(currentClientBlock.toLowerCase())
+  );
+});
+   console.log("ПЕРВАЯ СТРОКА:", clientsData[0]);
+    // 🔍 результат
+   console.log("ОТФИЛЬТРОВАНО:", rows);
+   rows.forEach(item => {
+    const btn = document.createElement("div");
+    btn.className = "menuBtn";
+
+    const contract = item["договоры"] || "—";
+    const client = item["клиент"] || "—";
+    const dollar = item["доллар"] || "0";
+
+    btn.innerHTML = `
+   №${contract}<br>
+   ${client}<br>
+   💵 ${dollar}
+   `;
+
+    btn.onclick = () => {
+      showClientDetails(item);
+    };
+
+    container.appendChild(btn);
+  });
+
+  clientsScreen.appendChild(container);
+}
+
 
 // =====================
 // SVG
@@ -271,6 +420,36 @@ if (!svg.querySelector("#soldPattern")) {
 // =====================
 backBtn.onclick = () => {
 
+  console.log("НАЗАД:", currentLevel);
+
+  // 🔥 0. из квартиры → к списку квартир
+if (currentLevel === "client-flat") {
+  currentLevel = "clients-flats";
+  renderClientFlats();
+  return;
+}
+// 🔥 1. из квартир → к подъездам
+if (currentLevel === "clients-flats") {
+  currentLevel = "clients-blocks";
+  renderClientBlocks();
+  return;
+}
+  // 1. из проекта → к списку проектов
+  if (currentLevel === "clients-blocks") {
+    openClients();
+    return;
+  }
+
+  // 2. из списка проектов → в главное меню
+  if (currentLevel === "clients-projects" || currentLevel === "clients") {
+    clientsScreen.style.display = "none";
+    mainMenu1.style.display = "flex";
+    backBtn.style.display = "none";
+    currentLevel = "main";
+    return;
+  }
+
+  // 3. дальше твоя старая логика (для SVG)
   if (flatCard.classList.contains("show")) {
     hideFlatCard();
     return;
@@ -279,7 +458,6 @@ backBtn.onclick = () => {
   if (currentLevel === "flats") {
     currentLevel = "blocks";
     currentBlock = null;
-
     floorPanel.style.display = "none";
     loadSVG(projects[currentProject].svg);
     return;
@@ -287,7 +465,6 @@ backBtn.onclick = () => {
 
   if (currentLevel === "blocks") {
     currentLevel = "projects";
-
     plan.style.display = "none";
     mainMenu.style.display = "flex";
     return;
@@ -295,11 +472,12 @@ backBtn.onclick = () => {
 
   if (currentLevel === "projects") {
     currentLevel = "main";
-
     mainMenu.style.display = "none";
     mainMenu1.style.display = "flex";
     backBtn.style.display = "none";
+    return;
   }
+
 };
 
 // =====================
@@ -329,6 +507,29 @@ if (isSold) {
   flatCard.classList.add("show"); // оставляем твою анимацию
 }
 
+// =====================
+// КАРТОЧКА 2
+// =====================
+
+function showClientDetails(item) {
+  clientsScreen.innerHTML = `
+    <div style="color:white; text-align:center; margin-top:40px;">
+
+      <h2>№${item.contract}</h2>
+      <p>${item.client}</p>
+      <p>📞 ${item.phone}</p>
+
+      <p>Проект: ${item.project}</p>
+      <p>Блок: ${item.block}</p>
+      <p>Этаж: ${item.floor}</p>
+
+      <h3>💰 Долг: ${item.debt}</h3>
+
+    </div>
+  `;
+}
+
+
 function hideFlatCard() {
   flatCard.classList.remove("show");
   flatCard.classList.remove("sold"); // 🔥 обязательно
@@ -348,3 +549,36 @@ window.addEventListener("load", () => {
 
   }, 2000); // 2 секунды
 });
+
+function openClients() {
+  currentLevel = "clients";
+
+  // скрываем старое
+  document.getElementById("mainMenu1").style.display = "none";
+  document.getElementById("mainMenu").style.display = "none";
+  plan.style.display = "none";
+  floorPanel.style.display = "none";
+
+  // показываем новое
+  clientsScreen.style.display = "block";
+
+  clientsScreen.innerHTML = `
+  <div style="text-align:center; margin-top:60px;">
+    <div class="menuBtn" onclick="selectClientProject('kush')">Куш</div>
+    <div class="menuBtn" onclick="selectClientProject('gafurov')">Гафуров</div>
+    <div class="menuBtn" onclick="selectClientProject('buston')">Бустон</div>
+  </div>
+`;
+
+  backBtn.style.display = "block";
+}
+
+function showClientFlatInfo(flat) {
+  clientsScreen.innerHTML = `
+    <div style="color:white; text-align:center; margin-top:80px;">
+      Проект: ${currentClientProject.toUpperCase()}<br>
+      Подъезд: ${currentClientBlock.toUpperCase()}<br>
+      Квартира: ${flat}
+    </div>
+  `;
+}
