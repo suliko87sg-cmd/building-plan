@@ -653,7 +653,9 @@ function showClientDetails(item) {
     </div>
   `;
 }
-
+function goBack() {
+  backBtn.click();
+}
 function prevClient() {
   if (!currentClientRows.length) return;
 
@@ -666,22 +668,45 @@ function prevClient() {
   showClientDetails(currentClientRows[currentClientIndex]);
 }
 let startY = 0;
+let startX = 0;
 
+// 👉 фиксируем начало
 document.addEventListener("touchstart", (e) => {
   if (currentLevel !== "client-flat") return;
+
   startY = e.touches[0].clientY;
+  startX = e.touches[0].clientX;
 });
 
+// 👉 анализируем жест
 document.addEventListener("touchend", (e) => {
   if (currentLevel !== "client-flat") return;
 
   const endY = e.changedTouches[0].clientY;
+  const endX = e.changedTouches[0].clientX;
 
-  if (startY - endY > 50) {
-    nextClient();
-  }
+  const deltaX = startX - endX;
+  const deltaY = startY - endY;
 
-  if (endY - startY > 50) {
-    prevClient();
+  // 👉 определяем направление
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+
+    // горизонтальный свайп
+    // горизонтальный свайп (только с края)
+if (startX < 50 && deltaX > 70) {
+  goBack();
+}
+
+  } else {
+
+    // вертикальный свайп
+    if (deltaY > 50) {
+      nextClient();
+    }
+
+    if (deltaY < -50) {
+      prevClient();
+    }
+
   }
 });
