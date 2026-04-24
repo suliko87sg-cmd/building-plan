@@ -31,9 +31,14 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/cli
 let currentProject = "kush";
 let currentBlock = null;
 let currentFloor = 3;
+
 let currentLevel = "main";
 let currentClientProject = null;
 let currentClientBlock = null;
+
+// 🔥 ВОТ ЭТО ДОБАВЛЯЕМ
+let currentClientRows = [];
+let currentClientIndex = 0;
 // =====================
 // ЭЛЕМЕНТЫ
 // =====================
@@ -215,6 +220,7 @@ console.log("КЛЮЧИ:", Object.keys(clientsData[0]));
 // ✅ фильтр
 const rows = clientsData.filter(item => {
 
+
   const dollarText = (item["доллар"] || "").toString();
   const project = (item["проект"] || "").toLowerCase().trim();
   const flatId = (item.flatId || item.flatID || "").toLowerCase();
@@ -226,6 +232,7 @@ const rows = clientsData.filter(item => {
   );
 
 });
+currentClientRows = rows; // 🔥 ВОТ ЗДЕСЬ ПРАВИЛЬНО
    console.log("ПЕРВАЯ СТРОКА:", clientsData[0]);
     // 🔍 результат
    console.log("ОТФИЛЬТРОВАНО:", rows);
@@ -247,7 +254,10 @@ const rows = clientsData.filter(item => {
 `;
 
   btn.onclick = () => {
-  currentLevel = "client-flat"; // 🔥 ВАЖНО
+  currentLevel = "client-flat"; // оставляем
+
+  currentClientIndex = currentClientRows.indexOf(item); // 🔥 добавили
+
   showClientDetails(item);
 };
 
@@ -255,61 +265,7 @@ const rows = clientsData.filter(item => {
   // КАРТОЧКА 2 
   // =====================
 
-function showClientDetails(item) {
 
-  const screen = document.getElementById("clientsScreen");
-
-  // ✅ 1. список месяцев
-  const months = [
-    "01/25","02/25","03/25","04/25","05/25","06/25",
-    "07/25","08/25","09/25","10/25","11/25","12/25",
-    "01/26","02/26","03/26","04/26","05/26","06/26",
-    "07/26","08/26","09/26","10/26","11/26","12/26"
-  ];
-
-  // ✅ 2. собираем квадраты
-  let grid = "";
-
-  months.forEach(m => {
-    const value = item[m];
-
-    let cls = "empty";
-
-    if (value && value !== "") {
-      cls = "paid";
-    }
-
-    grid += `
-      <div class="payCell ${cls}">
-        ${value || ""}
-      </div>
-    `;
-  });
-
-  // ✅ 3. выводим всё
-  screen.innerHTML = `
-    <div style="padding:20px; color:white;">
-
-      <h2>${item["клиент"]}</h2>
-
-      <p>📞 ${item["телефон"]}</p>
-      <p>🏢 ${item["проект"]}</p>
-      <p>💰 Фикс: ${item["фикс/сумм"]}</p>
-
-      <hr>
-
-      <p>✅ Оплачено: ${item["оплачено"]}</p>
-      <p>📉 Остаток: ${item["долг"]} сомони</p>
-
-      <h3>💵 Долг: ${item["доллар"]} $</h3>
-
-      <div class="paymentGrid">
-        ${grid}
-      </div>
-
-    </div>
-  `;
-}
   container.appendChild(btn);
   
 });
@@ -628,3 +584,104 @@ function showClientFlatInfo(flat) {
     </div>
   `;
 }
+function nextClient() {
+  if (!currentClientRows.length) return;
+
+  currentClientIndex++;
+
+  if (currentClientIndex >= currentClientRows.length) {
+    currentClientIndex = 0;
+  }
+
+  showClientDetails(currentClientRows[currentClientIndex]);
+}
+function showClientDetails(item) {
+
+  const screen = document.getElementById("clientsScreen");
+
+  // ✅ 1. список месяцев
+  const months = [
+    "01/25","02/25","03/25","04/25","05/25","06/25",
+    "07/25","08/25","09/25","10/25","11/25","12/25",
+    "01/26","02/26","03/26","04/26","05/26","06/26",
+    "07/26","08/26","09/26","10/26","11/26","12/26"
+  ];
+
+  // ✅ 2. собираем квадраты
+  let grid = "";
+
+  months.forEach(m => {
+    const value = item[m];
+
+    let cls = "empty";
+
+    if (value && value !== "") {
+      cls = "paid";
+    }
+
+    grid += `
+      <div class="payCell ${cls}">
+        ${value || ""}
+      </div>
+    `;
+  });
+
+  // ✅ 3. выводим всё
+  screen.innerHTML = `
+    <div style="padding:20px; color:white;">
+
+      <h2>${item["клиент"]}</h2>
+
+      <p>📞 ${item["телефон"]}</p>
+      <p>🏢 ${item["проект"]}</p>
+      <p>💰 Фикс: ${item["фикс/сумм"]}</p>
+
+      <hr>
+
+      <p>✅ Оплачено: ${item["оплачено"]}</p>
+      <p>📉 Остаток: ${item["долг"]} сомони</p>
+
+      <h3>💵 Долг: ${item["доллар"]} $</h3>
+
+      <div class="paymentGrid">
+        ${grid}
+      </div>
+<div class="navBtns">
+  <button onclick="prevClient()">⬆ Предыдущий</button>
+  <button onclick="nextClient()">⬇ Следующий</button>
+</div>
+    </div>
+  `;
+}
+
+function prevClient() {
+  if (!currentClientRows.length) return;
+
+  currentClientIndex--;
+
+  if (currentClientIndex < 0) {
+    currentClientIndex = currentClientRows.length - 1;
+  }
+
+  showClientDetails(currentClientRows[currentClientIndex]);
+}
+let startY = 0;
+
+document.addEventListener("touchstart", (e) => {
+  if (currentLevel !== "client-flat") return;
+  startY = e.touches[0].clientY;
+});
+
+document.addEventListener("touchend", (e) => {
+  if (currentLevel !== "client-flat") return;
+
+  const endY = e.changedTouches[0].clientY;
+
+  if (startY - endY > 50) {
+    nextClient();
+  }
+
+  if (endY - startY > 50) {
+    prevClient();
+  }
+});
