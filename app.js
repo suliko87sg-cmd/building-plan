@@ -692,10 +692,9 @@ document.addEventListener("touchend", (e) => {
   if (Math.abs(deltaX) > Math.abs(deltaY)) {
 
     // горизонтальный свайп
-    // горизонтальный свайп (только с края)
-if (startX < 50 && deltaX > 70) {
-  goBack();
-}
+    if (deltaX > 70) {
+      goBack();
+    }
 
   } else {
 
