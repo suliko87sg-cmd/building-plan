@@ -214,41 +214,108 @@ console.log("ПЕРВЫЙ flatId:", clientsData[0]?.flatId);
 console.log("КЛЮЧИ:", Object.keys(clientsData[0]));
 // ✅ фильтр
 const rows = clientsData.filter(item => {
+
+  const dollarText = (item["доллар"] || "").toString();
   const project = (item["проект"] || "").toLowerCase().trim();
   const flatId = (item.flatId || item.flatID || "").toLowerCase();
 
   return (
     project === currentClientProject.toLowerCase() &&
-    flatId.includes(currentClientBlock.toLowerCase())
+    flatId.includes(currentClientBlock.toLowerCase()) &&
+    dollarText.trim().startsWith("-")
   );
+
 });
    console.log("ПЕРВАЯ СТРОКА:", clientsData[0]);
     // 🔍 результат
    console.log("ОТФИЛЬТРОВАНО:", rows);
-   rows.forEach(item => {
-    const btn = document.createElement("div");
-    btn.className = "menuBtn";
+ rows.forEach(item => {
 
-    const contract = item["договоры"] || "—";
-    const client = item["клиент"] || "—";
-    const dollar = item["доллар"] || "0";
+  const btn = document.createElement("div"); // ← ВОТ ЭТО НЕ ХВАТАЛО
+  btn.className = "clientBtn";
 
-    btn.innerHTML = `
-   №${contract}<br>
-   ${client}<br>
-   💵 ${dollar}
-   `;
+  const contract = item["договоры"] || "—";
+  const client = item["клиент"] || "—";
+  const dollar = item["доллар"] || "0";
 
-    btn.onclick = () => {
-      showClientDetails(item);
-    };
+  btn.innerHTML = `
+  <div class="rowTop">${contract}</div>
+  <div class="rowBottom">
+    <span class="client">${client}</span>
+    <span class="money">💵 ${dollar}</span>
+  </div>
+`;
 
-    container.appendChild(btn);
+  btn.onclick = () => {
+  currentLevel = "client-flat"; // 🔥 ВАЖНО
+  showClientDetails(item);
+};
+
+  // =====================
+  // КАРТОЧКА 2 
+  // =====================
+
+function showClientDetails(item) {
+
+  const screen = document.getElementById("clientsScreen");
+
+  // ✅ 1. список месяцев
+  const months = [
+    "01/25","02/25","03/25","04/25","05/25","06/25",
+    "07/25","08/25","09/25","10/25","11/25","12/25",
+    "01/26","02/26","03/26","04/26","05/26","06/26",
+    "07/26","08/26","09/26","10/26","11/26","12/26"
+  ];
+
+  // ✅ 2. собираем квадраты
+  let grid = "";
+
+  months.forEach(m => {
+    const value = item[m];
+
+    let cls = "empty";
+
+    if (value && value !== "") {
+      cls = "paid";
+    }
+
+    grid += `
+      <div class="payCell ${cls}">
+        ${value || ""}
+      </div>
+    `;
   });
 
-  clientsScreen.appendChild(container);
-}
+  // ✅ 3. выводим всё
+  screen.innerHTML = `
+    <div style="padding:20px; color:white;">
 
+      <h2>${item["клиент"]}</h2>
+
+      <p>📞 ${item["телефон"]}</p>
+      <p>🏢 ${item["проект"]}</p>
+      <p>💰 Фикс: ${item["фикс/сумм"]}</p>
+
+      <hr>
+
+      <p>✅ Оплачено: ${item["оплачено"]}</p>
+      <p>📉 Остаток: ${item["долг"]} сомони</p>
+
+      <h3>💵 Долг: ${item["доллар"]} $</h3>
+
+      <div class="paymentGrid">
+        ${grid}
+      </div>
+
+    </div>
+  `;
+}
+  container.appendChild(btn);
+  
+});
+clientsScreen.appendChild(container); // ← добавь это
+
+}
 
 // =====================
 // SVG
@@ -507,27 +574,6 @@ if (isSold) {
   flatCard.classList.add("show"); // оставляем твою анимацию
 }
 
-// =====================
-// КАРТОЧКА 2
-// =====================
-
-function showClientDetails(item) {
-  clientsScreen.innerHTML = `
-    <div style="color:white; text-align:center; margin-top:40px;">
-
-      <h2>№${item.contract}</h2>
-      <p>${item.client}</p>
-      <p>📞 ${item.phone}</p>
-
-      <p>Проект: ${item.project}</p>
-      <p>Блок: ${item.block}</p>
-      <p>Этаж: ${item.floor}</p>
-
-      <h3>💰 Долг: ${item.debt}</h3>
-
-    </div>
-  `;
-}
 
 
 function hideFlatCard() {

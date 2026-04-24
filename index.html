@@ -325,6 +325,124 @@ body {
     transparent 6px
   );
 }
+/* только для экрана ПОГАШЕНИЯ */
+#clientsScreen .menuBtn {
+  width: 80%;
+  max-width: 260px;
+
+  padding: 8px 12px;
+  margin: 6px auto;
+
+  border-radius: 10px;
+
+  background: #000;
+  color: white;
+
+  border: 1px solid rgba(255,0,0,0.5);
+  box-shadow: 0 0 8px rgba(255,0,0,0.5);
+}
+
+/* верхняя строка (договор) */
+#clientsScreen .row1 {
+  text-align: center;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* нижняя строка */
+#clientsScreen .row2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* имя */
+#clientsScreen .client {
+  text-align: left;
+}
+
+/* деньги */
+#clientsScreen .money {
+  text-align: right;
+  font-weight: bold;
+}
+
+/* ===== ПОГАШЕНИЕ ===== */
+.clientBtn {
+  width: 92%;
+  margin: 8px auto;
+  padding: 10px 14px;
+
+  border-radius: 12px;
+  background: #000;
+  color: white;
+  border: 1px solid rgba(255,0,0,0.5);
+  box-shadow: 0 0 10px rgba(255,0,0,0.6);
+
+  font-size: 14px;
+}
+
+/* верхняя строка: номер договора слева */
+.clientBtn .rowTop {
+  text-align: left;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+/* нижняя строка */
+.clientBtn .rowBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* имя клиента */
+.clientBtn .client {
+  text-align: left;
+  font-size: 16px;
+  line-height: 1.2;
+  max-width: 68%;
+}
+
+/* долг справа */
+.clientBtn .money {
+  text-align: right;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+  transform: translateY(-2px);
+  white-space: nowrap;
+}
+.paymentGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 6 в ряд */
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.payCell {
+  padding: 8px;
+  text-align: center;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #111;
+  color: white;
+}
+
+/* оплачено */
+.payCell.paid {
+  background: #0a7d2c;
+}
+
+/* пусто */
+.payCell.empty {
+  background: #222;
+}
 </style>
 </head>
 
@@ -374,6 +492,7 @@ body {
 </div>
 <!-- ПОГАШЕНИЕ -->
 <script src="app.js?v=10"></script>
+
 
 </body>
 </html>
