@@ -207,7 +207,7 @@ const projectMap = {
   "Бустон": "buston"
 };
 
-const realBlock = blockMap[currentClientBlock] || currentClientBlock;
+const realBlock = currentClientBlock.toLowerCase();
 const realProject = projectMap[currentClientProject] || currentClientProject;
 // 🔍 диагностика
 console.log("PROJECT:", realProject);
@@ -218,22 +218,34 @@ console.log("БЛОК В СИСТЕМЕ:", currentClientBlock);
 console.log("ПЕРВЫЙ flatId:", clientsData[0]?.flatId);
 console.log("КЛЮЧИ:", Object.keys(clientsData[0]));
 // ✅ фильтр
-const rows = clientsData.filter(item => {
+const prefix = (realProject + "blocks-" + currentClientBlock).toLowerCase();
 
+const rowsById = clientsData.filter(item => {
+  const flatId = (item.flatId || item.flatID || "")
+    .toString()
+    .toLowerCase()
+    .replace(/\s/g, "");
 
-  const dollarText = (item["доллар"] || "").toString();
-  const project = (item["проект"] || "").toLowerCase().trim();
-  const flatId = (item.flatId || item.flatID || "").toLowerCase();
-
-  return (
-    project === currentClientProject.toLowerCase() &&
-    flatId.includes(currentClientBlock.toLowerCase()) &&
-    dollarText.trim().startsWith("-")
-  );
-
+  return flatId.startsWith(prefix);
 });
+
+console.log("PREFIX:", prefix);
+console.log("НАЙДЕНО ПО ID:", rowsById.length, rowsById.slice(0, 5));
+
+const rows = rowsById.filter(item => {
+  const dollarText = (item["доллар"] || "")
+    .toString()
+    .trim();
+
+  return dollarText.startsWith("-");
+});
+
+console.log("НАЙДЕНО ДОЛЖНИКОВ:", rows.length, rows.slice(0, 5));
+
 currentClientRows = rows; // 🔥 ВОТ ЗДЕСЬ ПРАВИЛЬНО
-   console.log("ПЕРВАЯ СТРОКА:", clientsData[0]);
+   console.log("ПЕРВАЯ В ОТФИЛЬТРОВАННЫХ:", rows[0]);
+   console.log("ВСЕ ОТФИЛЬТРОВАННЫЕ:", rows);
+   console.log("CURRENT BLOCK:", currentClientBlock);
     // 🔍 результат
    console.log("ОТФИЛЬТРОВАНО:", rows);
  rows.forEach(item => {
@@ -600,12 +612,13 @@ function showClientDetails(item) {
   const screen = document.getElementById("clientsScreen");
 
   // ✅ 1. список месяцев
-  const months = [
-    "01/25","02/25","03/25","04/25","05/25","06/25",
-    "07/25","08/25","09/25","10/25","11/25","12/25",
-    "01/26","02/26","03/26","04/26","05/26","06/26",
-    "07/26","08/26","09/26","10/26","11/26","12/26"
-  ];
+  const months = Object.keys(item)
+  .filter(key => /^\d{2}\/\d{2}$/.test(key)) // формат 01/25
+  .sort((a, b) => {
+    const [m1, y1] = a.split("/").map(Number);
+    const [m2, y2] = b.split("/").map(Number);
+    return y1 !== y2 ? y1 - y2 : m1 - m2;
+  });
 
   // ✅ 2. собираем квадраты
   let grid = "";
@@ -625,15 +638,40 @@ function showClientDetails(item) {
       </div>
     `;
   });
+const blockReverseMap = {
+  "b1": "А",
+  "b2": "Б",
+  "b3": "В",
+  "b4": "Г",
+  "b5": "Д",
+  "b6": "Е"
+};
+const projectNameMap = {
+  "buston": "Бустон",
+  "kush": "Куш",
+  "gafurov": "Гафуров"
+};
+const projectKey = (item["проект"] || "").toLowerCase().trim();
+const niceProject = projectNameMap[projectKey] || projectKey;
+const flatId = (item.flatId || item.flatID || "").toLowerCase();
+const realBlock = flatId.split("-")[1]; // ← вот магия
+const niceBlock = blockReverseMap[realBlock] || realBlock;
 
+const displayProject = `${niceProject} ${niceBlock}`;
   // ✅ 3. выводим всё
   screen.innerHTML = `
     <div style="padding:20px; color:white;">
 
-      <h2>${item["клиент"]}</h2>
+      <h3 style="opacity:0.7; margin-bottom:5px;">
+  ${item["договоры"] || "—"}
+</h3>
+
+<h2 style="margin-top:0;">
+  ${item["клиент"]}
+</h2>
 
       <p>📞 ${item["телефон"]}</p>
-      <p>🏢 ${item["проект"]}</p>
+      <p>🏢 ${item["проект"] || "-"}</p>
       <p>💰 Фикс: ${item["фикс/сумм"]}</p>
 
       <hr>
