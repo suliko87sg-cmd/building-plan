@@ -218,7 +218,7 @@ console.log("БЛОК В СИСТЕМЕ:", currentClientBlock);
 console.log("ПЕРВЫЙ flatId:", clientsData[0]?.flatId);
 console.log("КЛЮЧИ:", Object.keys(clientsData[0]));
 // ✅ фильтр
-const prefix = (realProject + "blocks-" + currentClientBlock).toLowerCase();
+const prefix = (projects[realProject].sheet + "-" + currentClientBlock).toLowerCase();
 
 const rowsById = clientsData.filter(item => {
   const flatId = (item.flatId || item.flatID || "")
