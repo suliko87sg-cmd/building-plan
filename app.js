@@ -611,33 +611,71 @@ function showClientDetails(item) {
 
   const screen = document.getElementById("clientsScreen");
 
-  // ✅ 1. список месяцев
-  const months = Object.keys(item)
-  .filter(key => /^\d{2}\/\d{2}$/.test(key)) // формат 01/25
+  // ✅ 1. старт клиента
+const start = item["старт"];
+console.log("СТАРТ:", start);
+
+const startDate = parseDate(start);
+
+const normalized = {};
+Object.keys(item).forEach(k => {
+  normalized[k.trim()] = item[k];
+});
+
+// 1. Берём колонки оплат из таблицы: 01/24, 02/24, 03/24...
+const paymentKeys = Object.keys(normalized)
+  .filter(k => /^\d{2}\/\d{2}$/.test(k))
   .sort((a, b) => {
     const [m1, y1] = a.split("/").map(Number);
     const [m2, y2] = b.split("/").map(Number);
-    return y1 !== y2 ? y1 - y2 : m1 - m2;
+    return y1 === y2 ? m1 - m2 : y1 - y2;
   });
 
-  // ✅ 2. собираем квадраты
-  let grid = "";
+// 2. Строим реальные месяцы от старта клиента
+const realMonths = startDate ? generateMonths(startDate, paymentKeys.length) : paymentKeys;
 
-  months.forEach(m => {
-    const value = item[m];
+// ✅ 2. собираем квадраты
+let grid = "";
 
-    let cls = "empty";
+// 🔥 ВОТ СЮДА
 
-    if (value && value !== "") {
-      cls = "paid";
-    }
 
-    grid += `
-      <div class="payCell ${cls}">
-        ${value || ""}
-      </div>
-    `;
-  });
+
+
+const today = new Date();
+today.setDate(1);
+today.setHours(0,0,0,0);
+
+realMonths.forEach((m, index) => {
+  const [month, year] = m.split("/");
+const cellDate = new Date(2000 + Number(year), Number(month) - 1, 1);
+const isCurrentMonth =
+  cellDate.getFullYear() === today.getFullYear() &&
+  cellDate.getMonth() === today.getMonth();
+  const key = paymentKeys[index];
+const value = key ? normalized[key] : "";
+
+  const cleanValue = Number(String(value).replace(/\s/g, "")) || 0;
+
+  let cls = "empty";
+
+  if (cleanValue > 0) {
+    cls = "paid"; // 🟢 есть деньги
+  } else if (cellDate < today) {
+    cls = "late"; // 🟡 просрочка
+  } else {
+    cls = "empty"; // ⚪ будущее
+    let isCurrentMonth =
+  cellDate.getFullYear() === today.getFullYear() &&
+  cellDate.getMonth() === today.getMonth();
+  }
+
+  grid += `
+  <div class="payCell ${cls} ${isCurrentMonth ? "currentMonth" : ""}">
+    ${value || ""}
+  </div>
+`;
+});
 const blockReverseMap = {
   "b1": "А",
   "b2": "Б",
@@ -691,8 +729,33 @@ const displayProject = `${niceProject} ${niceBlock}`;
     </div>
   `;
 }
-function goBack() {
-  backBtn.click();
+
+function parseDate(dateStr) {
+  if (!dateStr) return null;
+
+  const parts = dateStr.split(/[.,]/);
+  return new Date(parts[2], parts[1] - 1, parts[0]);
+}
+function generateMonths(startDate, count = 24) {
+  const months = [];
+
+  let month = startDate.getMonth();
+  let year = startDate.getFullYear();
+
+  for (let i = 0; i < count; i++) {
+    const m = String(month + 1).padStart(2, "0");
+    const y = String(year).slice(2);
+
+    months.push(`${m}/${y}`);
+
+    month++;
+    if (month > 11) {
+      month = 0;
+      year++;
+    }
+  }
+
+  return months;
 }
 function prevClient() {
   if (!currentClientRows.length) return;

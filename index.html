@@ -439,6 +439,12 @@ body {
   background: #0a7d2c;
 }
 
+/* просрочка */
+.payCell.late {
+  background: #b58b00;
+  color: white;
+}
+
 /* пусто */
 .payCell.empty {
   background: #222;
@@ -458,7 +464,13 @@ body {
     display: none;
   }
 }
-
+.payCell.currentMonth {
+  border: 2px solid #bb00ff;
+  box-shadow:
+    0 0 6px #bb00ff,
+    0 0 12px #bb00ff,
+    0 0 20px #ff00ff;
+}
 </style>
 </head>
 
