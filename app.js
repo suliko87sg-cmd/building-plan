@@ -830,51 +830,15 @@ function prevClient() {
 
   showClientDetails(currentClientRows[currentClientIndex]);
 }
-let startY = 0;
-let startX = 0;
 
-// 👉 фиксируем начало
-document.addEventListener("touchstart", (e) => {
-  if (currentLevel !== "client-flat") return;
-
-  startY = e.touches[0].clientY;
-  startX = e.touches[0].clientX;
-});
-
-// 👉 анализируем жест
-document.addEventListener("touchend", (e) => {
-  if (currentLevel !== "client-flat") return;
-
-  const endY = e.changedTouches[0].clientY;
-  const endX = e.changedTouches[0].clientX;
-
-  const deltaX = startX - endX;
-  const deltaY = startY - endY;
-
-  // 👉 определяем направление
-  if (Math.abs(deltaX) > Math.abs(deltaY)) {
-
-    // горизонтальный свайп
-    if (deltaX > 70) {
-      goBack();
-    }
-
-  } else {
-
-    // вертикальный свайп
-    if (deltaY > 50) {
-      nextClient();
-    }
-
-    if (deltaY < -50) {
-      prevClient();
-    }
-
-  }
-});
 // ===== SWIPE BACK (iPhone style) =====
+document.addEventListener("touchmove", (e) => {
+  if (isEdgeSwipe) {
+    e.preventDefault(); // 🔥 ВОТ ЭТО ВАЖНО
+  }
+}, { passive: false });
 
-const EDGE_SIZE = 30;   // зона от края (px)
+const EDGE_SIZE = 60;   // зона от края (px)
 const MIN_SWIPE = 70;   // минимальная длина свайпа
 
 document.addEventListener("touchstart", (e) => {
@@ -916,5 +880,40 @@ document.addEventListener("touchend", (e) => {
   // 👉 свайп СПРАВА → ВЛЕВО
   if (startX > screenWidth - EDGE_SIZE && deltaX < -MIN_SWIPE) {
     goBack();
+  }
+});
+
+// ===== SWIPE BETWEEN CLIENTS (vertical) =====
+
+let vStartY = 0;
+let vStartX = 0;
+
+document.addEventListener("touchstart", (e) => {
+  if (currentLevel !== "client-flat") return;
+
+  vStartY = e.touches[0].clientY;
+  vStartX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", (e) => {
+  if (currentLevel !== "client-flat") return;
+
+  const endY = e.changedTouches[0].clientY;
+  const endX = e.changedTouches[0].clientX;
+
+  const deltaY = vStartY - endY;
+  const deltaX = Math.abs(vStartX - endX);
+
+  // ❌ игнор если горизонтальный свайп
+  if (deltaX > 50) return;
+
+  // 🔽 вниз → предыдущий
+  if (deltaY < -50) {
+    prevClient();
+  }
+
+  // 🔼 вверх → следующий
+  if (deltaY > 50) {
+    nextClient();
   }
 });
