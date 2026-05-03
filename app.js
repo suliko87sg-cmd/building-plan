@@ -473,13 +473,16 @@ if (!svg.querySelector("#soldPattern")) {
     };
   });
 };
-
 // =====================
 // НАЗАД
 // =====================
+function goBack() {
+  if (typeof backBtn.onclick === "function") {
+    backBtn.onclick();
+  }
+}
 backBtn.onclick = () => {
-
-  console.log("НАЗАД:", currentLevel);
+console.log("НАЗАД:", currentLevel);
 
   // 🔥 0. из квартиры → к списку квартир
 if (currentLevel === "client-flat") {
@@ -538,6 +541,7 @@ if (currentLevel === "clients-flats") {
   }
 
 };
+
 
 // =====================
 // КАРТОЧКА
@@ -749,18 +753,24 @@ const displayProject = `${niceProject} ${niceBlock}`;
   <div class="phoneRow">
   <span class="phoneText">📞 ${item["телефон"] || "-"}</span>
 
-  <div class="phoneActions">
-    <a href="tel:${(item["телефон"] || "").replace(/\D/g, "")}" class="callBtn">
-      📞
-    </a>
+  <a href="tel:${(item["телефон"] || "").replace(/\D/g, "")}" 
+     <a href="tel:${(item["телефон"] || "").replace(/\D/g, "")}" 
+   class="callMiniBtn">
 
+  <span class="callIcon">📞</span>
+  <span>Позвонить</span>
+
+</a>
+
+  <div class="phoneActions">
     <a href="https://wa.me/${(item["телефон"] || "").replace(/\D/g, "")}" 
-       target="_blank" 
+       target="_blank"
        class="waBtn">
-      💬
+       <img src="whatsapp.svg">
     </a>
   </div>
 </div>
+
       <p>🏢 ${item["проект"] || "-"}</p>
       <p>💰 Фикс: ${item["фикс/сумм"]}</p>
 
@@ -860,5 +870,51 @@ document.addEventListener("touchend", (e) => {
       prevClient();
     }
 
+  }
+});
+// ===== SWIPE BACK (iPhone style) =====
+
+const EDGE_SIZE = 30;   // зона от края (px)
+const MIN_SWIPE = 70;   // минимальная длина свайпа
+
+document.addEventListener("touchstart", (e) => {
+  const touch = e.touches[0];
+
+  startX = touch.clientX;
+  startY = touch.clientY;
+
+  const screenWidth = window.innerWidth;
+
+  // старт только с краёв
+  if (startX < EDGE_SIZE || startX > screenWidth - EDGE_SIZE) {
+    isEdgeSwipe = true;
+  } else {
+    isEdgeSwipe = false;
+  }
+});
+
+document.addEventListener("touchend", (e) => {
+  if (!isEdgeSwipe) return;
+
+  const touch = e.changedTouches[0];
+  const endX = touch.clientX;
+  const endY = touch.clientY;
+
+  const deltaX = endX - startX;
+  const deltaY = Math.abs(endY - startY);
+
+  // защита от вертикальных свайпов
+  if (deltaY > 50) return;
+
+  const screenWidth = window.innerWidth;
+
+  // 👉 свайп СЛЕВА → ВПРАВО
+  if (startX < EDGE_SIZE && deltaX > MIN_SWIPE) {
+    goBack();
+  }
+
+  // 👉 свайп СПРАВА → ВЛЕВО
+  if (startX > screenWidth - EDGE_SIZE && deltaX < -MIN_SWIPE) {
+    goBack();
   }
 });

@@ -26,11 +26,19 @@ body {
   color: rgb(8, 8, 8);
   font-family: Arial, sans-serif;
   overflow: hidden;
-  @media (max-width: 768px) {
+}
+
+/* 📱 МОБИЛКА */
+@media (max-width: 768px) {
   #plan {
     padding-bottom: 200px;
   }
+
+  .navBtns {
+    display: none;
+  }
 }
+
 
 
 
@@ -162,7 +170,7 @@ body {
   position: fixed;
   top: 15px;
   left: 15px;
-
+   display: none; 
   padding: 8px 14px;
   font-size: 16px;
 
@@ -180,6 +188,7 @@ body {
 
   z-index: 9999;
 }
+
 
 /* ===================== */
 /* ЭТАЖИ */
@@ -475,12 +484,7 @@ body {
   border-radius: 8px;
 }
 
-/* 📱 скрываем на телефоне */
-@media (max-width: 768px) {
-  .navBtns {
-    display: none;
-  }
-}
+
 .payCell.currentMonth {
   border: 2px solid #bb00ff;
   box-shadow:
@@ -517,76 +521,90 @@ body {
   border: 1px solid red;
   box-shadow: 0 0 8px red;
 }
+
+/* ===== Телефон + WhatsApp ===== */
 .phoneRow {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 10px 0;
+  gap: 8px;
+}
+.phoneText {
+  flex: 1;
 }
 
 .phoneText {
   color: white;
   font-size: 16px;
-}
-
-.callBtn {
-  background: linear-gradient(45deg, #00ff88, #00cc66);
-  color: black;
-  padding: 8px 14px;
-  border-radius: 10px;
-  text-decoration: none;
-  font-weight: bold;
-  box-shadow: 0 0 10px #00ff88;
-}
-.phoneRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 0;
-}
-
-.phoneText {
-  color: white;
-  font-size: 16px;
+  white-space: nowrap;
 }
 
 .phoneActions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.callBtn {
-  background: linear-gradient(45deg, #00ff88, #00cc66);
-  color: black;
+.callMiniBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
   padding: 6px 10px;
-  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+
+  color: white;
   text-decoration: none;
-  font-weight: bold;
-  box-shadow: 0 0 8px #00ff88;
+
+  border-radius: 8px;
+  background: rgba(255, 0, 0, 0.85);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+
+  transition: 0.2s;
+}
+
+.callMiniBtn:active {
+  transform: scale(0.95);
+}
+.callMiniBtn:active,
+.waBtn:active {
+  transform: scale(0.92);
+}
+
+.callIcon {
+  font-size: 14px;
 }
 
 .waBtn {
-  background: linear-gradient(45deg, #25D366, #128C7E);
-  color: white;
-  padding: 6px 10px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  box-shadow: 0 0 8px #25D366;
-}
-.phoneActions a {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  font-size: 16px;
+
+  width: 44px;
+  height: 44px;
+
+  background: transparent;     /* 👈 убрали чёрный фон */
+  box-shadow: none;            /* 👈 убрали свечение если есть */
 }
+.waBtn {
+  transition: 0.2s;
+}
+
+.waBtn:hover {
+  transform: scale(1.05);
+}
+
+.waBtn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 </style>
 </head>
 
 <body>
-
+  <div id="app">
 <!-- SPLASH -->
 <div id="splash">
   <img src="logo.png" id="splashLogo">
