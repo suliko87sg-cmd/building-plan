@@ -229,6 +229,14 @@ body {
     0 0 30px red;
 }
 
+.managerTop {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.85;
+}
 /* ===================== */
 /* SVG */
 /* ===================== */
@@ -426,12 +434,21 @@ body {
 }
 
 .payCell {
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+
   padding: 8px;
   text-align: center;
   border-radius: 6px;
   font-size: 12px;
   background: #111;
   color: white;
+
+  height: 32px;        /* 🔥 ВОТ ЭТО ДОБАВЬ */
+  display: flex;       /* 🔥 и это */
+  align-items: center; /* по центру вертикально */
+  justify-content: center; /* по центру горизонтально */
 }
 
 /* оплачено */
@@ -470,6 +487,100 @@ body {
     0 0 6px #bb00ff,
     0 0 12px #bb00ff,
     0 0 20px #ff00ff;
+}
+.managerFilter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 15px 10px 5px;
+}
+
+.filterItem {
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: #111;
+  color: #ccc;
+  cursor: pointer;
+  border: 1px solid #333;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.filterItem:hover {
+  color: white;
+  border-color: red;
+}
+
+.filterItem.active {
+  background: rgba(255, 0, 0, 0.2);
+  color: white;
+  border: 1px solid red;
+  box-shadow: 0 0 8px red;
+}
+.phoneRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.phoneText {
+  color: white;
+  font-size: 16px;
+}
+
+.callBtn {
+  background: linear-gradient(45deg, #00ff88, #00cc66);
+  color: black;
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00ff88;
+}
+.phoneRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.phoneText {
+  color: white;
+  font-size: 16px;
+}
+
+.phoneActions {
+  display: flex;
+  gap: 8px;
+}
+
+.callBtn {
+  background: linear-gradient(45deg, #00ff88, #00cc66);
+  color: black;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 0 8px #00ff88;
+}
+
+.waBtn {
+  background: linear-gradient(45deg, #25D366, #128C7E);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  box-shadow: 0 0 8px #25D366;
+}
+.phoneActions a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
 }
 </style>
 </head>

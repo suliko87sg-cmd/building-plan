@@ -39,6 +39,7 @@ let currentClientBlock = null;
 // 🔥 ВОТ ЭТО ДОБАВЛЯЕМ
 let currentClientRows = [];
 let currentClientIndex = 0;
+let selectedManager = "all";
 // =====================
 // ЭЛЕМЕНТЫ
 // =====================
@@ -184,73 +185,99 @@ function renderClientBlocks() {
 
 function renderClientFlats() {
   clientsScreen.innerHTML = "";
-  if (!isClientsLoaded) {
-  console.log("clients еще не загрузились");
-  return;
-}
-const container = document.createElement("div");
+
+  if (!isClientsLoaded) return;
+
+  const container = document.createElement("div");
   container.style.textAlign = "center";
   container.style.marginTop = "60px";
 
-  const blockMap = {
-  "А": "b1",
-  "Б": "b2",
-  "В": "b3",
-  "Г": "b4",
-  "Д": "b5",
-  "Е": "b6"
+  const projectMap = {
+    "Куш": "kush",
+    "Гафуров": "gafurov",
+    "Бустон": "buston"
+  };
+
+  const realProject = projectMap[currentClientProject] || currentClientProject;
+
+  const prefix = (projects[realProject].sheet + "-" + currentClientBlock).toLowerCase();
+
+  // 🔽 фильтр по ID
+  const rowsById = clientsData.filter(item => {
+    const flatId = (item.flatId || item.flatID || "")
+      .toString()
+      .toLowerCase()
+      .replace(/\s/g, "");
+
+    return flatId.startsWith(prefix);
+  });
+
+  // 🔽 только должники
+  const rows = rowsById.filter(item => {
+    const d = (item["доллар"] || "").toString().trim();
+    return d.startsWith("-");
+  });
+
+  // =======================
+  // 📊 считаем менеджеров
+  // =======================
+  const managerCounts = {};
+
+  rows.forEach(item => {
+    const m = (item["менеджер"] || "").trim();
+    if (!m) return;
+    managerCounts[m] = (managerCounts[m] || 0) + 1;
+  });
+
+  const managers = Object.keys(managerCounts);
+
+// =======================
+// 🎛️ UI фильтра (КНОПКИ)
+// =======================
+const filterBox = document.createElement("div");
+filterBox.className = "managerFilter";
+
+// кнопка ВСЕ
+const allBtn = document.createElement("div");
+allBtn.className = "filterItem" + (selectedManager === "all" ? " active" : "");
+allBtn.textContent = `Все (${rows.length})`;
+
+allBtn.onclick = () => {
+  selectedManager = "all";
+  renderClientFlats();
 };
 
-const projectMap = {
-  "Куш": "kush",
-  "Гафуров": "gafurov",
-  "Бустон": "buston"
-};
+filterBox.appendChild(allBtn);
 
-const realBlock = currentClientBlock.toLowerCase();
-const realProject = projectMap[currentClientProject] || currentClientProject;
-// 🔍 диагностика
-console.log("PROJECT:", realProject);
-console.log("BLOCK:", realBlock);
-console.log("ВСЕ ДАННЫЕ:", clientsData);
-console.log("ПРОЕКТ В СИСТЕМЕ:", currentClientProject);
-console.log("БЛОК В СИСТЕМЕ:", currentClientBlock);
-console.log("ПЕРВЫЙ flatId:", clientsData[0]?.flatId);
-console.log("КЛЮЧИ:", Object.keys(clientsData[0]));
-// ✅ фильтр
-const prefix = (projects[realProject].sheet + "-" + currentClientBlock).toLowerCase();
+// кнопки менеджеров
+managers.forEach(name => {
+  const btn = document.createElement("div");
 
-const rowsById = clientsData.filter(item => {
-  const flatId = (item.flatId || item.flatID || "")
-    .toString()
-    .toLowerCase()
-    .replace(/\s/g, "");
+  btn.className = "filterItem" + (selectedManager === name ? " active" : "");
+  btn.textContent = `👤 ${name} (${managerCounts[name]})`;
+allBtn.textContent = `📋 Все (${rows.length})`;
+  btn.onclick = () => {
+    selectedManager = name;
+    renderClientFlats();
+  };
 
-  return flatId.startsWith(prefix);
+  filterBox.appendChild(btn);
 });
 
-console.log("PREFIX:", prefix);
-console.log("НАЙДЕНО ПО ID:", rowsById.length, rowsById.slice(0, 5));
-
-const rows = rowsById.filter(item => {
-  const dollarText = (item["доллар"] || "")
-    .toString()
-    .trim();
-
-  return dollarText.startsWith("-");
+// вставляем ПЕРЕД списком
+container.appendChild(filterBox);
+// фильтр данных
+const filteredRows = rows.filter(item => {
+  const m = (item["менеджер"] || "").trim();
+  if (selectedManager === "all") return true;
+  return m === selectedManager;
 });
 
-console.log("НАЙДЕНО ДОЛЖНИКОВ:", rows.length, rows.slice(0, 5));
+currentClientRows = filteredRows;
 
-currentClientRows = rows; // 🔥 ВОТ ЗДЕСЬ ПРАВИЛЬНО
-   console.log("ПЕРВАЯ В ОТФИЛЬТРОВАННЫХ:", rows[0]);
-   console.log("ВСЕ ОТФИЛЬТРОВАННЫЕ:", rows);
-   console.log("CURRENT BLOCK:", currentClientBlock);
-    // 🔍 результат
-   console.log("ОТФИЛЬТРОВАНО:", rows);
- rows.forEach(item => {
-
-  const btn = document.createElement("div"); // ← ВОТ ЭТО НЕ ХВАТАЛО
+// вывод
+filteredRows.forEach(item => {
+  const btn = document.createElement("div");
   btn.className = "clientBtn";
 
   const contract = item["договоры"] || "—";
@@ -258,29 +285,26 @@ currentClientRows = rows; // 🔥 ВОТ ЗДЕСЬ ПРАВИЛЬНО
   const dollar = item["доллар"] || "0";
 
   btn.innerHTML = `
-  <div class="rowTop">${contract}</div>
-  <div class="rowBottom">
-    <span class="client">${client}</span>
-    <span class="money">💵 ${dollar}</span>
-  </div>
-`;
+    <div class="rowTop">${contract}</div>
+    <div class="rowBottom">
+      <span class="client">${client}</span>
+      <span class="money">💵 ${dollar}</span>
+    </div>
+  `;
 
   btn.onclick = () => {
-  currentLevel = "client-flat"; // оставляем
+    currentLevel = "client-flat";
+    currentClientIndex = currentClientRows.indexOf(item);
+    showClientDetails(item);
+  };
 
-  currentClientIndex = currentClientRows.indexOf(item); // 🔥 добавили
-
-  showClientDetails(item);
-};
+  container.appendChild(btn);
+});
 
   // =====================
   // КАРТОЧКА 2 
   // =====================
 
-
-  container.appendChild(btn);
-  
-});
 clientsScreen.appendChild(container); // ← добавь это
 
 }
@@ -609,6 +633,9 @@ function nextClient() {
 }
 function showClientDetails(item) {
 
+   const phone = item["телефон"] || "-";
+  const cleanPhone = phone.replace(/\D/g, "");
+
   const screen = document.getElementById("clientsScreen");
 
   // ✅ 1. старт клиента
@@ -645,10 +672,19 @@ let grid = "";
 const today = new Date();
 today.setDate(1);
 today.setHours(0,0,0,0);
-
+  let futureCount = 0;
+const MAX_FUTURE = 12;
 realMonths.forEach((m, index) => {
+
   const [month, year] = m.split("/");
 const cellDate = new Date(2000 + Number(year), Number(month) - 1, 1);
+
+// ограничиваем будущее
+if (cellDate > today) {
+  futureCount++;
+  if (futureCount > MAX_FUTURE) return;
+}
+
 const isCurrentMonth =
   cellDate.getFullYear() === today.getFullYear() &&
   cellDate.getMonth() === today.getMonth();
@@ -699,6 +735,8 @@ const displayProject = `${niceProject} ${niceBlock}`;
   // ✅ 3. выводим всё
   screen.innerHTML = `
     <div style="padding:20px; color:white;">
+    
+    <div class="managerTop">👤 ${item["менеджер"] || "-"}</div>
 
       <h3 style="opacity:0.7; margin-bottom:5px;">
   ${item["договоры"] || "—"}
@@ -708,7 +746,21 @@ const displayProject = `${niceProject} ${niceBlock}`;
   ${item["клиент"]}
 </h2>
 
-      <p>📞 ${item["телефон"]}</p>
+  <div class="phoneRow">
+  <span class="phoneText">📞 ${item["телефон"] || "-"}</span>
+
+  <div class="phoneActions">
+    <a href="tel:${(item["телефон"] || "").replace(/\D/g, "")}" class="callBtn">
+      📞
+    </a>
+
+    <a href="https://wa.me/${(item["телефон"] || "").replace(/\D/g, "")}" 
+       target="_blank" 
+       class="waBtn">
+      💬
+    </a>
+  </div>
+</div>
       <p>🏢 ${item["проект"] || "-"}</p>
       <p>💰 Фикс: ${item["фикс/сумм"]}</p>
 
