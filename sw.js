@@ -1,11 +1,11 @@
 const CACHE_NAME = "app-cache-v2";
 
 const urlsToCache = [
-  "/building-plan/",
-  "/building-plan/index.html",
-  "/building-plan/app.js",
-  "/building-plan/manifest.json",
-  "/building-plan/logo.png"
+  "/",
+  "/index.html",
+  "/app.js",
+  "/manifest.json",
+  "/logo.png"
 ];
 
 self.addEventListener("install", (e) => {

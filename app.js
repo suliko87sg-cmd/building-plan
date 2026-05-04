@@ -917,3 +917,28 @@ document.addEventListener("touchend", (e) => {
     nextClient();
   }
 });
+window.addEventListener("load", () => {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js")
+      .then(() => console.log("🔥 SW зарегистрирован"))
+      .catch(err => console.log("❌ SW ошибка:", err));
+  }
+});
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  console.log("🔥 МОЖНО УСТАНОВИТЬ");
+
+  const installBtn = document.createElement("button");
+  installBtn.innerText = "Установить приложение";
+  installBtn.id = "installBtn";
+
+  document.body.appendChild(installBtn);
+
+  installBtn.onclick = async () => {
+    deferredPrompt.prompt();
+  };
+});
