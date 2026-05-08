@@ -26,19 +26,11 @@ body {
   color: rgb(8, 8, 8);
   font-family: Arial, sans-serif;
   overflow: hidden;
-}
-
-/* 📱 МОБИЛКА */
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
   #plan {
     padding-bottom: 200px;
   }
-
-  .navBtns {
-    display: none;
-  }
 }
-
 
 
 
@@ -484,7 +476,12 @@ body {
   border-radius: 8px;
 }
 
-
+/* 📱 скрываем на телефоне */
+@media (max-width: 768px) {
+  .navBtns {
+    display: none;
+  }
+}
 .payCell.currentMonth {
   border: 2px solid #bb00ff;
   box-shadow:
@@ -600,34 +597,246 @@ body {
   object-fit: contain;
 }
 
-/* 🔥 КНОПКА УСТАНОВКИ */
-#installBtn {
+/* ===================== */
+/* MONITORING */
+/* ===================== */
+
+#monitoringScreen {
   position: fixed;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  
-  width: 80%;
-  max-width: 300px;
+  inset: 0;
 
-  padding: 12px;
-  border-radius: 12px;
+  overflow-y: auto;
 
-  background: black;
+  padding: 80px 16px 40px;
+
+  color: white;
+}
+
+.monitoringHeader {
+
+  text-align: center;
+
+  font-size: 28px;
+  font-weight: bold;
+
+  margin-bottom: 30px;
+
   color: white;
 
-  border: 1px solid red;
-  box-shadow: 0 0 10px red;
+  text-shadow: 0 0 10px red;
+}
+
+.monitoringGrid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 16px;
+}
+
+.monitorCard {
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20,20,20,0.95),
+      rgba(0,0,0,0.95)
+    );
+
+  border-radius: 18px;
+
+  padding: 26px 12px;
+
+  border:
+    1px solid rgba(255,0,0,0.35);
+
+  box-shadow:
+    0 0 14px rgba(255,0,0,0.25);
+
+  text-align: center;
+
+  transition: 0.25s;
+}
+
+.monitorCard:active {
+  transform: scale(0.96);
+}
+
+.monitorIcon {
+
+  font-size: 42px;
+
+  margin-bottom: 12px;
+}
+
+.monitorTitle {
 
   font-size: 16px;
-  z-index: 9999;
+  font-weight: 600;
+}
+
+.monitorCard.danger {
+
+  border:
+    1px solid rgba(255,0,0,0.8);
+
+  box-shadow:
+    0 0 18px rgba(255,0,0,0.45);
+}
+
+.buildGrid{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  padding:20px;
+}
+
+.buildCard{
+  background:#120000;
+  border:2px solid #ff0000;
+  border-radius:22px;
+  padding:20px;
+  color:white;
+  box-shadow:0 0 20px rgba(255,0,0,0.4);
+}
+
+.buildTop{
+  font-size:26px;
+  font-weight:bold;
+  margin-bottom:18px;
+}
+
+.buildInfo{
+  font-size:18px;
+  margin-bottom:10px;
+  opacity:0.9;
+}
+
+.progressBar{
+  width:100%;
+  height:16px;
+  background:#2a0000;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:15px;
+}
+
+.progressFill{
+  height:100%;
+  background:linear-gradient(90deg,#ff0000,#ff5e00);
+  border-radius:20px;
+}
+
+/* ===================== */
+/* KPI */
+/* ===================== */
+
+.kpiGrid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 14px;
+
+  margin-bottom: 24px;
+}
+
+.kpiCard {
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15,15,15,0.95),
+      rgba(0,0,0,0.95)
+    );
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  border:
+    1px solid rgba(255,0,0,0.35);
+
+  box-shadow:
+    0 0 12px rgba(255,0,0,0.25);
+}
+
+.kpiCard.danger {
+
+  border:
+    1px solid rgba(255,0,0,0.8);
+
+  box-shadow:
+    0 0 18px rgba(255,0,0,0.45);
+}
+
+.kpiLabel {
+
+  font-size: 13px;
+  opacity: 0.75;
+
+  margin-bottom: 8px;
+}
+
+.kpiValue {
+
+  font-size: 20px;
+  font-weight: bold;
+
+  color: white;
+}
+
+/* ===================== */
+/* PROJECTS */
+/* ===================== */
+
+.projectMonitorCard {
+
+  background:
+    rgba(0,0,0,0.75);
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  margin-bottom: 14px;
+
+  border:
+    1px solid rgba(255,0,0,0.35);
+
+  box-shadow:
+    0 0 12px rgba(255,0,0,0.25);
+}
+
+.projectTop {
+
+  font-size: 20px;
+  font-weight: bold;
+
+  margin-bottom: 14px;
+
+  color: white;
+}
+
+.projectStats {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  color: #ddd;
 }
 
 </style>
 </head>
 
 <body>
-  <div id="app">
+
 <!-- SPLASH -->
 <div id="splash">
   <img src="logo.png" id="splashLogo">
@@ -638,7 +847,7 @@ body {
 
   <div class="menuBtn" onclick="openProjects()">Проекты</div>
   <div class="menuBtn" onclick="openClients()">Погашение</div>
-  <div class="menuBtn">Мониторинг</div>
+  <div class="menuBtn" onclick="checkMonitoringAccess()">Мониторинг</div>
 </div>
 <!-- МЕНЮ -->
 <div id="mainMenu" style="display:none;">
@@ -651,6 +860,7 @@ body {
 </div>
 <!-- ВОТ СЮДА -->
 <div id="clientsScreen" style="display:none;"></div>
+<div id="monitoringScreen" style="display:none;"></div>
 
 <!-- ЭТАЖИ -->
 <div id="floorPanel">
