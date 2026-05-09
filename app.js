@@ -110,13 +110,37 @@ const projects = {
     blockNames: ["А","Б"]
   },
     obj4: {
-    svg: null,
-    sheet: "obj4",
-    floorStart: 1,
-    floorEnd: 16,
-    blocks: [],
-    blockNames: []
-  }
+  svg: null,
+  sheet: "14-15blocks",
+  floorStart: 1,
+  floorEnd: 18,
+
+  blocks: ["b1","b2"],
+
+  blockNames: ["А","Б"]
+}, // ← ВОТ ЭТА ЗАПЯТАЯ
+
+sholk: {
+  svg: null,
+  sheet: "sholk",
+
+  floorStart: 1,
+  floorEnd: 16,
+
+  blocks: ["b1"],
+  blockNames: ["3"]
+},
+
+nabiev: {
+  svg: null,
+  sheet: "nabiev",
+
+  floorStart: 1,
+  floorEnd: 18,
+
+  blocks: ["b1"],
+  blockNames: ["1"]
+},
 };
 
 // =====================
@@ -198,10 +222,27 @@ function openProjects() {
 window.openProjects = openProjects;
 
 function selectClientProject(project) {
-  currentClientProject = project;
-  currentLevel = "clients-blocks";
+currentClientProject = project;
 
-  renderClientBlocks();
+// 🔥 объекты без подъездов
+if (
+  project === "nabiev" ||
+  project === "sholk"
+) {
+
+  currentClientBlock = "b1";
+
+  currentLevel = "clients-flats";
+
+  renderClientFlats();
+
+  return;
+}
+
+// обычные объекты
+currentLevel = "clients-blocks";
+
+renderClientBlocks();
 }
 window.selectClientProject = selectClientProject;
 
@@ -241,10 +282,13 @@ function renderClientFlats() {
   container.style.marginTop = "60px";
 
   const projectMap = {
-    "Куш": "kush",
-    "Гафуров": "gafurov",
-    "Бустон": "buston"
-  };
+  "Куш": "kush",
+  "Гафуров": "gafurov",
+  "Бустон": "buston",
+  "14-15": "obj4",
+  "Шолккомбинат": "sholk",
+  "Набиев": "nabiev"
+};
 
   const realProject = projectMap[currentClientProject] || currentClientProject;
 
@@ -317,9 +361,28 @@ container.appendChild(filterBox);
 // фильтр данных
 const filteredRows = rows.filter(item => {
   const m = (item["менеджер"] || "").trim();
+
   if (selectedManager === "all") return true;
+
   return m === selectedManager;
 });
+
+// 🔥 сортировка по самому большому долгу
+filteredRows.sort((a, b) => {
+
+  const debtA = Math.abs(
+    parseMoney(a["доллар"])
+  );
+
+  const debtB = Math.abs(
+    parseMoney(b["доллар"])
+  );
+
+  return debtB - debtA;
+
+});
+
+currentClientRows = filteredRows;
 
 currentClientRows = filteredRows;
 
@@ -568,8 +631,21 @@ if (currentLevel === "client-flat") {
 }
 // 🔥 1. из квартир → к подъездам
 if (currentLevel === "clients-flats") {
+
+  // 🔥 объекты без подъездов
+  if (
+    currentClientProject === "nabiev" ||
+    currentClientProject === "sholk"
+  ) {
+
+    openClients();
+    return;
+  }
+
   currentLevel = "clients-blocks";
+
   renderClientBlocks();
+
   return;
 }
   // 1. из проекта → к списку проектов
@@ -679,11 +755,27 @@ function openClients() {
   // показываем новое
   clientsScreen.style.display = "block";
 
-  clientsScreen.innerHTML = `
+ clientsScreen.innerHTML = `
   <div style="text-align:center; margin-top:60px;">
     <div class="menuBtn" onclick="selectClientProject('kush')">Куш</div>
-    <div class="menuBtn" onclick="selectClientProject('gafurov')">Гафуров</div>
-    <div class="menuBtn" onclick="selectClientProject('buston')">Бустон</div>
+
+    <div class="menuBtn" onclick="selectClientProject('gafurov')">
+      Гафуров
+    </div>
+
+    <div class="menuBtn" onclick="selectClientProject('buston')">
+      Бустон
+    </div>
+
+    <div class="menuBtn" onclick="selectClientProject('obj4')">
+      14-15
+    </div>
+    <div class="menuBtn" onclick="selectClientProject('sholk')">
+  Шолккомбинат
+</div>
+<div class="menuBtn" onclick="selectClientProject('nabiev')">
+  Набиев
+</div>
   </div>
 `;
 
@@ -990,47 +1082,51 @@ function openMonitoring() {
   monitoringScreen.innerHTML = `
 
     <div class="monitoringHeader">
-      📊 Мониторинг
-    </div>
+MONITORING
+</div>
 
     <div class="monitoringGrid">
 
-      <div class="monitorCard" onclick="openSalesMonitoring()">
-  <div class="monitorIcon">🏢</div>
+      <div class="monitorCard large" onclick="openSalesMonitoring()">
+  <div class="monitorIcon">◫</div>
   <div class="monitorTitle">Продажи</div>
+<div class="monitorSub">$2.4M this month</div>
 </div>
 
       <div class="monitorCard" onclick="openDebtMonitoring()">
 
-  <div class="monitorIcon">💸</div>
+  <div class="monitorIcon">◧</div>
 
-  <div class="monitorTitle">
-    Погашение
-  </div>
+  <div class="monitorTitle">Погашение</div>
+<div class="monitorSub">38 active debtors</div>
 
 </div>
 
       <div class="monitorCard" onclick="openBuildMonitoring()">
 
-  <div class="monitorIcon">🏗️</div>
+  <div class="monitorIcon">△</div>
 
   <div class="monitorTitle">Стройка</div>
+<div class="monitorSub">5 active projects</div>
 
 </div>
 
-      <div class="monitorCard" onclick="openManagersMonitoring()">
-  <div class="monitorIcon">👔</div>
+      <div class="monitorCard wide" onclick="openManagersMonitoring()">
+  <div class="monitorIcon">◎</div>
   <div class="monitorTitle">Менеджеры</div>
+<div class="monitorSub">12 managers online</div>
 </div>
 
       <div class="monitorCard" onclick="openFinanceMonitoring()">
-  <div class="monitorIcon">📈</div>
+  <div class="monitorIcon">▣</div>
   <div class="monitorTitle">Финансы</div>
+<div class="monitorSub">Cashflow & reports</div>
 </div>
 
-      <div class="monitorCard danger" onclick="openProblemsMonitoring()">
-        <div class="monitorIcon">🚨</div>
+      <div class="monitorCard small danger" onclick="openProblemsMonitoring()">
+        <div class="monitorIcon">✕</div>
         <div class="monitorTitle">Проблемы</div>
+<div class="monitorSub">2 critical alerts</div>
       </div>
 
     </div>

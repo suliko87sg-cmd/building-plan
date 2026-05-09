@@ -159,26 +159,47 @@ body {
 /* КНОПКА НАЗАД */
 /* ===================== */
 #backBtn {
+
   position: fixed;
-  top: 15px;
-  left: 15px;
-   display: none; 
-  padding: 8px 14px;
-  font-size: 16px;
+  top: 18px;
+  left: 18px;
+  z-index: 9999;
 
-  background: rgba(40,0,0,0.6);
-  border-radius: 10px;
+  height: 42px;
+  padding: 0 18px;
 
-  border: 1px solid rgba(255,0,0,0.6);
+  border-radius: 16px;
+
+  border: 1px solid rgba(0,213,255,0.18);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.08),
+      rgba(0,0,0,0.75)
+    );
+
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  backdrop-filter: blur(18px);
 
   box-shadow:
-    0 0 10px rgba(255,0,0,0.6),
-    inset 0 0 10px rgba(255,0,0,0.3);
+    0 8px 24px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.08);
 
-  color: white;
+  transition: 0.25s ease;
   cursor: pointer;
+}
 
-  z-index: 9999;
+#backBtn:active {
+
+  transform: scale(0.95);
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.45);
 }
 
 
@@ -601,89 +622,204 @@ body {
 /* MONITORING */
 /* ===================== */
 
+/* ===================== */
+/* MONITORING NEW DESIGN */
+/* ===================== */
+
 #monitoringScreen {
   position: fixed;
   inset: 0;
-
   overflow-y: auto;
 
-  padding: 80px 16px 40px;
+  padding: 90px 18px 40px;
 
   color: white;
+
+  background:
+    radial-gradient(circle at top right, rgba(0, 210, 255, 0.18), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.04), transparent 35%),
+    linear-gradient(180deg, #050606 0%, #090909 45%, #120202 100%);
 }
 
 .monitoringHeader {
+  text-align: left;
 
-  text-align: center;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -1px;
 
-  font-size: 28px;
-  font-weight: bold;
+  margin: 0 0 28px 4px;
 
-  margin-bottom: 30px;
+  color: #ffffff;
+  text-shadow: none;
+}
 
-  color: white;
+.monitoringHeader::after {
+  content: "Executive dashboard";
+  display: block;
 
-  text-shadow: 0 0 10px red;
+  margin-top: 6px;
+
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+
+  color: rgba(255,255,255,0.45);
 }
 
 .monitoringGrid {
 
   display: grid;
 
-  grid-template-columns:
-    repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 
   gap: 16px;
 }
 
 .monitorCard {
+  position: relative;
+  overflow: hidden;
+
+  min-height: 150px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 18px;
+
+  border-radius: 28px;
 
   background:
     linear-gradient(
-      145deg,
-      rgba(20,20,20,0.95),
-      rgba(0,0,0,0.95)
+      160deg,
+      rgba(255,255,255,0.10),
+      rgba(255,255,255,0.025) 45%,
+      rgba(0,0,0,0.75)
     );
 
-  border-radius: 18px;
-
-  padding: 26px 12px;
-
-  border:
-    1px solid rgba(255,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
 
   box-shadow:
-    0 0 14px rgba(255,0,0,0.25);
+    0 18px 40px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.10);
 
-  text-align: center;
+  backdrop-filter: blur(18px);
 
-  transition: 0.25s;
+  transition: 0.25s ease;
+}
+
+.monitorCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(255,255,255,0.10) 35%,
+      transparent 60%
+    );
+
+  transform: translateX(-120%);
+  transition: 0.6s ease;
 }
 
 .monitorCard:active {
   transform: scale(0.96);
 }
 
+.monitorCard:active::before {
+  transform: translateX(120%);
+}
+
 .monitorIcon {
+  width: 48px;
+  height: 48px;
 
-  font-size: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  margin-bottom: 12px;
+  font-size: 24px;
+font-weight: 700;
+color: #00d5ff;
+
+  border-radius: 16px;
+
+  background: rgba(0, 210, 255, 0.10);
+  border: 1px solid rgba(0, 210, 255, 0.22);
+
+  box-shadow:
+    0 0 20px rgba(0, 210, 255, 0.16);
 }
 
 .monitorTitle {
+  position: relative;
+  z-index: 2;
 
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+
+  color: rgba(255,255,255,0.94);
+}
+.monitorSub {
+
+  margin-top: 6px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  color: rgba(255,255,255,0.42);
+
+  letter-spacing: 0.3px;
 }
 
 .monitorCard.danger {
+  border: 1px solid rgba(255,70,70,0.30);
 
-  border:
-    1px solid rgba(255,0,0,0.8);
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255,60,60,0.10),
+      rgba(255,255,255,0.025) 45%,
+      rgba(0,0,0,0.78)
+    );
 
   box-shadow:
-    0 0 18px rgba(255,0,0,0.45);
+    0 18px 40px rgba(0,0,0,0.55),
+    0 0 25px rgba(255,0,0,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.monitorCard.large {
+  grid-column: span 2;
+  min-height: 190px;
+}
+
+.monitorCard.wide {
+  grid-column: span 2;
+  min-height: 150px;
+}
+
+.monitorCard.small {
+  min-height: 120px;
+}
+
+.monitorCard.danger {
+  border: 1px solid rgba(255,70,70,0.30);
+}
+.monitorCard:hover {
+
+  transform: translateY(-4px);
+
+  border: 1px solid rgba(0,213,255,0.20);
+
+  box-shadow:
+    0 24px 50px rgba(0,0,0,0.65),
+    0 0 30px rgba(0,213,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.10);
 }
 
 .buildGrid{
