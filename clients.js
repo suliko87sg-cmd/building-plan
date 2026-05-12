@@ -1,0 +1,486 @@
+function openClients() {
+  currentLevel = "clients";
+
+  // скрываем старое
+  document.getElementById("mainMenu1").style.display = "none";
+  document.getElementById("mainMenu").style.display = "none";
+
+  plan.style.display = "none";
+  floorPanel.style.display = "none";
+
+  // показываем новое
+  clientsScreen.style.display = "block";
+
+  clientsScreen.innerHTML = `
+    <div style="text-align:center; margin-top:60px;">
+
+      <div class="menuBtn" onclick="selectClientProject('kush')">
+        Куш
+      </div>
+
+      <div class="menuBtn" onclick="selectClientProject('gafurov')">
+        Гафуров
+      </div>
+
+      <div class="menuBtn" onclick="selectClientProject('buston')">
+        Бустон
+      </div>
+
+      <div class="menuBtn" onclick="selectClientProject('obj4')">
+        14-15
+      </div>
+
+      <div class="menuBtn" onclick="selectClientProject('sholk')">
+        Шолккомбинат
+      </div>
+
+      <div class="menuBtn" onclick="selectClientProject('nabiev')">
+        Набиев
+      </div>
+
+      <div class="menuBtn" onclick="selectClientProject('mikro8')">
+        8-й микрорайон
+      </div>
+
+    </div>
+  `;
+
+  backBtn.style.display = "block";
+}
+
+window.openClients = openClients;
+
+function selectClientProject(project) {
+
+  currentClientProject = project;
+
+  // объекты без подъездов
+  if (
+    project === "nabiev" ||
+    project === "sholk"
+  ) {
+
+    currentClientBlock = "b1";
+
+    currentLevel = "clients-flats";
+
+    renderClientFlats();
+
+    return;
+  }
+
+  // обычные объекты
+  currentLevel = "clients-blocks";
+
+  renderClientBlocks();
+}
+
+window.selectClientProject = selectClientProject;
+
+function renderClientFlats() {
+  clientsScreen.innerHTML = "";
+
+  if (!isClientsLoaded) return;
+
+  const container = document.createElement("div");
+  container.style.textAlign = "center";
+  container.style.marginTop = "60px";
+
+  const projectMap = {
+  "Куш": "kush",
+  "Гафуров": "gafurov",
+  "Бустон": "buston",
+  "14-15": "obj4",
+  "Шолккомбинат": "sholk",
+  "Набиев": "nabiev",
+  "8-й микрорайон": "mikro8"
+};
+
+  const realProject = projectMap[currentClientProject] || currentClientProject;
+
+  const prefix = (projects[realProject].sheet + "-" + currentClientBlock).toLowerCase();
+
+  // 🔽 фильтр по ID
+  const rowsById = clientsData.filter(item => {
+    const flatId = (item.flatId || item.flatID || "")
+      .toString()
+      .toLowerCase()
+      .replace(/\s/g, "");
+
+    return flatId.startsWith(prefix);
+  });
+
+  // 🔽 только должники
+  const rows = rowsById.filter(item => {
+    const d = (item["доллар"] || "").toString().trim();
+    return d.startsWith("-");
+  });
+
+  // =======================
+  // 📊 считаем менеджеров
+  // =======================
+  const managerCounts = {};
+
+  rows.forEach(item => {
+    const m = (item["менеджер"] || "").trim();
+    if (!m) return;
+    managerCounts[m] = (managerCounts[m] || 0) + 1;
+  });
+
+  const managers = Object.keys(managerCounts);
+
+// =======================
+// 🎛️ UI фильтра (КНОПКИ)
+// =======================
+const filterBox = document.createElement("div");
+filterBox.className = "managerFilter";
+
+// кнопка ВСЕ
+const allBtn = document.createElement("div");
+allBtn.className = "filterItem" + (selectedManager === "all" ? " active" : "");
+allBtn.textContent = `Все (${rows.length})`;
+
+allBtn.onclick = () => {
+  selectedManager = "all";
+  renderClientFlats();
+};
+
+filterBox.appendChild(allBtn);
+
+// кнопки менеджеров
+managers.forEach(name => {
+  const btn = document.createElement("div");
+
+  btn.className = "filterItem" + (selectedManager === name ? " active" : "");
+  btn.textContent = `👤 ${name} (${managerCounts[name]})`;
+allBtn.textContent = `📋 Все (${rows.length})`;
+  btn.onclick = () => {
+    selectedManager = name;
+    renderClientFlats();
+  };
+
+  filterBox.appendChild(btn);
+});
+
+// вставляем ПЕРЕД списком
+container.appendChild(filterBox);
+// фильтр данных
+const filteredRows = rows.filter(item => {
+  const m = (item["менеджер"] || "").trim();
+
+  if (selectedManager === "all") return true;
+
+  return m === selectedManager;
+});
+
+// 🔥 сортировка по самому большому долгу
+filteredRows.sort((a, b) => {
+
+  const debtA = Math.abs(
+    parseMoney(a["доллар"])
+  );
+
+  const debtB = Math.abs(
+    parseMoney(b["доллар"])
+  );
+
+  return debtB - debtA;
+
+});
+
+currentClientRows = filteredRows;
+
+// вывод
+filteredRows.forEach(item => {
+  const btn = document.createElement("div");
+  btn.className = "clientBtn";
+
+  const contract = item["договоры"] || "—";
+  const client = item["клиент"] || "—";
+  const dollar = item["доллар"] || "0";
+
+  btn.innerHTML = `
+    <div class="rowTop">${contract}</div>
+    <div class="rowBottom">
+      <span class="client">${client}</span>
+      <span class="money">💵 ${dollar}</span>
+    </div>
+  `;
+
+  btn.onclick = () => {
+    currentLevel = "client-flat";
+    currentClientIndex = currentClientRows.indexOf(item);
+    showClientDetails(item);
+  };
+
+  container.appendChild(btn);
+});
+
+clientsScreen.appendChild(container); // ← добавь это
+
+}
+
+function renderClientBlocks() {
+
+  clientsScreen.innerHTML = "";
+
+  const blocks =
+    projects[currentClientProject]?.blocks || [];
+
+  const blockNames =
+    projects[currentClientProject]?.blockNames || [];
+
+  const container = document.createElement("div");
+
+  container.style.textAlign = "center";
+  container.style.marginTop = "60px";
+
+  blocks.forEach((block, index) => {
+
+    const btn = document.createElement("div");
+
+    btn.className = "menuBtn";
+
+    btn.innerText =
+      blockNames[index] || block.toUpperCase();
+
+    btn.onclick = () => {
+
+      currentClientBlock = block;
+
+      currentLevel = "clients-flats";
+
+      renderClientFlats();
+    };
+
+    container.appendChild(btn);
+
+  });
+
+  clientsScreen.appendChild(container);
+}
+
+
+function nextClient() {
+  if (!currentClientRows.length) return;
+
+  currentClientIndex++;
+
+  if (currentClientIndex >= currentClientRows.length) {
+    currentClientIndex = 0;
+  }
+
+  showClientDetails(currentClientRows[currentClientIndex]);
+}
+
+function prevClient() {
+
+  if (!currentClientRows.length) return;
+
+  currentClientIndex--;
+
+  if (currentClientIndex < 0) {
+
+    currentClientIndex =
+      currentClientRows.length - 1;
+  }
+
+  showClientDetails(
+    currentClientRows[currentClientIndex]
+  );
+}
+
+function showClientDetails(item) {
+
+   const phone = item["телефон"] || "-";
+  const cleanPhone = phone.replace(/\D/g, "");
+
+  const screen = document.getElementById("clientsScreen");
+
+  // ✅ 1. старт клиента
+const start = item["старт"];
+console.log("СТАРТ:", start);
+
+const startDate = parseDate(start);
+
+const normalized = {};
+Object.keys(item).forEach(k => {
+  normalized[k.trim()] = item[k];
+});
+
+// 1. Берём колонки оплат из таблицы: 01/24, 02/24, 03/24...
+const paymentKeys = Object.keys(normalized)
+  .filter(k => /^\d{2}\/\d{2}$/.test(k))
+  .sort((a, b) => {
+    const [m1, y1] = a.split("/").map(Number);
+    const [m2, y2] = b.split("/").map(Number);
+    return y1 === y2 ? m1 - m2 : y1 - y2;
+  });
+
+// 2. Строим реальные месяцы от старта клиента
+const realMonths = startDate ? generateMonths(startDate, paymentKeys.length) : paymentKeys;
+
+// ✅ 2. собираем квадраты
+let grid = "";
+
+// 🔥 ВОТ СЮДА
+
+
+
+
+const today = new Date();
+today.setDate(1);
+today.setHours(0,0,0,0);
+  let futureCount = 0;
+const MAX_FUTURE = 12;
+realMonths.forEach((m, index) => {
+
+  const [month, year] = m.split("/");
+const cellDate = new Date(2000 + Number(year), Number(month) - 1, 1);
+
+// ограничиваем будущее
+if (cellDate > today) {
+  futureCount++;
+  if (futureCount > MAX_FUTURE) return;
+}
+
+const isCurrentMonth =
+  cellDate.getFullYear() === today.getFullYear() &&
+  cellDate.getMonth() === today.getMonth();
+  const key = paymentKeys[index];
+const value = key ? normalized[key] : "";
+
+  const cleanValue = Number(String(value).replace(/\s/g, "")) || 0;
+
+  let cls = "empty";
+
+  if (cleanValue > 0) {
+    cls = "paid"; // 🟢 есть деньги
+  } else if (cellDate < today) {
+    cls = "late"; // 🟡 просрочка
+  } else {
+    cls = "empty"; // ⚪ будущее
+    let isCurrentMonth =
+  cellDate.getFullYear() === today.getFullYear() &&
+  cellDate.getMonth() === today.getMonth();
+  }
+
+  grid += `
+  <div class="payCell ${cls} ${isCurrentMonth ? "currentMonth" : ""}">
+    ${value || ""}
+  </div>
+`;
+});
+const blockReverseMap = {
+  "b1": "А",
+  "b2": "Б",
+  "b3": "В",
+  "b4": "Г",
+  "b5": "Д",
+  "b6": "Е"
+};
+const projectNameMap = {
+  "buston": "Бустон",
+  "kush": "Куш",
+  "gafurov": "Гафуров"
+};
+const projectKey = (item["проект"] || "").toLowerCase().trim();
+const niceProject = projectNameMap[projectKey] || projectKey;
+const flatId = (item.flatId || item.flatID || "").toLowerCase();
+const realBlock = flatId.split("-")[1]; // ← вот магия
+const niceBlock = blockReverseMap[realBlock] || realBlock;
+
+const displayProject = `${niceProject} ${niceBlock}`;
+  // ✅ 3. выводим всё
+  screen.innerHTML = `
+    <div style="padding:20px; color:white;">
+    
+    <div class="managerTop">👤 ${item["менеджер"] || "-"}</div>
+
+      <h3 style="opacity:0.7; margin-bottom:5px;">
+  ${item["договоры"] || "—"}
+</h3>
+
+<h2 style="margin-top:0;">
+  ${item["клиент"]}
+</h2>
+
+  <div class="phoneRow">
+  <span class="phoneText">📞 ${item["телефон"] || "-"}</span>
+
+  <a href="tel:${(item["телефон"] || "").replace(/\D/g, "")}" 
+   class="callMiniBtn">
+
+  <span class="callIcon">📞</span>
+  <span>Позвонить</span>
+
+</a>
+
+  <div class="phoneActions">
+    <a href="https://wa.me/${(item["телефон"] || "").replace(/\D/g, "")}" 
+       target="_blank"
+       class="waBtn">
+       <img src="whatsapp.svg">
+    </a>
+  </div>
+</div>
+
+      <p>🏢 ${item["проект"] || "-"}</p>
+      <p>💰 Фикс: ${item["фикс/сумм"]}</p>
+
+      <hr>
+
+      <p>✅ Оплачено: ${item["оплачено"]}</p>
+      <p>📉 Остаток: ${item["долг"]} сомони</p>
+
+      <h3>💵 Долг: ${item["доллар"]} $</h3>
+
+      <div class="paymentGrid">
+        ${grid}
+      </div>
+<div class="navBtns">
+  <button onclick="prevClient()">⬆ Предыдущий</button>
+  <button onclick="nextClient()">⬇ Следующий</button>
+</div>
+    </div>
+  `;
+}
+
+window.nextClient = nextClient;
+window.prevClient = prevClient;
+window.showClientDetails = showClientDetails;
+
+
+let startY = 0;
+let startX = 0;
+
+document.addEventListener("touchstart", (e) => {
+  if (currentLevel !== "client-flat") return;
+
+  startY = e.touches[0].clientY;
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", (e) => {
+  if (currentLevel !== "client-flat") return;
+
+  const endY = e.changedTouches[0].clientY;
+  const endX = e.changedTouches[0].clientX;
+
+  const deltaX = startX - endX;
+  const deltaY = startY - endY;
+
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (deltaX > 70) {
+      goBack();
+    }
+  } else {
+    if (deltaY > 50) {
+      nextClient();
+    }
+
+    if (deltaY < -50) {
+      prevClient();
+    }
+  }
+});
