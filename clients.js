@@ -329,7 +329,6 @@ let grid = "";
 
 
 const today = new Date();
-today.setDate(1);
 today.setHours(0,0,0,0);
   let futureCount = 0;
 const MAX_FUTURE = 12;
@@ -344,26 +343,38 @@ if (cellDate > today) {
   if (futureCount > MAX_FUTURE) return;
 }
 
+const key = paymentKeys[index];
+const value = key ? normalized[key] : "";
+
+const cleanValue = Number(String(value).replace(/\s/g, "")) || 0;
+
+let cls = "empty";
+
+const payDay = startDate ? startDate.getDate() : 1;
+
+const isPastMonth =
+  cellDate.getFullYear() < today.getFullYear() ||
+  (
+    cellDate.getFullYear() === today.getFullYear() &&
+    cellDate.getMonth() < today.getMonth()
+  );
+
 const isCurrentMonth =
   cellDate.getFullYear() === today.getFullYear() &&
   cellDate.getMonth() === today.getMonth();
-  const key = paymentKeys[index];
-const value = key ? normalized[key] : "";
 
-  const cleanValue = Number(String(value).replace(/\s/g, "")) || 0;
-
-  let cls = "empty";
-
-  if (cleanValue > 0) {
-    cls = "paid"; // 🟢 есть деньги
-  } else if (cellDate < today) {
-    cls = "late"; // 🟡 просрочка
-  } else {
-    cls = "empty"; // ⚪ будущее
-    let isCurrentMonth =
-  cellDate.getFullYear() === today.getFullYear() &&
-  cellDate.getMonth() === today.getMonth();
-  }
+if (cleanValue > 0) {
+  cls = "paid";
+}
+else if (isPastMonth) {
+  cls = "late";
+}
+else if (isCurrentMonth && today.getDate() >= payDay) {
+  cls = "late";
+}
+else {
+  cls = "empty";
+}
 
   grid += `
   <div class="payCell ${cls} ${isCurrentMonth ? "currentMonth" : ""}">
