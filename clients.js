@@ -1,3 +1,35 @@
+// =====================
+// CLIENTS DATA
+// =====================
+
+ let clientsData = [];
+let isClientsLoaded = false;
+  
+fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/clients")
+  .then(res => res.json())
+  .then(data => {
+    console.log("CLIENTS LOADED:", data);
+    clientsData = Array.isArray(data) ? data : (data.data || []);
+    isClientsLoaded = true;
+  })
+  .catch(err => console.error("Ошибка загрузки clients:", err));
+
+// =====================
+// CLIENT STATE
+// =====================
+
+let currentClientProject = null;
+let currentClientBlock = null;
+
+// 🔥 ВОТ ЭТО ДОБАВЛЯЕМ
+let currentClientRows = [];
+let currentClientIndex = 0;
+let selectedManager = "all";
+
+// =====================
+// CLIENT FUNCTIONS
+// =====================
+
 function openClients() {
   currentLevel = "clients";
 
@@ -12,7 +44,10 @@ function openClients() {
   clientsScreen.style.display = "block";
 
   clientsScreen.innerHTML = `
-    <div style="text-align:center; margin-top:60px;">
+
+  <div id="clientsStats"></div>
+
+  <div style="text-align:center; margin-top:100px;">
 
       <div class="menuBtn" onclick="selectClientProject('kush')">
         Куш
@@ -44,6 +79,75 @@ function openClients() {
 
     </div>
   `;
+  const debtRows = clientsData.filter(item => {
+
+  const d = (item["доллар"] || "")
+    .toString()
+    .trim();
+
+  return d.startsWith("-");
+});
+
+const totalDollarDebt = debtRows.reduce((sum, item) => {
+
+  const value = parseFloat(
+    (item["доллар"] || "0")
+      .toString()
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  );
+
+  return sum + (isNaN(value) ? 0 : Math.abs(value));
+
+}, 0);
+
+const totalSomoniDebt = debtRows.reduce((sum, item) => {
+
+  const value = parseFloat(
+    (item["долг"] || "0")
+      .toString()
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  );
+
+  return sum + (isNaN(value) ? 0 : value);
+
+}, 0);
+
+let goodClients = 0;
+  renderClientsStats("Все объекты", [
+
+  {
+    value: `-${Math.round(totalDollarDebt).toLocaleString()}$`,
+    label: "Общий долг"
+  },
+
+  {
+  value: `
+    <span style="color:#ffcc00">
+      ${debtRows.length}
+    </span>
+  `,
+  label: "Должники",
+  danger: true
+},
+
+  {
+  value: `${Math.round(totalSomoniDebt).toLocaleString()} TJS`,
+  label: "Остаток"
+},
+
+{
+  value: `
+    <span style="color:#ffcc00">
+      ${Math.round(totalSomoniDebt).toLocaleString()}
+    </span> TJS
+  `,
+  label: "Просрочено",
+  danger: true
+}
+
+]);
 
   backBtn.style.display = "block";
 }
@@ -54,22 +158,7 @@ function selectClientProject(project) {
 
   currentClientProject = project;
 
-  // объекты без подъездов
-  if (
-    project === "nabiev" ||
-    project === "sholk"
-  ) {
-
-    currentClientBlock = "b1";
-
-    currentLevel = "clients-flats";
-
-    renderClientFlats();
-
-    return;
-  }
-
-  // обычные объекты
+    // обычные объекты
   currentLevel = "clients-blocks";
 
   renderClientBlocks();
@@ -78,13 +167,26 @@ function selectClientProject(project) {
 window.selectClientProject = selectClientProject;
 
 function renderClientFlats() {
-  clientsScreen.innerHTML = "";
+ clientsScreen.innerHTML = `
+  <div id="clientsStats"></div>
+`;
+const clientProjectNames = {
+  kush: "Куш",
+  gafurov: "Гафуров",
+  buston: "Бустон",
+  obj4: "14-15",
+  sholk: "Шолккомбинат",
+  nabiev: "Набиев",
+  mikro8: "8-й микрорайон"
+};
+
+
 
   if (!isClientsLoaded) return;
 
   const container = document.createElement("div");
   container.style.textAlign = "center";
-  container.style.marginTop = "60px";
+  container.style.marginTop = "5px";
 
   const projectMap = {
   "Куш": "kush",
@@ -115,11 +217,55 @@ function renderClientFlats() {
     const d = (item["доллар"] || "").toString().trim();
     return d.startsWith("-");
   });
+  const totalDollarDebt = rows.reduce((sum, item) => {
 
-  // =======================
-  // 📊 считаем менеджеров
-  // =======================
-  const managerCounts = {};
+  const value = parseFloat(
+    (item["доллар"] || "0")
+      .toString()
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  );
+
+  return sum + (isNaN(value) ? 0 : Math.abs(value));
+
+}, 0);
+
+const totalSomoniDebt = rows.reduce((sum, item) => {
+
+  const value = parseFloat(
+    (item["долг"] || "0")
+      .toString()
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  );
+
+  return sum + (isNaN(value) ? 0 : value);
+
+}, 0);
+
+renderClientsStats(
+
+ `${clientProjectNames[currentClientProject] || currentClientProject}`,
+
+  [
+    {
+  value: `-${Math.round(totalDollarDebt).toLocaleString()}$`,
+  label: "Общий долг"
+},
+
+
+{
+  value: `${Math.round(totalSomoniDebt).toLocaleString()} TJS`,
+  label: "Остаток"
+},
+  ]
+);
+
+
+// =====================
+// 📊 считаем менеджеров
+// =====================
+const managerCounts = {};
 
   rows.forEach(item => {
     const m = (item["менеджер"] || "").trim();
@@ -134,6 +280,19 @@ function renderClientFlats() {
 // =======================
 const filterBox = document.createElement("div");
 filterBox.className = "managerFilter";
+
+const filterToggle = document.createElement("div");
+
+filterToggle.className = "managerDrawerBtn";
+
+filterToggle.innerHTML = "☰";
+console.log("DRAWER CREATED");
+
+filterToggle.onclick = () => {
+
+  filterBox.classList.toggle("open");
+
+};
 
 // кнопка ВСЕ
 const allBtn = document.createElement("div");
@@ -152,8 +311,80 @@ managers.forEach(name => {
   const btn = document.createElement("div");
 
   btn.className = "filterItem" + (selectedManager === name ? " active" : "");
-  btn.textContent = `👤 ${name} (${managerCounts[name]})`;
-allBtn.textContent = `📋 Все (${rows.length})`;
+  const managerRows = rows.filter(item => {
+  return (item["менеджер"] || "").trim() === name;
+});
+
+const goodClients = managerRows.filter(item => {
+
+  const start = item["старт"];
+  const startDate = parseDate(start);
+
+  const normalized = {};
+
+  Object.keys(item).forEach(k => {
+    normalized[k.trim()] = item[k];
+  });
+
+  const paymentKeys = Object.keys(normalized)
+    .filter(k => /^\d{2}\/\d{2}$/.test(k));
+
+  const realMonths = startDate
+    ? generateMonths(startDate, paymentKeys.length)
+    : paymentKeys;
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let hasLate = false;
+
+  realMonths.forEach((m, index) => {
+
+    const [month, year] = m.split("/");
+
+    const cellDate =
+      new Date(2000 + Number(year), Number(month) - 1, 1);
+
+    const key = paymentKeys[index];
+    const value = key ? normalized[key] : "";
+
+    const cleanValue =
+      Number(String(value).replace(/\s/g, "")) || 0;
+
+    const payDay =
+      startDate ? startDate.getDate() : 1;
+
+    const isPastMonth =
+      cellDate.getFullYear() < today.getFullYear() ||
+
+      (
+        cellDate.getFullYear() === today.getFullYear() &&
+        cellDate.getMonth() < today.getMonth()
+      );
+
+    const isCurrentMonth =
+      cellDate.getFullYear() === today.getFullYear() &&
+      cellDate.getMonth() === today.getMonth();
+
+    if (
+      cleanValue <= 0 &&
+      (
+        isPastMonth ||
+        (isCurrentMonth && today.getDate() >= payDay)
+      )
+    ) {
+      hasLate = true;
+    }
+
+  });
+
+  return !hasLate;
+
+}).length;
+
+btn.innerHTML =
+  `👤 ${name} (<span style="color:#ffcc00">${managerCounts[name]}</span>/<span style="color:#00ff66">${goodClients}</span>)`;
+
   btn.onclick = () => {
     selectedManager = name;
     renderClientFlats();
@@ -163,6 +394,9 @@ allBtn.textContent = `📋 Все (${rows.length})`;
 });
 
 // вставляем ПЕРЕД списком
+container.appendChild(filterToggle);
+console.log(filterToggle);
+
 container.appendChild(filterBox);
 // фильтр данных
 const filteredRows = rows.filter(item => {
@@ -222,7 +456,281 @@ clientsScreen.appendChild(container); // ← добавь это
 
 function renderClientBlocks() {
 
-  clientsScreen.innerHTML = "";
+  clientsScreen.innerHTML = `
+    <div id="clientsStats"></div>
+  `;
+ const clientProjectNames = {
+  kush: "Куш",
+  gafurov: "Гафуров",
+  buston: "Бустон",
+  obj4: "14-15",
+  sholk: "Шолккомбинат",
+  nabiev: "Набиев",
+  mikro8: "8-й микрорайон"
+};
+
+const realProject = currentClientProject;
+
+const projectRows = clientsData.filter(item => {
+
+  const flatId = (item.flatId || item.flatID || "")
+    .toString()
+    .toLowerCase()
+    .replace(/\s/g, "");
+
+  return flatId.startsWith(projects[realProject].sheet.toLowerCase());
+});
+
+const debtRows = projectRows.filter(item => {
+  const d = (item["доллар"] || "").toString().trim();
+  return d.startsWith("-");
+});
+
+const totalDollarDebt = debtRows.reduce((sum, item) => {
+
+  const value = parseFloat(
+    (item["доллар"] || "0")
+      .toString()
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  );
+
+  return sum + (isNaN(value) ? 0 : Math.abs(value));
+
+}, 0);
+
+const totalSomoniDebt = debtRows.reduce((sum, item) => {
+
+  const value = parseFloat(
+    (item["долг"] || "0")
+      .toString()
+      .replace(/\s/g, "")
+      .replace(",", ".")
+  );
+
+  return sum + (isNaN(value) ? 0 : value);
+
+}, 0);
+
+debtRows.forEach(item => {
+
+  let hasYellow = false;
+
+  const startDate =
+  item["дата договора"] || item["дата"];
+
+if (!startDate) return;
+
+const realMonths = generateMonths(startDate);
+
+  realMonths.forEach(month => {
+
+    const paid = parseMoney(item[month]);
+
+    const fix = parseMoney(item["фикс"]);
+
+    if (paid > 0 && paid < fix) {
+      hasYellow = true;
+    }
+
+  });
+
+  if (!hasYellow) {
+    goodClients++;
+  }
+
+});
+
+const goodClients = debtRows.filter(item => {
+
+  const start = item["старт"];
+  const startDate = parseDate(start);
+
+  const normalized = {};
+
+  Object.keys(item).forEach(k => {
+    normalized[k.trim()] = item[k];
+  });
+
+  const paymentKeys = Object.keys(normalized)
+    .filter(k => /^\d{2}\/\d{2}$/.test(k));
+
+  const realMonths = startDate
+    ? generateMonths(startDate, paymentKeys.length)
+    : paymentKeys;
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let hasLate = false;
+
+  realMonths.forEach((m, index) => {
+
+    const [month, year] = m.split("/");
+
+    const cellDate =
+      new Date(2000 + Number(year), Number(month) - 1, 1);
+
+    const key = paymentKeys[index];
+    const value = key ? normalized[key] : "";
+
+    const cleanValue =
+      Number(String(value).replace(/\s/g, "")) || 0;
+
+    const payDay =
+      startDate ? startDate.getDate() : 1;
+
+    const isPastMonth =
+      cellDate.getFullYear() < today.getFullYear() ||
+
+      (
+        cellDate.getFullYear() === today.getFullYear() &&
+        cellDate.getMonth() < today.getMonth()
+      );
+
+    const isCurrentMonth =
+      cellDate.getFullYear() === today.getFullYear() &&
+      cellDate.getMonth() === today.getMonth();
+
+    if (
+      cleanValue <= 0 &&
+      (
+        isPastMonth ||
+        (isCurrentMonth && today.getDate() >= payDay)
+      )
+    ) {
+      hasLate = true;
+    }
+
+  });
+
+  return !hasLate;
+
+}).length;
+
+let overdueSomoni = 0;
+
+debtRows.forEach(item => {
+
+  const start = item["старт"];
+  const startDate = parseDate(start);
+
+  const fixed =
+    parseMoney(item["фикс/сумм"] || 0);
+
+  if (!fixed) return;
+
+  const normalized = {};
+
+  Object.keys(item).forEach(k => {
+    normalized[k.trim()] = item[k];
+  });
+
+  const paymentKeys = Object.keys(normalized)
+    .filter(k => /^\d{2}\/\d{2}$/.test(k));
+
+  const realMonths = startDate
+    ? generateMonths(startDate, paymentKeys.length)
+    : paymentKeys;
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let expected = 0;
+  let paid = 0;
+
+  realMonths.forEach((m, index) => {
+
+    const [month, year] = m.split("/");
+
+    const cellDate =
+      new Date(2000 + Number(year), Number(month) - 1, 1);
+
+    const key = paymentKeys[index];
+    const value = key ? normalized[key] : "";
+
+    const cleanValue =
+      parseMoney(value || 0);
+
+    const payDay =
+      startDate ? startDate.getDate() : 1;
+
+    const isPastMonth =
+      cellDate.getFullYear() < today.getFullYear() ||
+
+      (
+        cellDate.getFullYear() === today.getFullYear() &&
+        cellDate.getMonth() < today.getMonth()
+      );
+
+    const isCurrentMonth =
+      cellDate.getFullYear() === today.getFullYear() &&
+      cellDate.getMonth() === today.getMonth();
+
+    if (
+      isPastMonth ||
+      (isCurrentMonth && today.getDate() >= payDay)
+    ) {
+      expected += fixed;
+      paid += cleanValue;
+    }
+
+  });
+
+  const overdue =
+    Math.max(0, expected - paid);
+
+  overdueSomoni += overdue;
+
+});
+
+renderClientsStats(
+
+`${clientProjectNames[currentClientProject] || currentClientProject} `,
+
+[
+  {
+    value: `-${Math.round(totalDollarDebt).toLocaleString()}$`,
+    label: "Общий долг"
+  },
+
+  {
+  value: `
+    <span style="color:#ffcc00">
+      ${debtRows.length}
+    </span>
+
+    <span style="color:white">
+      /
+    </span>
+
+    <span style="color:#00ff66">
+      ${goodClients}
+    </span>
+  `,
+  label: "Должники",
+  danger: true
+},
+
+  {
+    value: `${Math.round(totalSomoniDebt).toLocaleString()} TJS`,
+    label: "Остаток"
+  },
+
+  {
+  value: `
+<span style="color:#ffcc00">
+  ${Math.round(overdueSomoni).toLocaleString()}
+</span> TJS
+`,
+  label: "Просрочено",
+  danger: true
+},
+
+]
+
+);
+  
 
   const blocks =
     projects[currentClientProject]?.blocks || [];
@@ -324,9 +832,6 @@ const realMonths = startDate ? generateMonths(startDate, paymentKeys.length) : p
 let grid = "";
 
 // 🔥 ВОТ СЮДА
-
-
-
 
 const today = new Date();
 today.setHours(0,0,0,0);
@@ -461,6 +966,44 @@ window.nextClient = nextClient;
 window.prevClient = prevClient;
 window.showClientDetails = showClientDetails;
 
+function renderClientsStats(title, stats) {
+
+  const box =
+    document.getElementById("clientsStats");
+
+  if (!box) return;
+ 
+ box.innerHTML = `
+
+<div class="topStickyBar">
+
+  <div class="statsTitle">
+    ${title}
+  </div>
+
+</div>
+
+<div class="statsGrid" style="margin-top:-10px;">
+
+  ${stats.map(item => `
+
+    <div class="kpiMini ${item.danger ? "danger" : ""}">
+
+      <div class="kpiValue">
+        ${item.value}
+      </div>
+
+      <div class="kpiLabel">
+        ${item.label}
+      </div>
+
+    </div>
+
+  `).join("")}
+
+</div>
+`;
+}
 
 let startY = 0;
 let startX = 0;
@@ -495,3 +1038,5 @@ document.addEventListener("touchend", (e) => {
     }
   }
 });
+
+

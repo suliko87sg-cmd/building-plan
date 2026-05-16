@@ -13,18 +13,6 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/pla
   })
   .catch(err => console.error("Ошибка загрузки данных:", err));
 
-  let clientsData = [];
-let isClientsLoaded = false;
-  
-fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/clients")
-  .then(res => res.json())
-  .then(data => {
-    console.log("CLIENTS LOADED:", data);
-    clientsData = Array.isArray(data) ? data : (data.data || []);
-    isClientsLoaded = true;
-  })
-  .catch(err => console.error("Ошибка загрузки clients:", err));
-
 // =====================
 // СОСТОЯНИЕ
 // =====================
@@ -33,13 +21,7 @@ let currentBlock = null;
 let currentFloor = 3;
 
 let currentLevel = "main";
-let currentClientProject = null;
-let currentClientBlock = null;
 
-// 🔥 ВОТ ЭТО ДОБАВЛЯЕМ
-let currentClientRows = [];
-let currentClientIndex = 0;
-let selectedManager = "all";
 // =====================
 // ЭЛЕМЕНТЫ
 // =====================
@@ -368,45 +350,40 @@ if (currentLevel === "monitoring") {
 
   return;
 }
-  // 🔥 0. из квартиры → к списку квартир
+  
+// =====================
+// НАЗАД: ПОГАШЕНИЕ
+// =====================
+
+// из карточки клиента → к списку должников
 if (currentLevel === "client-flat") {
   currentLevel = "clients-flats";
   renderClientFlats();
   return;
 }
-// 🔥 1. из квартир → к подъездам
+
+// из списка должников → к блокам / объектам
 if (currentLevel === "clients-flats") {
 
-  // 🔥 объекты без подъездов
-  if (
-    currentClientProject === "nabiev" ||
-    currentClientProject === "sholk"
-  ) {
-
-    openClients();
-    return;
-  }
-
   currentLevel = "clients-blocks";
-
   renderClientBlocks();
-
   return;
 }
-  // 1. из проекта → к списку проектов
-  if (currentLevel === "clients-blocks") {
-    openClients();
-    return;
-  }
 
-  // 2. из списка проектов → в главное меню
-  if (currentLevel === "clients-projects" || currentLevel === "clients") {
-    clientsScreen.style.display = "none";
-    mainMenu1.style.display = "flex";
-    backBtn.style.display = "none";
-    currentLevel = "main";
-    return;
-  }
+// из блоков → к списку объектов
+if (currentLevel === "clients-blocks") {
+  openClients();
+  return;
+}
+
+// из списка объектов → главное меню
+if (currentLevel === "clients") {
+  clientsScreen.style.display = "none";
+  mainMenu1.style.display = "flex";
+  backBtn.style.display = "none";
+  currentLevel = "main";
+  return;
+}
 
   // 3. дальше твоя старая логика (для SVG)
   if (flatCard.classList.contains("show")) {
