@@ -1222,6 +1222,7 @@ align-items: center;
 
 .passwordTitle{
 
+  white-space:nowrap;
   color:white;
 
   font-size:22px;
@@ -1230,6 +1231,12 @@ align-items: center;
   text-align:center;
 
   margin-bottom:25px;
+}
+.passwordBox input:focus{
+
+  box-shadow:
+    0 0 15px rgba(0,213,255,0.35);
+
 }
 
 .passwordBox input{
@@ -1283,6 +1290,79 @@ align-items: center;
 .passwordBox button:active{
 
   transform:scale(0.98);
+}
+
+.pinDots{
+
+  display:flex;
+
+  justify-content:center;
+
+  gap:12px;
+
+  margin:25px 0 30px;
+}
+
+.pinDots span{
+
+  width:16px;
+  height:16px;
+
+  border-radius:50%;
+
+  background:#222;
+
+  border:1px solid rgba(255,255,255,0.15);
+
+  transition:0.2s;
+}
+
+.pinDots span.active{
+
+  background:#00d5ff;
+
+  box-shadow:
+    0 0 12px rgba(0,213,255,0.7);
+}
+
+.pinPad{
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(3,1fr);
+
+  gap:12px;
+}
+
+.pinPad button{
+
+  height:65px;
+
+  border:none;
+
+  border-radius:18px;
+
+  background:#111;
+
+  color:white;
+
+  font-size:24px;
+
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:0.15s;
+}
+
+.pinPad button:active{
+
+  transform:scale(0.96);
+
+  background:#00d5ff;
+
+  color:black;
 }
 
 </style>
@@ -1341,19 +1421,39 @@ align-items: center;
 
   <div class="passwordBox">
 
-    <div class="passwordTitle">
-      🔒 MONITORING ACCESS
-    </div>
+   <div class="passwordTitle">
+  🔒 MONITORING ACCESS
+</div>
 
-    <input
-      type="password"
-      id="passwordInput"
-      placeholder="Введите пароль"
-    >
+<div id="pinDots" class="pinDots">
 
-    <button onclick="checkMonitoringPassword()">
-      Войти
-    </button>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+
+</div>
+
+<div class="pinPad">
+
+  <button onclick="addPinNumber('1')">1</button>
+  <button onclick="addPinNumber('2')">2</button>
+  <button onclick="addPinNumber('3')">3</button>
+
+  <button onclick="addPinNumber('4')">4</button>
+  <button onclick="addPinNumber('5')">5</button>
+  <button onclick="addPinNumber('6')">6</button>
+
+  <button onclick="addPinNumber('7')">7</button>
+  <button onclick="addPinNumber('8')">8</button>
+  <button onclick="addPinNumber('9')">9</button>
+
+  <button onclick="removePinNumber()">⌫</button>
+  <button onclick="addPinNumber('0')">0</button>
+  <button onclick="checkMonitoringPassword()">✓</button>
+
+</div>
 
   </div>
   

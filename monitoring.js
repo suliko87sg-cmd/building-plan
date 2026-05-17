@@ -837,18 +837,18 @@ openProblemsMonitoring;
 window.checkMonitoringAccess =
   checkMonitoringAccess;
 
+  let enteredPin = "";
+
   function checkMonitoringPassword() {
 
-  const pass =
-    document.getElementById("passwordInput").value;
-
-  if (pass === "00101") {
+  if (enteredPin === "00101") {
 
     document.getElementById("passwordModal")
       .style.display = "none";
 
-    document.getElementById("passwordInput")
-      .value = "";
+    enteredPin = "";
+
+    updatePinDots();
 
     openMonitoring();
 
@@ -856,11 +856,59 @@ window.checkMonitoringAccess =
 
   else {
 
-    alert("Неверный PIN-код");
+    alert("Неверный PIN");
+
+    enteredPin = "";
+
+    updatePinDots();
 
   }
 
 }
+
+function addPinNumber(number) {
+
+  if (enteredPin.length >= 5) return;
+
+  enteredPin += number;
+
+  updatePinDots();
+
+}
+
+function removePinNumber() {
+
+  enteredPin =
+    enteredPin.slice(0, -1);
+
+  updatePinDots();
+
+}
+
+function updatePinDots() {
+
+  const dots =
+    document.querySelectorAll(
+      "#pinDots span"
+    );
+
+  dots.forEach((dot, index) => {
+
+    dot.classList.toggle(
+      "active",
+      index < enteredPin.length
+    );
+
+  });
+
+}
+
+window.addPinNumber =
+  addPinNumber;
+
+window.removePinNumber =
+  removePinNumber;
+  
 
 window.checkMonitoringPassword =
   checkMonitoringPassword;
