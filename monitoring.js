@@ -29,19 +29,8 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/м�
 // =====================
 function checkMonitoringAccess() {
 
-const pin = prompt("бе парол хта гам нате!");
-
-if (pin === "00101") {
-
-openMonitoring();
-
-}
-
-else if (pin !== null) {
-
-alert("Неверный PIN-код");
-
-}
+document.getElementById("passwordModal")
+  .style.display = "flex";
 
 }
 
@@ -847,3 +836,43 @@ openProblemsMonitoring;
 
 window.checkMonitoringAccess =
   checkMonitoringAccess;
+
+  function checkMonitoringPassword() {
+
+  const pass =
+    document.getElementById("passwordInput").value;
+
+  if (pass === "00101") {
+
+    document.getElementById("passwordModal")
+      .style.display = "none";
+
+    document.getElementById("passwordInput")
+      .value = "";
+
+    openMonitoring();
+
+  }
+
+  else {
+
+    alert("Неверный PIN-код");
+
+  }
+
+}
+
+window.checkMonitoringPassword =
+  checkMonitoringPassword;
+
+  document
+  .getElementById("passwordInput")
+  .addEventListener("keydown", e => {
+
+    if (e.key === "Enter") {
+
+      checkMonitoringPassword();
+
+    }
+
+});
