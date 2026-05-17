@@ -5,11 +5,13 @@
 let monitoringData = [];
 let isMonitoringLoaded = false;
 
-fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/monitoring_api")
+fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/монитор")
   .then(res => res.json())
   .then(data => {
 
     console.log("MONITORING LOADED:", data);
+
+    console.log(data[0]);
 
     monitoringData =
       Array.isArray(data)
@@ -61,6 +63,46 @@ function openMonitoring() {
   // показываем мониторинг
   monitoringScreen.style.display = "block";
 
+let totalSold = 0;
+let totalPaid = 0;
+let totalDebt = 0;
+let totalMeters = 0;
+
+monitoringData.forEach(item => {
+
+  totalSold += parseMoney(
+    item["продано $"] || 0
+  );
+
+  totalPaid += parseMoney(
+    item["оплачено $"] || 0
+  );
+
+  totalDebt += parseMoney(
+    item[" остаток $"] || 0
+  );
+
+  totalMeters += parseMoney(
+    item["м² в проекте"] || 0
+  );
+
+});
+
+let totalClientsDebt = 0;
+let totalClients = 0;
+
+clientsData.forEach(item => {
+
+  const dollar =
+    parseMoney(item["доллар"]);
+
+  if (dollar >= 0) return;
+
+  totalClientsDebt += Math.abs(dollar);
+
+  totalClients++;
+
+});
   monitoringScreen.innerHTML = `
 
     <div class="monitoringHeader">
@@ -72,7 +114,9 @@ MONITORING
       <div class="monitorCard large" onclick="openSalesMonitoring()">
   <div class="monitorIcon">◫</div>
   <div class="monitorTitle">Продажи</div>
-<div class="monitorSub">$2.4M this month</div>
+<div class="monitorSub">
+${formatMoney(totalSold)} $
+</div>
 </div>
 
       <div class="monitorCard" onclick="openDebtMonitoring()">
@@ -80,7 +124,9 @@ MONITORING
   <div class="monitorIcon">◧</div>
 
   <div class="monitorTitle">Погашение</div>
-<div class="monitorSub">38 active debtors</div>
+<div class="monitorSub">
+${formatMoney(totalPaid)} $
+</div>
 
 </div>
 
@@ -89,7 +135,10 @@ MONITORING
   <div class="monitorIcon">△</div>
 
   <div class="monitorTitle">Стройка</div>
-<div class="monitorSub">5 active projects</div>
+
+  <div class="monitorSub">
+    ${formatMoney(totalMeters)} м²
+  </div>
 
 </div>
 
@@ -100,9 +149,15 @@ MONITORING
 </div>
 
       <div class="monitorCard" onclick="openFinanceMonitoring()">
+
   <div class="monitorIcon">▣</div>
+
   <div class="monitorTitle">Финансы</div>
-<div class="monitorSub">Cashflow & reports</div>
+
+  <div class="monitorSub">
+    ${formatMoney(totalDebt)} $
+  </div>
+
 </div>
 
       <div class="monitorCard small danger" onclick="openProblemsMonitoring()">
@@ -140,19 +195,19 @@ function openSalesMonitoring() {
   monitoringData.forEach(item => {
 
   totalSold += parseMoney(
-    item["проданные"] || 0
+    item["продано $"] || 0
   );
 
   totalPaid += parseMoney(
-    item["оплачено"] || 0
+    item["оплачено $"] || 0
   );
 
   totalDebt += parseMoney(
-    item["остаток"] || 0
+    item[" остаток $"] || 0
   );
 
   totalMeters += parseMoney(
-    item["м² на данный момент продано"] || 0
+    item["м² в проекте:"] || 0
   );
 });
 
@@ -203,16 +258,19 @@ function openSalesMonitoring() {
   monitoringData.forEach(item => {
 
     const name =
-  item["обекты"] || "Объект";
+item["объекты"] || "Объект";
 
 const sold =
-  parseMoney(item["проданные"] || 0);
+parseMoney(item["продано $"] || 0);
 
 const paid =
-  parseMoney(item["оплачено"] || 0);
+parseMoney(item["оплачено $"] || 0);
 
 const avg =
-  item["среднее значение"] || "-";
+item["среднее значение"] || "-";
+
+const debt =
+parseMoney(item[" остаток $"] || 0);
 
     projectsList.innerHTML += `
 
@@ -239,6 +297,10 @@ const avg =
             <b>${avg}</b>
           </div>
 
+          <div>
+            Остаток:
+            <b>${formatMoney(debt)} $</b>
+          </div>
         </div>
 
       </div>
@@ -257,6 +319,22 @@ let totalClients = 0;
 
 const projectStats = {};
 
+let overdueTotal = 0;
+let currentMonthPaid = 0;
+
+const today = new Date();
+
+const currentMonth =
+  String(today.getMonth() + 1)
+    .padStart(2, "0");
+
+const currentYear =
+  String(today.getFullYear())
+    .slice(2);
+
+const currentMonthKey =
+  `${currentMonth}/${currentYear}`;
+
 clientsData.forEach(item => {
 
   const dollar =
@@ -266,6 +344,114 @@ clientsData.forEach(item => {
   if (dollar >= 0) return;
 
   const debt = Math.abs(dollar);
+
+  // =====================
+// ПРОСРОЧКА
+// =====================
+
+const start = item["старт"];
+const startDate = parseDate(start);
+
+const fixed =
+  parseMoney(item["фикс/сумм"] || 0);
+  let overdue = 0;
+
+if (startDate && fixed) {
+
+  const normalized = {};
+
+  Object.keys(item).forEach(k => {
+    normalized[k.trim()] = item[k];
+  });
+
+  const paymentKeys = Object.keys(normalized)
+    .filter(k => /^\d{2}\/\d{2}$/.test(k));
+
+  const realMonths =
+    generateMonths(startDate, paymentKeys.length);
+
+  let expected = 0;
+  let paid = 0;
+
+  realMonths.forEach((m, index) => {
+
+    const [month, year] = m.split("/");
+
+    const cellDate =
+      new Date(
+        2000 + Number(year),
+        Number(month) - 1,
+        1
+      );
+
+    const key = paymentKeys[index];
+
+    const value =
+      key ? normalized[key] : "";
+
+    const cleanValue =
+      parseMoney(value || 0);
+
+    const payDay =
+      startDate.getDate();
+
+    const isPastMonth =
+      cellDate.getFullYear() <
+        today.getFullYear()
+
+      ||
+
+      (
+        cellDate.getFullYear() ===
+          today.getFullYear()
+
+        &&
+
+        cellDate.getMonth() <
+          today.getMonth()
+      );
+
+    const isCurrentMonth =
+      cellDate.getFullYear() ===
+        today.getFullYear()
+
+      &&
+
+      cellDate.getMonth() ===
+        today.getMonth();
+
+    if (
+      isPastMonth ||
+
+      (
+        isCurrentMonth &&
+        today.getDate() >= payDay
+      )
+    ) {
+
+      expected += fixed;
+      paid += cleanValue;
+
+    }
+
+  });
+
+  overdue =
+  Math.max(0, expected - paid);
+    
+
+  overdueTotal += overdue;
+}
+
+// =====================
+// ОПЛАЧЕНО ЗА МЕСЯЦ
+// =====================
+
+const currentMonthValue =
+  parseMoney(item[currentMonthKey] || 0);
+ 
+
+currentMonthPaid += currentMonthValue;
 
   totalDebt += debt;
 
@@ -279,13 +465,16 @@ const project =
   fullProject.split(" ")[0];
 
   if (!projectStats[project]) {
+   
 
     projectStats[project] = {
-      debt: 0,
-      clients: 0
-    };
+  debt: 0,
+  clients: 0,
+  overdue: 0
+};
 
   }
+   projectStats[project].overdue += overdue;
 
   projectStats[project].debt += debt;
 
@@ -326,17 +515,17 @@ const project =
         </div>
 
         <div class="kpiValue">
-          0 $
+          ${formatMoney(overdueTotal)} TJS
         </div>
       </div>
 
       <div class="kpiCard">
         <div class="kpiLabel">
-          Оплачено за месяц
+         
         </div>
 
         <div class="kpiValue">
-          0 $
+           ${formatMoney(currentMonthPaid)} TJS
         </div>
       </div>
 
@@ -373,6 +562,12 @@ Object.keys(projectStats).forEach(project => {
           <b>${data.clients}</b>
         </div>
 
+        <div>
+  Просрочка:
+<b style="color:#ffcc00;">
+  ${formatMoney(data.overdue)} TJS
+</b>
+</div>
       </div>
 
     </div>

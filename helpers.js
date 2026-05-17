@@ -29,15 +29,16 @@ function generateMonths(startDate, count = 24) {
 const normalize = val => String(val || "").trim().toLowerCase();
 
 function parseMoney(value) {
+
   if (!value) return 0;
 
   return Number(
     String(value)
       .replace(/\$/g, "")
-      .split(",")[0]
       .replace(/\s/g, "")
+      .replace(/,/g, "")
   ) || 0;
- }
+}
 
  function formatMoney(value) {
 
