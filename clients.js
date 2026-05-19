@@ -47,18 +47,18 @@ function openClients() {
 
   <div id="clientsStats"></div>
 
-  <div style="text-align:center; margin-top:100px;">
+  <div style="text-align:center; margin-top:30px;">
 
       <div class="menuBtn" onclick="selectClientProject('kush')">
         Куш
       </div>
 
       <div class="menuBtn" onclick="selectClientProject('gafurov')">
-        Гафуров
+        Гафуров 2
       </div>
 
       <div class="menuBtn" onclick="selectClientProject('buston')">
-        Бустон
+        Бустон 2
       </div>
 
       <div class="menuBtn" onclick="selectClientProject('obj4')">
@@ -77,6 +77,13 @@ function openClients() {
         8-й микрорайон
       </div>
 
+      <div class="menuBtn" onclick="selectClientProject('mikro12')">
+  12-й микрорайон
+</div>
+
+<div class="menuBtn" onclick="selectClientProject('mikro32')">
+  32/2 микрорайон
+</div>
     </div>
   `;
   const debtRows = clientsData.filter(item => {
@@ -172,12 +179,14 @@ function renderClientFlats() {
 `;
 const clientProjectNames = {
   kush: "Куш",
-  gafurov: "Гафуров",
-  buston: "Бустон",
+  gafurov: "Гафуров 2",
+  buston: "Бустон 2",
   obj4: "14-15",
   sholk: "Шолккомбинат",
   nabiev: "Набиев",
-  mikro8: "8-й микрорайон"
+  mikro8: "8-й микрорайон",
+mikro12: "12-й микрорайон",
+mikro32: "32/2 микрорайон"
 };
 
 
@@ -190,12 +199,14 @@ const clientProjectNames = {
 
   const projectMap = {
   "Куш": "kush",
-  "Гафуров": "gafurov",
+  "Гафуров 2": "gafurov",
   "Бустон": "buston",
   "14-15": "obj4",
   "Шолккомбинат": "sholk",
   "Набиев": "nabiev",
-  "8-й микрорайон": "mikro8"
+  "8-й микрорайон": "mikro8",
+ "12-й микрорайон": "mikro12",
+ "32/2 микрорайон": "mikro32"
 };
 
   const realProject = projectMap[currentClientProject] || currentClientProject;
@@ -461,12 +472,14 @@ function renderClientBlocks() {
   `;
  const clientProjectNames = {
   kush: "Куш",
-  gafurov: "Гафуров",
-  buston: "Бустон",
+  gafurov: "Гафуров 2",
+  buston: "Бустон 2",
   obj4: "14-15",
   sholk: "Шолккомбинат",
   nabiev: "Набиев",
-  mikro8: "8-й микрорайон"
+  mikro8: "8-й микрорайон",
+mikro12: "12-й микрорайон",
+mikro32: "32/2 микрорайон"
 };
 
 const realProject = currentClientProject;
@@ -896,7 +909,7 @@ const blockReverseMap = {
   "b6": "Е"
 };
 const projectNameMap = {
-  "buston": "Бустон",
+  "buston": "Бустон 2",
   "kush": "Куш",
   "gafurov": "Гафуров"
 };
