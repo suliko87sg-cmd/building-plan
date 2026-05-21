@@ -84,6 +84,14 @@ function openClients() {
 <div class="menuBtn" onclick="selectClientProject('mikro32')">
   32/2 микрорайон
 </div>
+
+<div class="menuBtn" onclick="selectClientProject('gaf1')">
+  Гафуров 1
+</div>
+
+<div class="menuBtn" onclick="selectClientProject('mikro321')">
+  32/1 микрорайон
+</div>
     </div>
   `;
   const debtRows = clientsData.filter(item => {
@@ -186,7 +194,9 @@ const clientProjectNames = {
   nabiev: "Набиев",
   mikro8: "8-й микрорайон",
 mikro12: "12-й микрорайон",
-mikro32: "32/2 микрорайон"
+mikro32: "32/2 микрорайон",
+gaf1: "Гафуров 1",
+mikro321: "32/1 микрорайон",
 };
 
 
@@ -206,7 +216,9 @@ mikro32: "32/2 микрорайон"
   "Набиев": "nabiev",
   "8-й микрорайон": "mikro8",
  "12-й микрорайон": "mikro12",
- "32/2 микрорайон": "mikro32"
+ "32/2 микрорайон": "mikro32",
+ "Гафуров 1": "gaf1",
+ "32/1 микрорайон": "mikro321",
 };
 
   const realProject = projectMap[currentClientProject] || currentClientProject;
@@ -479,7 +491,9 @@ function renderClientBlocks() {
   nabiev: "Набиев",
   mikro8: "8-й микрорайон",
 mikro12: "12-й микрорайон",
-mikro32: "32/2 микрорайон"
+mikro32: "32/2 микрорайон",
+gaf1: "Гафуров 1",
+mikro321: "32/1 микрорайон",
 };
 
 const realProject = currentClientProject;
@@ -691,9 +705,17 @@ debtRows.forEach(item => {
   });
 
   const overdue =
-    Math.max(0, expected - paid);
+  Math.max(0, expected - paid);
 
-  overdueSomoni += overdue;
+const clientDebt = Math.abs(
+  parseMoney(item["долг"] || 0)
+);
+
+// просрочка не может быть больше остатка
+const realOverdue =
+  Math.min(overdue, clientDebt);
+
+overdueSomoni += realOverdue;
 
 });
 

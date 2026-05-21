@@ -128,6 +128,23 @@ mikro32: {
 
   blockNames: ["2"]
 },
+
+gaf1: {
+  title: "Гафуров 1",
+
+  sheet: "gaf",
+
+  blocks: ["b1"],
+
+  blockNames: ["1"]
+},
+
+mikro321: {
+  title: "32/1 микрорайон",
+  sheet: "32/1",
+  blocks: ["b1"],
+  blockNames: ["1"]
+},
 };
 
 // =====================
