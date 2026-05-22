@@ -145,6 +145,13 @@ mikro321: {
   blocks: ["b1"],
   blockNames: ["1"]
 },
+
+mikro20: {
+  name: "20 микрорайон",
+  sheet: "20",
+  blocks: ["b1"],
+  blockNames: ["1 блок"]
+},
 };
 
 // =====================
