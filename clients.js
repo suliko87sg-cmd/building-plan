@@ -96,6 +96,10 @@ function openClients() {
 <div class="menuBtn" onclick="selectClientProject('mikro20')">
   20 микрорайон
 </div>
+
+<div class="menuBtn" onclick="selectClientProject('buston1')">
+  Бустон 1
+</div>
     </div>
   `;
   const debtRows = clientsData.filter(item => {
@@ -202,6 +206,7 @@ mikro32: "32/2 микрорайон",
 gaf1: "Гафуров 1",
 mikro321: "32/1 микрорайон",
 mikro20: "20 микрорайон",
+buston1: "Бустон 1",
 };
 
 
@@ -215,7 +220,7 @@ mikro20: "20 микрорайон",
   const projectMap = {
   "Куш": "kush",
   "Гафуров 2": "gafurov",
-  "Бустон": "buston",
+  "Бустон 2": "buston",
   "14-15": "obj4",
   "Шолккомбинат": "sholk",
   "Набиев": "nabiev",
@@ -225,6 +230,7 @@ mikro20: "20 микрорайон",
  "Гафуров 1": "gaf1",
  "32/1 микрорайон": "mikro321",
  "20 микрорайон": "mikro20",
+ "Бустон 1": "buston1",
 };
 
   const realProject = projectMap[currentClientProject] || currentClientProject;
@@ -501,6 +507,7 @@ mikro32: "32/2 микрорайон",
 gaf1: "Гафуров 1",
 mikro321: "32/1 микрорайон",
 mikro20: "20 микрорайон",
+buston1: "Бустон 1",
 };
 
 const realProject = currentClientProject;

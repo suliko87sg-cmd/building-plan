@@ -152,6 +152,15 @@ mikro20: {
   blocks: ["b1"],
   blockNames: ["1 блок"]
 },
+
+buston1: {
+  svg: "bustonblocks.svg",
+  sheet: "buston1",
+  floorStart: 1,
+  floorEnd: 10,
+  blocks: ["b1","b2"],
+  blockNames: ["А","Б"]
+},
 };
 
 // =====================
