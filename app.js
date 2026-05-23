@@ -154,7 +154,7 @@ mikro20: {
 },
 
 buston1: {
-  svg: "bustonblocks.svg",
+  svg: "bustonb1.svg",
   sheet: "buston1",
   floorStart: 1,
   floorEnd: 10,

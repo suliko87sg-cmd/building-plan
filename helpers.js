@@ -30,14 +30,25 @@ const normalize = val => String(val || "").trim().toLowerCase();
 
 function parseMoney(value) {
 
-  if (!value) return 0;
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return 0;
+  }
 
-  return Number(
-    String(value)
-      .replace(/\$/g, "")
-      .replace(/\s/g, "")
-      .replace(/,/g, "")
-  ) || 0;
+  const cleaned = String(value)
+    .replace(/\s/g, "")
+    .replace(/,/g, "")
+    .trim();
+
+  const number = parseFloat(cleaned);
+
+  return isNaN(number)
+    ? 0
+    : number;
+
 }
 
  function formatMoney(value) {

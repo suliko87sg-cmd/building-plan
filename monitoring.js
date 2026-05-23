@@ -3,6 +3,7 @@
 // =====================
 
 let monitoringData = [];
+let financeData = {};
 let isMonitoringLoaded = false;
 
 fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/монитор")
@@ -13,15 +14,32 @@ fetch("https://opensheet.elk.sh/1bgxMmcENfryGLng9KZwju8zsoQaHBco-aDTmNONlQ2s/м�
 
     console.log(data[0]);
 
-    monitoringData =
-      Array.isArray(data)
-        ? data
-        : (data.data || []);
+   monitoringData =
+  Array.isArray(data)
+    ? data
+    : (data.data || []);
 
-    isMonitoringLoaded = true;
+data.forEach(item => {
 
-  })
-  .catch(err =>
+  const key =
+    String(item["объекты"] || "")
+      .trim()
+      .toLowerCase();
+
+  const value =
+    parseMoney(item["этажы"]);
+
+  if (key) {
+    financeData[key] = value;
+  }
+
+});
+
+console.log("FINANCE:", financeData);
+
+isMonitoringLoaded = true;
+})
+.catch(err =>
     console.error("Ошибка monitoring:", err)
   );
   // =====================
@@ -55,7 +73,8 @@ function openMonitoring() {
 let totalSold = 0;
 let totalPaid = 0;
 let totalDebt = 0;
-let totalMeters = 0;
+let totalProjectMeters = 0;
+let totalSoldMeters = 0;
 
 monitoringData.forEach(item => {
 
@@ -71,27 +90,20 @@ monitoringData.forEach(item => {
     item[" остаток $"] || 0
   );
 
-  totalMeters += parseMoney(
-    item["м² в проекте"] || 0
-  );
+  totalProjectMeters += parseMoney(
+  item["m² в проекте"] || 0
+);
+
+totalSoldMeters += parseMoney(
+  item["m² в договоров"] || 0
+);
 
 });
 
 let totalClientsDebt = 0;
 let totalClients = 0;
 
-clientsData.forEach(item => {
 
-  const dollar =
-    parseMoney(item["доллар"]);
-
-  if (dollar >= 0) return;
-
-  totalClientsDebt += Math.abs(dollar);
-
-  totalClients++;
-
-});
   monitoringScreen.innerHTML = `
 
     <div class="monitoringHeader">
@@ -126,7 +138,9 @@ ${formatMoney(totalPaid)} $
   <div class="monitorTitle">Стройка</div>
 
   <div class="monitorSub">
-    ${formatMoney(totalMeters)} м²
+    ${formatMoney(totalProjectMeters)}
+/
+${formatMoney(totalSoldMeters)} м²
   </div>
 
 </div>
@@ -179,7 +193,8 @@ function openSalesMonitoring() {
   let totalSold = 0;
   let totalPaid = 0;
   let totalDebt = 0;
-  let totalMeters = 0;
+  let totalProjectMeters = 0;
+let totalSoldMeters = 0;
 
   monitoringData.forEach(item => {
 
@@ -195,9 +210,13 @@ function openSalesMonitoring() {
     item[" остаток $"] || 0
   );
 
-  totalMeters += parseMoney(
-    item["м² в проекте:"] || 0
-  );
+  totalProjectMeters += parseMoney(
+  item["m² в проекте"] || 0
+);
+
+totalSoldMeters += parseMoney(
+  item["m² в договоров"] || 0
+);
 });
 
   monitoringScreen.innerHTML = `
@@ -230,10 +249,33 @@ function openSalesMonitoring() {
       </div>
 
       <div class="kpiCard">
-        <div class="kpiLabel">Продано м²</div>
-        <div class="kpiValue">
-          ${formatMoney(totalMeters)}
-        </div>
+        <div class="kpiLabel">м² проект / договор</div>
+
+<div class="kpiValue">
+
+<span style="
+font-size:18px;
+white-space:nowrap;
+">
+  ${formatMoney(totalProjectMeters)}
+
+  <span style="
+    opacity:.4;
+    margin:0 4px;
+  ">
+    /
+  </span>
+
+  <span style="
+    color:#00ff88;
+    font-weight:700;
+  ">
+    ${formatMoney(totalSoldMeters)}
+  </span>
+
+</span>
+
+</div>
       </div>
 
     </div>
@@ -261,6 +303,12 @@ item["среднее значение"] || "-";
 const debt =
 parseMoney(item[" остаток $"] || 0);
 
+const projectMeters =
+parseMoney(item["m² в проекте"] || 0);
+
+const soldMeters =
+parseMoney(item["m² в договоров"] || 0);
+
     projectsList.innerHTML += `
 
       <div class="projectMonitorCard">
@@ -285,6 +333,19 @@ parseMoney(item[" остаток $"] || 0);
             Средний м²:
             <b>${avg}</b>
           </div>
+
+          <div>
+  м²:
+  <b>
+    ${formatMoney(projectMeters)}
+  </b>
+
+  /
+
+  <b style="color:#00ff88;">
+    ${formatMoney(soldMeters)}
+  </b>
+</div>
 
           <div>
             Остаток:
@@ -326,6 +387,15 @@ const currentMonthKey =
 
 clientsData.forEach(item => {
 
+  // 🔥 пропускаем мусорные строки
+if (
+  !item["клиент"] ||
+  !item["договоры"] ||
+  !(item["flatId"] || item["flatID"])
+) {
+  return;
+}
+
   const dollar =
     parseMoney(item["доллар"]);
 
@@ -344,6 +414,7 @@ const startDate = parseDate(start);
 const fixed =
   parseMoney(item["фикс/сумм"] || 0);
   let overdue = 0;
+let realOverdue = 0;
 
 if (startDate && fixed) {
 
@@ -427,9 +498,16 @@ if (startDate && fixed) {
 
   overdue =
   Math.max(0, expected - paid);
-    
 
-  overdueTotal += overdue;
+// 🔥 ограничиваем просрочку остатком клиента
+const clientDebt = Math.abs(
+  parseMoney(item["долг"] || 0)
+);
+
+realOverdue =
+  Math.min(overdue, clientDebt);
+
+overdueTotal += realOverdue;
 }
 
 // =====================
@@ -446,12 +524,41 @@ currentMonthPaid += currentMonthValue;
 
   totalClients++;
 
-  const fullProject =
-  (item["проект"] || "Без проекта")
+let project =
+  (item["проект"] || "")
     .trim();
 
-const project =
-  fullProject.split(" ")[0];
+// 🔥 если проект пустой — берём из flatId
+if (!project) {
+
+  const flat =
+    (item["flatId"] || item["flatID"] || "")
+      .toLowerCase();
+
+  if (flat.startsWith("32/1")) {
+    project = "32/1";
+  }
+
+  else if (flat.startsWith("32/2")) {
+    project = "32/2";
+  }
+
+  else if (flat.startsWith("20")) {
+    project = "20-мкрн";
+  }
+
+  else if (flat.startsWith("8")) {
+    project = "8В";
+  }
+
+  else {
+    return; // 🔥 вообще пропускаем неизвестное
+  }
+
+}
+
+// берём только первое слово
+project = project.split(" ")[0];
 
   if (!projectStats[project]) {
    
@@ -463,7 +570,7 @@ const project =
 };
 
   }
-   projectStats[project].overdue += overdue;
+   projectStats[project].overdue += realOverdue;
 
   projectStats[project].debt += debt;
 
@@ -670,36 +777,88 @@ window.openBuildMonitoring =
   currentLevel = "managers-monitoring";
 
   monitoringScreen.innerHTML = `
-  
-    <div class="monitoringHeader">
-      👔 Менеджеры
+<div class="monitoringHeader">
+👔 Менеджеры
+</div>
+
+<div id="managersList"></div>
+`;
+
+const managersList =
+document.getElementById("managersList");
+
+const managers = {};
+
+clientsData.forEach(item => {
+
+  const manager =
+  item["менеджер"] ||
+  item["Менеджер"] ||
+  item["manager"] ||
+  item["кассир"] ||
+  item["сотрудник"] ||
+  "Неизвестно";
+
+  if (!managers[manager]) {
+    managers[manager] = {
+      total: 0,
+      active: 0,
+      debt: 0
+    };
+  }
+
+  managers[manager].total++;
+
+  const rawDollar =
+  parseMoney(item["доллар"] || 0);
+
+const debt =
+  Math.abs(rawDollar);
+
+  managers[manager].debt += debt;
+
+  if (rawDollar >= 0) {
+  managers[manager].active++;
+}
+});
+
+Object.entries(managers)
+.forEach(([name, data]) => {
+
+  managersList.innerHTML += `
+
+  <div class="projectMonitorCard"
+       onclick="openManagerDetails('${name}')">
+
+    <div class="projectTop">
+      👔 ${name}
     </div>
 
-    <div class="projectMonitorCard">
-      <div class="projectTop">
-        👔 Ибрагим
+    <div class="projectStats">
+
+      <div>
+        Клиенты:
+        <b>
+          ${data.total}
+          /
+          <span style="color:#00ff88">
+            ${data.active}
+          </span>
+        </b>
       </div>
 
-      <div class="projectStats">
-        <div>Продаж: <b>14</b></div>
-        <div>Сумма: <b>420 000 $</b></div>
-        <div>Долги: <b>38 000 $</b></div>
+      <div>
+        Долг:
+        <b>
+          ${formatMoney(data.debt)} $
+        </b>
       </div>
+
     </div>
 
-    <div class="projectMonitorCard">
-      <div class="projectTop">
-        👔 Сафар
-      </div>
-
-      <div class="projectStats">
-        <div>Продаж: <b>8</b></div>
-        <div>Сумма: <b>210 000 $</b></div>
-        <div>Долги: <b>12 000 $</b></div>
-      </div>
-    </div>
-
+  </div>
   `;
+});
 
 }
 
