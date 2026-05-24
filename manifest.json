@@ -1,10 +1,10 @@
 {
   "name": "CIF Cascade",
-  "short_name": "CIF",
+  "short_name": "Каскад",
   "description": "Продажа квартир — CIF Cascade",
 
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/building-plan/",
+"scope": "/building-plan/",
 
   "display": "standalone",
   "orientation": "portrait",
