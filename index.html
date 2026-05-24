@@ -256,14 +256,7 @@ margin: 4px auto;
     0 0 30px red;
 }
 
-.managerTop {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 14px;
-  color: #fff;
-  opacity: 0.85;
-}
+
 /* ===================== */
 /* SVG */
 /* ===================== */
@@ -786,10 +779,26 @@ box-shadow:
 
   color: white;
 
-  background:
-    radial-gradient(circle at top right, rgba(0, 210, 255, 0.18), transparent 35%),
-    radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.04), transparent 35%),
-    linear-gradient(180deg, #050606 0%, #090909 45%, #120202 100%);
+ background:
+  radial-gradient(
+    circle at top right,
+    rgba(0,213,255,0.22),
+    transparent 40%
+  ),
+
+  radial-gradient(
+    circle at bottom left,
+    rgba(255,255,255,0.05),
+    transparent 40%
+  ),
+
+  linear-gradient(
+    180deg,
+    #07141c 0%,
+    #0b0f14 35%,
+    #111114 70%,
+    #170404 100%
+  );
 }
 
 .monitoringHeader {
@@ -815,7 +824,7 @@ box-shadow:
   font-weight: 400;
   letter-spacing: 0.4px;
 
-  color: rgba(255,255,255,0.45);
+  color: rgba(220,230,240,0.72);
 }
 
 .monitoringGrid {
@@ -843,17 +852,18 @@ box-shadow:
   border-radius: 28px;
 
   background:
-    linear-gradient(
-      160deg,
-      rgba(255,255,255,0.10),
-      rgba(255,255,255,0.025) 45%,
-      rgba(0,0,0,0.75)
-    );
+  linear-gradient(
+    160deg,
+    rgba(255,255,255,0.13),
+    rgba(255,255,255,0.04) 40%,
+    rgba(18,18,22,0.94)
+  );
 
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
 
   box-shadow:
-    0 18px 40px rgba(0,0,0,0.55),
+    0 18px 40px rgba(0,0,0,0.45),
+0 0 18px rgba(0,213,255,0.05),
     inset 0 1px 0 rgba(255,255,255,0.10);
 
   backdrop-filter: blur(18px);
@@ -900,11 +910,11 @@ color: #00d5ff;
 
   border-radius: 16px;
 
-  background: rgba(0, 210, 255, 0.10);
+  background: rgba(0, 213, 255, 0.16);
   border: 1px solid rgba(0, 210, 255, 0.22);
 
   box-shadow:
-    0 0 20px rgba(0, 210, 255, 0.16);
+  0 0 24px rgba(0,213,255,0.30);
 }
 
 .monitorTitle {
@@ -915,17 +925,137 @@ color: #00d5ff;
   font-weight: 700;
 
   color: rgba(255,255,255,0.94);
+  text-shadow:
+  0 0 12px rgba(255,255,255,0.08);
 }
 .monitorSub {
 
   margin-top: 6px;
 
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
 
-  color: rgba(255,255,255,0.42);
+  color: rgba(220,230,240,0.78);
 
   letter-spacing: 0.3px;
+}
+
+.monitorPercent{
+
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  margin-top:10px;
+  padding-top:6px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  width:78px;
+  height:54px;
+
+  border-radius:14px;
+
+  background:
+    rgba(0,25,20,0.55);
+
+  border:1px solid rgba(0,255,180,0.22);
+
+  box-shadow:
+    inset 0 0 18px rgba(0,255,180,0.08),
+    0 0 18px rgba(0,255,180,0.16);
+
+  backdrop-filter:blur(10px);
+}
+
+.monitorPercent::before{
+
+  content:"";
+
+  position:absolute;
+
+  left:-10%;
+  bottom:-4px;
+
+  width:120%;
+  height:28%;
+
+  background:
+  linear-gradient(
+    90deg,
+    rgba(0,220,255,0.32)
+   rgba(0,120,255,0.45)
+  );
+
+  border-radius:
+    40% 60% 35% 65% /
+    45% 35% 65% 55%;
+
+  animation:waterMove 4s ease-in-out infinite;
+
+  box-shadow:
+  0 0 18px rgba(0,180,255,0.12);
+
+  z-index:1;
+}
+
+@keyframes waterMove{
+
+  0%{
+    transform:translateX(0) translateY(0);
+
+    border-radius:
+      40% 60% 35% 65% /
+      45% 35% 65% 55%;
+  }
+
+  50%{
+
+    transform:
+      translateX(-6px)
+      translateY(2px);
+
+    border-radius:
+      55% 45% 60% 40% /
+      35% 60% 40% 65%;
+  }
+
+  100%{
+
+    transform:
+      translateX(0)
+      translateY(0);
+
+    border-radius:
+      40% 60% 35% 65% /
+      45% 35% 65% 55%;
+  }
+}
+.percentValue{
+
+  font-size:18px;
+  font-weight:800;
+
+  line-height:1;
+  mix-blend-mode:screen;
+  color:#00ffb3;
+
+  text-shadow:
+    0 0 12px rgba(0,255,180,0.45);
+}
+
+.percentLabel{
+
+  margin-top:4px;
+
+  font-size:9px;
+  font-weight:600;
+
+  opacity:0.72;
+
+  color:rgba(255,255,255,0.72);
 }
 
 .monitorCard.danger {
@@ -958,6 +1088,107 @@ color: #00d5ff;
   min-height: 120px;
 }
 
+.salesProgressWrap{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.salesProgressTop{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+}
+
+.salesPercent{
+  font-size:32px;
+  font-weight:900;
+  line-height:1;
+  color:#00f0ff;
+
+  text-shadow:
+    0 0 12px rgba(0,240,255,0.45),
+    0 0 24px rgba(0,240,255,0.22);
+}
+
+.salesTotal{
+  font-size:12px;
+  color:rgba(255,255,255,0.55);
+}
+
+.salesBar{
+  position:relative;
+
+  width:100%;
+  height:22px;
+
+  padding:3px;
+
+  border-radius:14px;
+
+  background:
+    rgba(255,255,255,0.04);
+
+  border:
+    1px solid rgba(0,240,255,0.16);
+
+  overflow:hidden;
+
+  box-shadow:
+    inset 0 0 12px rgba(0,0,0,0.45),
+    0 0 18px rgba(0,240,255,0.08);
+}
+
+.salesBarFill{
+  position:relative;
+
+  height:100%;
+
+  border-radius:10px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,180,255,0.45),
+      rgba(0,255,220,0.85)
+    );
+
+  box-shadow:
+    0 0 12px rgba(0,255,220,0.28);
+
+  overflow:hidden;
+}
+
+.salesBarFill::before{
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.38) 0px,
+      rgba(255,255,255,0.38) 8px,
+      transparent 8px,
+      transparent 14px
+    );
+
+  animation:batteryFlow 2.4s linear infinite;
+}
+
+@keyframes batteryFlow{
+  from{
+    transform:translateX(0);
+  }
+
+  to{
+    transform:translateX(22px);
+  }
+}
+
 .monitorCard.danger {
   border: 1px solid rgba(255,70,70,0.30);
 }
@@ -972,6 +1203,8 @@ color: #00d5ff;
     0 0 30px rgba(0,213,255,0.08),
     inset 0 1px 0 rgba(255,255,255,0.10);
 }
+
+
 
 .buildGrid{
   display:flex;
@@ -1004,7 +1237,8 @@ color: #00d5ff;
 .progressBar{
   width:100%;
   height:16px;
-  background:#2a0000;
+  background:rgba(255,255,255,0.06);
+backdrop-filter:blur(6px);
   border-radius:20px;
   overflow:hidden;
   margin-top:15px;
@@ -1012,10 +1246,88 @@ color: #00d5ff;
 
 .progressFill{
   height:100%;
-  background:linear-gradient(90deg,#ff0000,#ff5e00);
-  border-radius:20px;
+  position:relative;
+  overflow:hidden;
+
+  background:linear-gradient(
+    90deg,
+    #ff1a1a,
+    #ff5e00,
+    #ff7b00
+  );
+
+  border-radius:14px;
+
+  box-shadow:
+    0 0 10px rgba(255,80,0,0.7),
+    0 0 20px rgba(255,40,0,0.45);
 }
 
+.progressFill::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-40%;
+
+  width:40%;
+  height:100%;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.35),
+    transparent
+  );
+
+  animation:progressMove 2.5s linear infinite;
+}
+
+@keyframes progressMove{
+  100%{
+    left:140%;
+  }
+}
+
+.managerTop {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 14px;
+  color: #fff;
+  opacity: 0.85;
+}
+
+.managerClientBottom{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-top:8px;
+}
+
+.managerClientName{
+  color:#d7d7d7;
+  font-size:15px;
+}
+
+.managerClientContract{
+  color:#9a9a9a;
+  font-size:13px;
+  min-width:70px;
+}
+
+.managerClientProject{
+  margin-bottom:2px;
+}
+
+.managerClientBottom{
+  margin-top:0px;
+}
+
+.managerClientRow{
+  padding:0px 6px 4px;
+  border-bottom:1px solid rgba(255,0,0,0.45);
+  margin-bottom:6px;
+}
 /* ===================== */
 /* KPI */
 /* ===================== */
@@ -1456,7 +1768,7 @@ align-items: center;
 </div>
 
   </div>
-  
+  </div>
 <!-- ПОГАШЕНИЕ -->
 <script src="helpers.js"></script>
 <script src="svg.js"></script>
@@ -1467,20 +1779,5 @@ align-items: center;
 
 
 </div>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .then(() => {
-        console.log("Service Worker registered");
-      })
-      .catch(err => {
-        console.log("SW error:", err);
-      });
-  });
-}
-</script>
-
 </body>
 </html>

@@ -103,6 +103,8 @@ totalSoldMeters += parseMoney(
 let totalClientsDebt = 0;
 let totalClients = 0;
 
+const salesPercent =
+((totalPaid / totalSold) * 100).toFixed(1);
 
   monitoringScreen.innerHTML = `
 
@@ -116,7 +118,32 @@ MONITORING
   <div class="monitorIcon">◫</div>
   <div class="monitorTitle">Продажи</div>
 <div class="monitorSub">
-${formatMoney(totalSold)} $
+  ${formatMoney(totalPaid)} $
+</div>
+
+<div class="salesProgressWrap">
+
+  <div class="salesProgressTop">
+
+    <div class="salesPercent">
+      ${salesPercent}%
+    </div>
+
+    <div class="salesTotal">
+      из ${formatMoney(totalSold)} $
+    </div>
+
+  </div>
+
+  <div class="salesBar">
+
+    <div
+      class="salesBarFill"
+      style="width:${salesPercent}%"
+    ></div>
+
+  </div>
+
 </div>
 </div>
 
@@ -775,6 +802,8 @@ window.openBuildMonitoring =
   function openManagersMonitoring() {
 
   currentLevel = "managers-monitoring";
+  backBtn.style.display = "block";
+backBtn.innerText = "Назад";
 
   monitoringScreen.innerHTML = `
 <div class="monitoringHeader">
@@ -828,7 +857,7 @@ Object.entries(managers)
   managersList.innerHTML += `
 
   <div class="projectMonitorCard"
-       onclick="openManagerDetails('${name}')">
+       onclick="openManagerClients('${name}')">
 
     <div class="projectTop">
       👔 ${name}
@@ -1083,3 +1112,116 @@ window.checkMonitoringPassword =
     }
 
 });
+
+function openManagerClients(managerName) {
+
+  currentLevel = "manager-clients";
+  backBtn.style.display = "none";
+
+  const rows = clientsData.filter(item => {
+
+    const manager =
+      (item.manager ||
+       item["менеджер"] ||
+       "").trim();
+
+    return manager === managerName;
+
+  });
+
+  const activeClients =
+    rows.filter(item => {
+
+      const dollar =
+        parseMoney(item["доллар"] || 0);
+
+      return dollar >= 0;
+
+    }).length;
+
+  monitoringScreen.innerHTML = `
+
+    <div class="topStickyBar">
+
+      <button class="stickyBackBtn"
+        onclick="openManagersMonitoring()">
+
+        Назад
+
+      </button>
+
+      <div class="statsTitle">
+
+        ${managerName}
+
+      </div>
+
+    </div>
+
+    <div class="buildGrid">
+
+      <div class="projectMonitorCard">
+
+        <div class="projectTop">
+          👨‍💼 ${managerName}
+        </div>
+
+        <div class="projectStats">
+
+          <div>
+            Клиентов:
+            <b>${rows.length}</b>
+          </div>
+
+          <div>
+            Активных:
+            <b style="color:#00ff88">
+              ${activeClients}
+            </b>
+          </div>
+
+        </div>
+
+      </div>
+
+      ${rows.map(item => {
+console.log(item);
+        const project =
+  item["проект"] || "-";
+
+        const client =
+  item["клиент"] || "-";
+
+        const contract =
+  item["договоры"] || "-";
+
+        return `
+
+  <div class="managerClientRow">
+
+    <div class="managerClientProject">
+      🏢 ${project}
+    </div>
+
+    <div class="managerClientBottom">
+
+  <div class="managerClientContract">
+    📄 ${contract}
+  </div>
+
+  <div class="managerClientName">
+    👤 ${client}
+  </div>
+
+</div>
+
+  </div>
+
+`;
+
+      }).join("")}
+
+    </div>
+
+  `;
+}
