@@ -1497,6 +1497,7 @@ align-items: center;
 
   position:fixed;
   inset:0;
+padding-top:40px;
 
   background:rgba(0,0,0,0.75);
 
@@ -1512,43 +1513,95 @@ align-items: center;
 
 .passwordBox{
 
-  width:320px;
+  width:420px;
+  max-width:92%;
+  
+  overflow:hidden;
+position:relative;
+
+  padding:42px 38px;
+
+  border-radius:36px;
 
   background:
+    radial-gradient(
+      circle at top left,
+      rgba(0,217,255,0.14),
+      transparent 42%
+    ),
     linear-gradient(
       145deg,
-      rgba(20,20,20,0.96),
-      rgba(5,5,5,0.98)
+      rgba(12,20,35,0.96),
+      rgba(3,6,14,0.99)
     );
 
-  border:1px solid rgba(255,255,255,0.08);
-
-  border-radius:28px;
-
-  padding:30px 25px;
+  border:1px solid rgba(0,217,255,0.22);
 
   box-shadow:
-    0 0 45px rgba(0,255,255,0.08);
+    0 0 60px rgba(0,217,255,0.10),
+    inset 0 0 30px rgba(255,255,255,0.03);
 
+  backdrop-filter:blur(18px);
+}
+
+.passwordBox::before{
+
+  content:"";
+
+  position:absolute;
+
+  top:-120px;
+  left:-120px;
+
+  width:260px;
+  height:260px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0,217,255,0.16),
+      transparent 72%
+    );
+
+  pointer-events:none;
 }
 
 .passwordTitle{
 
-  white-space:nowrap;
-  color:white;
-
-  font-size:22px;
-  font-weight:700;
-
   text-align:center;
 
-  margin-bottom:25px;
+  margin-bottom:30px;
+
+ color:rgb(236, 234, 234);
+
+  font-size:38px;
+
+  font-weight:900;
+
+  letter-spacing:-1px;
+
+  line-height:1;
 }
-.passwordBox input:focus{
 
-  box-shadow:
-    0 0 15px rgba(0,213,255,0.35);
+.passwordTitle span{
 
+  display:block;
+
+  margin-top:10px;
+
+  font-size:22px;
+
+  letter-spacing:7px;
+
+  color:#00d9ff;
+
+  text-shadow:
+    0 0 14px rgba(0,217,255,0.65);
+
+    font-weight:700;
+    text-shadow:
+  0 0 10px rgba(0,217,255,0.8),
+  0 0 22px rgba(0,217,255,0.35);
 }
 
 .passwordBox input{
@@ -1576,34 +1629,6 @@ align-items: center;
   box-sizing:border-box;
 }
 
-.passwordBox button{
-
-  width:100%;
-
-  height:55px;
-
-  border:none;
-
-  border-radius:18px;
-
-  background:#00d5ff;
-
-  color:black;
-
-  font-size:18px;
-
-  font-weight:700;
-
-  cursor:pointer;
-
-  transition:0.2s;
-}
-
-.passwordBox button:active{
-
-  transform:scale(0.98);
-}
-
 .pinDots{
 
   display:flex;
@@ -1617,24 +1642,30 @@ align-items: center;
 
 .pinDots span{
 
-  width:16px;
-  height:16px;
+  width:18px;
+  height:18px;
 
   border-radius:50%;
 
-  background:#222;
+  background:transparent;
 
-  border:1px solid rgba(255,255,255,0.15);
+  border:2px solid rgba(0,217,255,0.55);
+
+  box-shadow:
+    0 0 10px rgba(0,217,255,0.18);
 
   transition:0.2s;
 }
 
 .pinDots span.active{
 
-  background:#00d5ff;
+  background:#00d9ff;
+
+  border-color:#00d9ff;
 
   box-shadow:
-    0 0 12px rgba(0,213,255,0.7);
+    0 0 16px rgba(0,217,255,0.9),
+    0 0 32px rgba(0,217,255,0.45);
 }
 
 .pinPad{
@@ -1649,32 +1680,48 @@ align-items: center;
 
 .pinPad button{
 
-  height:65px;
+  height:95px;
 
-  border:none;
+  border-radius:24px;
 
-  border-radius:18px;
+  border:1px solid rgba(0,217,255,0.18);
 
-  background:#111;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15,25,40,0.95),
+      rgba(4,8,18,0.98)
+    );
 
   color:white;
 
-  font-size:24px;
+  font-size:48px;
 
   font-weight:700;
 
   cursor:pointer;
 
   transition:0.15s;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.04),
+    0 0 14px rgba(0,217,255,0.05);
 }
 
 .pinPad button:active{
 
-  transform:scale(0.96);
+  transform:scale(0.95);
 
-  background:#00d5ff;
+  background:
+    rgba(0,217,255,0.14);
 
-  color:black;
+  border-color:
+    rgba(0,217,255,0.55);
+
+  box-shadow:
+    0 0 22px rgba(0,217,255,0.25);
+
+  color:white;
 }
 
 </style>
@@ -1734,7 +1781,8 @@ align-items: center;
   <div class="passwordBox">
 
    <div class="passwordTitle">
-  🔒 MONITORING ACCESS
+  MONITORING
+  <span>ACCESS</span>
 </div>
 
 <div id="pinDots" class="pinDots">
@@ -1743,7 +1791,7 @@ align-items: center;
   <span></span>
   <span></span>
   <span></span>
-  <span></span>
+  
 
 </div>
 
@@ -1773,8 +1821,8 @@ align-items: center;
 <script src="helpers.js"></script>
 <script src="svg.js"></script>
 <script src="clients.js"></script>
-<script src="app.js?v=11"></script>
-<script src="monitoring.js?v=13"></script>
+<script src="app.js?v=12"></script>
+<script src="monitoring.js?v=15"></script>
 
 <script>
 if ('serviceWorker' in navigator) {

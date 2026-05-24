@@ -1027,9 +1027,32 @@ window.checkMonitoringAccess =
 
   let enteredPin = "";
 
+  let wrongAttempts = 0;
+
+let pinBlockedUntil = Number(
+  localStorage.getItem("pinBlockedUntil")
+) || 0;
+
   function checkMonitoringPassword() {
 
+    if (Date.now() < pinBlockedUntil) {
+
+  const seconds = Math.ceil(
+    (pinBlockedUntil - Date.now()) / 1000
+  );
+
+  alert(
+    "Доступ временно заблокирован\nПопробуйте через " +
+    seconds +
+    " сек."
+  );
+
+  return;
+}
+
   if (enteredPin === "00101") {
+     wrongAttempts = 0;
+     localStorage.removeItem("pinBlockedUntil");
 
     document.getElementById("passwordModal")
       .style.display = "none";
@@ -1044,13 +1067,35 @@ window.checkMonitoringAccess =
 
   else {
 
-    alert("Неверный PIN");
+  wrongAttempts++;
 
-    enteredPin = "";
+  enteredPin = "";
 
-    updatePinDots();
+  updatePinDots();
+
+  if (wrongAttempts >= 3) {
+
+    pinBlockedUntil =
+      Date.now() + (3 * 60 * 1000);
+      localStorage.setItem(
+  "pinBlockedUntil",
+  pinBlockedUntil
+);
+
+    wrongAttempts = 0;
+
+    alert(
+      "Слишком много попыток\nПопробуйте через 3 минуты"
+    );
 
   }
+
+  document.getElementById("passwordModal")
+    .style.display = "none";
+
+  mainMenu1.style.display = "flex";
+
+}
 
 }
 
@@ -1061,6 +1106,12 @@ function addPinNumber(number) {
   enteredPin += number;
 
   updatePinDots();
+
+  if (enteredPin.length === 5) {
+
+    checkMonitoringPassword();
+
+  }
 
 }
 
@@ -1100,18 +1151,6 @@ window.removePinNumber =
 
 window.checkMonitoringPassword =
   checkMonitoringPassword;
-
-  document
-  .getElementById("passwordInput")
-  .addEventListener("keydown", e => {
-
-    if (e.key === "Enter") {
-
-      checkMonitoringPassword();
-
-    }
-
-});
 
 function openManagerClients(managerName) {
 
