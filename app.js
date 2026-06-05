@@ -98,13 +98,13 @@ nabiev: {
 },
 
 mikro8: {
-  svg: null,
+  svg: "8blocks.svg",
   sheet: "8mkr",
 
-  floorStart: 1,
+  floorStart: 2,
   floorEnd: 12,
 
-  blocks: ["b1","b2","b3","v"],
+  blocks: ["8b1","8b2","8b3","8v"],
 
   blockNames: ["Б-1","Б-2","Б-3","В"]
 },
@@ -347,7 +347,7 @@ if (!svg.querySelector("#soldPattern")) {
   }
 
   // ===== БЛОКИ =====
-  ["b1","b2","b3","b4","b5","b6"].forEach(id => {
+  (projects[currentProject].blocks || []).forEach(id => {
     const el = svg.getElementById(id);
     if (!el) return;
 
@@ -473,27 +473,23 @@ if (currentLevel === "clients") {
 // КАРТОЧКА
 // =====================
 function showFlatCard(id) {
-  if (!isDataLoaded) return;
-
   const row = findFlatRow(id);
-  if (!row) return;
 
-  cardContract.innerText = row.contract || "";
-  cardArea.innerText = row.area ? row.area + " м²" : "";
-  cardClient.innerText = row.client || "";
+  cardContract.innerText = row?.contract || "";
+  cardArea.innerText = row?.area ? row.area + " м²" : "";
+  cardClient.innerText = row?.client || "";
 
-  // 🔥 ОПРЕДЕЛЯЕМ СТАТУС
-  const isSold = row.contract || row.client;
+  const isSold = row && (row.contract || row.client);
 
-if (isSold) {
-  cardTitle.innerText = "Продано";
-  flatCard.classList.add("sold");
-} else {
-  cardTitle.innerText = "Свободно";
-  flatCard.classList.remove("sold");
-}
+  if (isSold) {
+    cardTitle.innerText = "Продано";
+    flatCard.classList.add("sold");
+  } else {
+    cardTitle.innerText = "Свободно";
+    flatCard.classList.remove("sold");
+  }
 
-  flatCard.classList.add("show"); // оставляем твою анимацию
+  flatCard.classList.add("show");
 }
 
 
