@@ -64,8 +64,10 @@ function parseMoney(value) {
  function getBlockSvgFile(projectKey, blockId) {
   if (projectKey === "buston") return "buston" + blockId + ".svg";
   if (projectKey === "gafurov") return "gafurov" + blockId + ".svg";
+  if (projectKey === "obj4") return "14-15" + blockId + ".svg";
+
   return blockId + ".svg";
- }
+}
 
  function findFlatRow(flatId) {
   return sheetData.find(item =>

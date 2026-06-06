@@ -30,7 +30,33 @@ const backBtn = document.getElementById("backBtn");
 const flatCard = document.getElementById("flatCard");
 const floorPanel = document.getElementById("floorPanel");
 const floorsContainer = document.getElementById("floors");
+const overviewPanel = document.getElementById("overviewPanel");
 const clientsScreen = document.getElementById("clientsScreen");
+
+const viewToggle = document.getElementById("viewToggle");
+const normalModeBtn = document.getElementById("normalModeBtn");
+const overviewModeBtn = document.getElementById("overviewModeBtn");
+
+normalModeBtn.onclick = () => {
+  if (!currentBlock) return;
+
+  currentLevel = "flats";
+
+  overviewPanel.style.display = "none";
+  plan.style.display = "block";
+  floorPanel.style.display = "block";
+
+  viewToggle.classList.remove("overview");
+
+  loadSVG(getBlockSvgFile(currentProject, currentBlock));
+};
+
+overviewModeBtn.onclick = () => {
+  if (!currentBlock) return;
+
+  viewToggle.classList.add("overview");
+  showOverview();
+};
 
 const monitoringScreen = document.getElementById("monitoringScreen");
 const mainMenu1 = document.getElementById("mainMenu1");
@@ -65,15 +91,13 @@ const projects = {
     blockNames: ["А","Б"]
   },
     obj4: {
-  svg: null,
+  svg: "14-15blocks.svg",
   sheet: "14-15blocks",
-  floorStart: 1,
+  floorStart: 2,
   floorEnd: 18,
-
   blocks: ["b1","b2"],
-
   blockNames: ["А","Б"]
-}, // ← ВОТ ЭТА ЗАПЯТАЯ
+},
 
 sholk: {
   svg: null,
@@ -242,6 +266,120 @@ function showFloors() {
   floorPanel.style.display = "block";
 }
 
+function showOverview() {
+  if (!currentBlock) return;
+
+  currentLevel = "overview";
+  viewToggle.classList.add("overview");
+  hideFlatCard();
+
+  plan.style.display = "none";
+  floorPanel.style.display = "none";
+  overviewPanel.style.display = "block";
+  overviewPanel.innerHTML = "";
+
+  const start = projects[currentProject]?.floorStart ?? 1;
+  const end = projects[currentProject]?.floorEnd ?? 16;
+
+  for (let floor = start; floor <= end; floor++) {
+    const row = document.createElement("div");
+row.className = "overviewFloor";
+
+const title = document.createElement("div");
+title.className = "overviewTitle";
+title.textContent = floor + " этаж";
+
+const obj = document.createElement("object");
+obj.className = "overviewSvg";
+obj.type = "image/svg+xml";
+obj.data = getBlockSvgFile(currentProject, currentBlock) + "?t=" + Date.now() + "-" + floor;
+
+obj.onload = () => {
+  paintOverviewSvg(obj, floor);
+};
+
+row.appendChild(title);
+row.appendChild(obj);
+
+overviewPanel.appendChild(row);
+  }
+}
+
+function paintOverviewSvg(obj, floor) {
+  const svg = obj.contentDocument;
+  if (!svg) return;
+
+  if (!svg.querySelector("#soldPattern")) {
+  const defs = svg.querySelector("defs") ||
+    document.createElementNS("http://www.w3.org/2000/svg", "defs");
+
+  const pattern = document.createElementNS("http://www.w3.org/2000/svg", "pattern");
+
+  pattern.setAttribute("id", "soldPattern");
+  pattern.setAttribute("patternUnits", "userSpaceOnUse");
+  pattern.setAttribute("width", "6");
+  pattern.setAttribute("height", "6");
+  pattern.setAttribute("patternTransform", "rotate(45)");
+
+  const lineWhite = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  lineWhite.setAttribute("x1", "0");
+  lineWhite.setAttribute("y1", "0");
+  lineWhite.setAttribute("x2", "0");
+  lineWhite.setAttribute("y2", "6");
+  lineWhite.setAttribute("stroke", "#ffffff");
+  lineWhite.setAttribute("stroke-width", "3");
+  lineWhite.setAttribute("opacity", "0.9");
+
+  const lineRed = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  lineRed.setAttribute("x1", "0");
+  lineRed.setAttribute("y1", "0");
+  lineRed.setAttribute("x2", "0");
+  lineRed.setAttribute("y2", "6");
+  lineRed.setAttribute("stroke", "#ff2222");
+  lineRed.setAttribute("stroke-width", "1.2");
+  lineRed.setAttribute("opacity", "1");
+
+  pattern.appendChild(lineWhite);
+  pattern.appendChild(lineRed);
+  defs.appendChild(pattern);
+  svg.documentElement.appendChild(defs);
+}
+
+
+  const flats = Array.from(svg.querySelectorAll('[id^="flat"]'))
+    .filter(el => /^flat\d+$/i.test(el.id));
+
+  flats.forEach(el => {
+    const row = sheetData.find(item =>
+      normalize(item.project) === normalize(getCurrentSheetProject()) &&
+      normalize(item.block) === normalize(currentBlock) &&
+      normalize(item.flat) === normalize(el.id) &&
+      Number(item.floor) === Number(floor)
+    );
+
+    if (!row || !(row.contract || row.client)) return;
+
+    const patternLayer = el.cloneNode(true);
+    patternLayer.removeAttribute("style");
+    patternLayer.style.pointerEvents = "none";
+    patternLayer.style.opacity = "0.95";
+
+    patternLayer.querySelectorAll("*").forEach(x => {
+      x.removeAttribute("style");
+      x.setAttribute("fill", "url(#soldPattern)");
+      x.setAttribute("stroke", "#ff1f1f");
+      x.setAttribute("stroke-width", "2.5");
+    });
+
+    patternLayer.setAttribute("fill", "url(#soldPattern)");
+    patternLayer.setAttribute("stroke", "#ff1f1f");
+    patternLayer.setAttribute("stroke-width", "2.5");
+    patternLayer.style.filter = "drop-shadow(0 0 4px rgba(255,0,0,0.9))";
+
+    el.parentNode.appendChild(patternLayer);
+  });
+}
+
 // =====================
 // SVG ЗАГРУЖЕН
 // =====================
@@ -264,18 +402,34 @@ if (!svg.querySelector("#soldPattern")) {
   pattern.setAttribute("height", "6");
   pattern.setAttribute("patternTransform", "rotate(45)");
 
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  // Белая толстая линия
+const lineWhite = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
-  line.setAttribute("x1", "0");
-  line.setAttribute("y1", "0");
-  line.setAttribute("x2", "0");
-  line.setAttribute("y2", "6");
+lineWhite.setAttribute("x1", "0");
+lineWhite.setAttribute("y1", "0");
+lineWhite.setAttribute("x2", "0");
+lineWhite.setAttribute("y2", "6");
 
-  line.setAttribute("stroke", "#ffffff");
-  line.setAttribute("stroke-width", "2");
-  line.setAttribute("opacity", "0.5");
+lineWhite.setAttribute("stroke", "#ffffff");
+lineWhite.setAttribute("stroke-width", "3");
+lineWhite.setAttribute("opacity", "0.9");
 
-  pattern.appendChild(line);
+pattern.appendChild(lineWhite);
+
+
+// Красная тонкая поверх белой
+const lineRed = document.createElementNS("http://www.w3.org/2000/svg", "line");
+
+lineRed.setAttribute("x1", "0");
+lineRed.setAttribute("y1", "0");
+lineRed.setAttribute("x2", "0");
+lineRed.setAttribute("y2", "6");
+
+lineRed.setAttribute("stroke", "#ff2222");
+lineRed.setAttribute("stroke-width", "1.2");
+lineRed.setAttribute("opacity", "1");
+
+pattern.appendChild(lineRed);
   defs.appendChild(pattern);
 
   svg.documentElement.appendChild(defs);
@@ -317,15 +471,24 @@ if (!svg.querySelector("#soldPattern")) {
   bg.style.pointerEvents = "none";
   bg.id = id + "_sold_bg";
 
-  // 🔹 ШТРИХОВКА
-  const patternLayer = el.cloneNode(true);
-  patternLayer.removeAttribute("style");
-  patternLayer.setAttribute("fill", "url(#soldPattern)");
-  patternLayer.style.pointerEvents = "none";
-  patternLayer.style.opacity = "0.8";
-  patternLayer.setAttribute("stroke", "#ffffff");
-  patternLayer.setAttribute("stroke-width", "1.5");
-  patternLayer.id = id + "_sold_pattern";
+ // 🔹 ШТРИХОВКА
+const patternLayer = el.cloneNode(true);
+patternLayer.removeAttribute("style");
+patternLayer.id = id + "_sold_pattern";
+patternLayer.style.pointerEvents = "none";
+patternLayer.style.opacity = "0.95";
+
+patternLayer.querySelectorAll("*").forEach(x => {
+  x.removeAttribute("style");
+  x.setAttribute("fill", "url(#soldPattern)");
+  x.setAttribute("stroke", "#ff1f1f");
+x.setAttribute("stroke-width", "2.5");
+});
+
+patternLayer.setAttribute("fill", "url(#soldPattern)");
+patternLayer.setAttribute("stroke", "#ff1f1f");
+patternLayer.setAttribute("stroke-width", "2.5");
+patternLayer.style.filter = "drop-shadow(0 0 4px rgba(255,0,0,0.9))";
 
   // 🔹 КЛИК
   const hit = el.cloneNode(true);
@@ -358,6 +521,13 @@ if (!svg.querySelector("#soldPattern")) {
       currentLevel = "flats";
 
       hideFlatCard();
+
+      overviewPanel.style.display = "none";
+      plan.style.display = "block";
+
+      viewToggle.style.display = "flex";
+      viewToggle.classList.remove("overview");
+
       showFloors();
 
       loadSVG(getBlockSvgFile(currentProject, id));
@@ -371,6 +541,16 @@ if (!svg.querySelector("#soldPattern")) {
 backBtn.onclick = () => {
 
   console.log("НАЗАД:", currentLevel);
+  if (currentLevel === "overview") {
+  currentLevel = "flats";
+
+  overviewPanel.style.display = "none";
+  plan.style.display = "block";
+
+  loadSVG(getBlockSvgFile(currentProject, currentBlock));
+
+  return;
+}
 // мониторинг → главное меню
 if (currentLevel === "sales-monitoring" || currentLevel === "debt-monitoring") {
   openMonitoring();
@@ -445,27 +625,35 @@ if (currentLevel === "clients") {
   }
 
   if (currentLevel === "flats") {
-    currentLevel = "blocks";
-    currentBlock = null;
-    floorPanel.style.display = "none";
-    loadSVG(projects[currentProject].svg);
-    return;
-  }
+  currentLevel = "blocks";
+  currentBlock = null;
+
+  floorPanel.style.display = "none";
+  overviewPanel.style.display = "none";
+  viewToggle.style.display = "none";
+
+  plan.style.display = "block";
+  loadSVG(projects[currentProject].svg);
+
+  return;
+}
 
   if (currentLevel === "blocks") {
-    currentLevel = "projects";
-    plan.style.display = "none";
-    mainMenu.style.display = "flex";
-    return;
-  }
+  currentLevel = "projects";
+  plan.style.display = "none";
+  mainMenu.style.display = "flex";
+  viewToggle.style.display = "none";
+  return;
+}
 
   if (currentLevel === "projects") {
-    currentLevel = "main";
-    mainMenu.style.display = "none";
-    mainMenu1.style.display = "flex";
-    backBtn.style.display = "none";
-    return;
-  }
+  currentLevel = "main";
+  mainMenu.style.display = "none";
+  mainMenu1.style.display = "flex";
+  backBtn.style.display = "none";
+  viewToggle.style.display = "none";
+  return;
+}
 
 };
 
