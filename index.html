@@ -281,9 +281,15 @@ margin: 4px auto;
 }
 
 .overviewTitle {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+
+  text-align: center;
+  width: 100%;
+
+  color: white;
+  text-shadow: 0 0 8px rgba(255,0,0,.8);
 }
 
 .overviewSvg {
@@ -1852,6 +1858,7 @@ position:relative;
   <div class="menuBtn" onclick="selectProject('buston')">Бустон</div>
   <div class="menuBtn" onclick="selectProject('obj4')">14-15</div>
   <div class="menuBtn" onclick="selectProject('mikro8')">8-й микрорайон</div>
+  <div class="menuBtn" onclick="selectProject('nabiev')">Набиев</div>
 </div>
 <!-- ВОТ СЮДА -->
 <div id="clientsScreen" style="display:none;">
@@ -1933,14 +1940,24 @@ position:relative;
 <script src="helpers.js"></script>
 <script src="svg.js"></script>
 <script src="clients.js"></script>
-<script src="app.js?v=14"></script>
-<script src="monitoring.js?v=15"></script>
+<script src="app.js?v=15"></script>
+<script src="monitoring.js?v=16"></script>
 
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(() => console.log('SW registered'))
-    .catch(err => console.log(err));
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    console.log('SW registered');
+
+    reg.update();
+
+    setInterval(() => {
+      reg.update();
+    }, 30000);
+
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      window.location.reload();
+    });
+  }).catch(err => console.log(err));
 }
 </script>
 

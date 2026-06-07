@@ -65,6 +65,7 @@ function parseMoney(value) {
   if (projectKey === "buston") return "buston" + blockId + ".svg";
   if (projectKey === "gafurov") return "gafurov" + blockId + ".svg";
   if (projectKey === "obj4") return "14-15" + blockId + ".svg";
+  if (projectKey === "nabiev") return "nab1.svg";
 
   return blockId + ".svg";
 }

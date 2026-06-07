@@ -1,4 +1,4 @@
-const CACHE_NAME = "cif-cache-v1";
+const CACHE_NAME = "cascade-cache-v2";
 
 const urlsToCache = [
   "./",

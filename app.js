@@ -111,11 +111,11 @@ sholk: {
 },
 
 nabiev: {
-  svg: null,
+  svg: "nabiev.svg",
   sheet: "nabiev",
 
-  floorStart: 1,
-  floorEnd: 18,
+  floorStart: 3,
+  floorEnd: 21,
 
   blocks: ["b1"],
   blockNames: ["1"]
@@ -205,7 +205,10 @@ function selectProject(project) {
   floorPanel.style.display = "none";
   backBtn.style.display = "block";
 
-  if (!projects[project].svg) return;
+  if (!projects[project].svg) {
+  renderProjectBlocks(project);
+  return;
+}
 
   loadSVG(projects[project].svg);
 }
