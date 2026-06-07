@@ -8,6 +8,65 @@
 <link rel="manifest" href="manifest.json">
 
 <style>
+
+  #loginScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 25px;
+  background: #310202;
+}
+
+.loginBox {
+  width: 90%;
+  max-width: 360px;
+  padding: 28px;
+  border-radius: 24px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,0,0,0.55);
+  box-shadow: 0 0 25px rgba(255,0,0,0.45);
+  text-align: center;
+  color: white;
+  margin-top: 0;
+}
+
+.loginLogo {
+  width: 180px;
+  border-radius: 18px;
+  margin-bottom: 18px;
+}
+
+.loginBox input {
+  width: 100%;
+  margin: 8px 0;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,0,0,0.5);
+  background: #111;
+  color: white;
+  outline: none;
+}
+
+.loginBox button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid red;
+  background: #000;
+  color: white;
+  font-weight: bold;
+}
+
+#loginError {
+  margin-top: 12px;
+  color: #ff6b6b;
+  font-size: 13px;
+}
+
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -1837,6 +1896,22 @@ position:relative;
 
 <body>
 
+  <div id="loginScreen" style="display:none;">
+  <div class="loginBox">
+    <img src="logo.png" class="loginLogo">
+
+    <h2>Вход в Kaskad CRM</h2>
+
+    <input id="loginEmail" type="email" placeholder="Email">
+    <input id="loginPassword" type="password" placeholder="Пароль">
+
+    <button onclick="loginUser()">Войти</button>
+
+    <div id="loginError"></div>
+  </div>
+</div>
+
+
 <!-- SPLASH -->
 <div id="splash">
   <img src="logo.png" id="splashLogo">
@@ -1936,7 +2011,11 @@ position:relative;
 
   </div>
   </div>
-<!-- ПОГАШЕНИЕ -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="firebase.js"></script>
+
 <script src="helpers.js"></script>
 <script src="svg.js"></script>
 <script src="clients.js"></script>
