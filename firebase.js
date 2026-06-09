@@ -1,3 +1,4 @@
+console.log("FIREBASE JS LOADED");
 const firebaseConfig = {
   apiKey: "AIzaSyCVEzL6tnKbLv0xNV8kQ9ktZ66TC9VuxSw",
   authDomain: "kaskad-crm.firebaseapp.com",
@@ -12,11 +13,7 @@ const auth = firebase.auth();
 
 const USER_ROLES = {
   "suliko87.sg@gmail.com": "admin"
-  "yasirsaidov8@gmail.com": "admin",
-  "abduhakimnormatov7@gmail.com": "manager",
-  "isfandiyor2021@icloud.com": "manager",
-  "ibrahim@kaskad.tj": "manager",
-  "bruim@kaskad.tj": "manager"
+  "abdullohis1987@gmail.com": "admin"
 };
 
 function loginUser() {
