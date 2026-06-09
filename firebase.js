@@ -12,6 +12,11 @@ const auth = firebase.auth();
 
 const USER_ROLES = {
   "suliko87.sg@gmail.com": "admin"
+  "yasirsaidov8@gmail.com": "admin",
+  "abduhakimnormatov7@gmail.com": "manager",
+  "isfandiyor2021@icloud.com": "manager",
+  "ibrahim@kaskad.tj": "manager",
+  "bruim@kaskad.tj": "manager"
 };
 
 function loginUser() {

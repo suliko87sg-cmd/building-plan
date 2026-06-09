@@ -27,6 +27,7 @@ let currentLevel = "main";
 // =====================
 const plan = document.getElementById("plan");
 const backBtn = document.getElementById("backBtn");
+backBtn.style.display = "none";
 const flatCard = document.getElementById("flatCard");
 const floorPanel = document.getElementById("floorPanel");
 const floorsContainer = document.getElementById("floors");
